@@ -28,6 +28,7 @@ export interface FiltrosPropiedades {
   tipo?: string;
   estado?: string;
   distrito?: string;
+  moneda?: string;
   precioMin?: number;
   precioMax?: number;
   cuartosMin?: number;
