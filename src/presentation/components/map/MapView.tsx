@@ -4,6 +4,7 @@ import { useCallback, useState, useMemo } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { usePropiedades } from "@/presentation/hooks/usePropiedades";
+import { useClickTracker } from "@/presentation/hooks/useClickTracker";
 import { PropertyList } from "./PropertyList";
 import { PropertyFilters } from "./PropertyFilters";
 import { LeadForm } from "./LeadForm";
@@ -24,11 +25,14 @@ export function MapView() {
   const [leadPropiedad, setLeadPropiedad] = useState<Propiedad | null>(null);
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number } | undefined>(undefined);
   const [masterPlanVisible, setMasterPlanVisible] = useState(false);
+  const { trackClick } = useClickTracker();
 
   const handleMarkerClick = useCallback((p: Propiedad) => {
     setSelected(p);
     setDetailOpen(true);
-  }, []);
+    // Track click for analytics
+    trackClick(p.id);
+  }, [trackClick]);
 
   const handleCardClick = useCallback((p: Propiedad) => {
     setSelected(p);

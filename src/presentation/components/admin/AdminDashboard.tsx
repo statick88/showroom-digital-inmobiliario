@@ -5,6 +5,7 @@ import { LayoutDashboard, Building2, MessageCircle, Plus, Search } from "lucide-
 import { usePropiedades } from "@/presentation/hooks/usePropiedades";
 import { useLeads } from "@/presentation/hooks/useLeads";
 import { useMetricas } from "@/presentation/hooks/useMetricas";
+import { useTopClicks } from "@/presentation/hooks/useTopClicks";
 import type { Propiedad } from "@/domain/entities/propiedad";
 
 type Tab = "dashboard" | "propiedades" | "leads";
@@ -222,12 +223,7 @@ function Legend() {
 }
 
 function TopClicksTable() {
-  // Mock data - replace with real data from hook
-  const topClicks = [
-    { rank: 1, codigo: "MIR-204", titulo: "Penthouse Miraflores", clicks: 1245 },
-    { rank: 2, codigo: "BAR-105", titulo: "Loft Barranco", clicks: 892 },
-    { rank: 3, codigo: "SUR-402", titulo: "Casa Surco", clicks: 754 },
-  ];
+  const { data: topClicks, isLoading } = useTopClicks(10);
 
   return (
     <table className="w-full text-sm">
@@ -240,18 +236,32 @@ function TopClicksTable() {
         </tr>
       </thead>
       <tbody className="divide-y divide-outline-variant">
-        {topClicks.map((item) => (
-          <tr key={item.codigo} className="hover:bg-surface-container-low transition-colors">
-            <td className="py-3">
-              <span className="w-6 h-6 rounded-full bg-primary-fixed-dim text-on-primary-fixed-variant flex items-center justify-center font-bold text-xs">
-                {item.rank}
-              </span>
+        {isLoading ? (
+          <tr>
+            <td colSpan={4} className="p-8 text-center">
+              Cargando...
             </td>
-            <td className="py-3 font-label-md text-primary">{item.codigo}</td>
-            <td className="py-3 font-body-md text-on-surface">{item.titulo}</td>
-            <td className="py-3 text-right font-bold text-primary">{item.clicks}</td>
           </tr>
-        ))}
+        ) : topClicks && topClicks.length > 0 ? (
+          topClicks.map((item, index) => (
+            <tr key={item.propiedad.id} className="hover:bg-surface-container-low transition-colors">
+              <td className="py-3">
+                <span className="w-6 h-6 rounded-full bg-primary-fixed-dim text-on-primary-fixed-variant flex items-center justify-center font-bold text-xs">
+                  {index + 1}
+                </span>
+              </td>
+              <td className="py-3 font-label-md text-primary">{item.propiedad.codigo}</td>
+              <td className="py-3 font-body-md text-on-surface">{item.propiedad.titulo}</td>
+              <td className="py-3 text-right font-bold text-primary">{item.clicks}</td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan={4} className="p-8 text-center">
+              No hay datos de clics
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   );
