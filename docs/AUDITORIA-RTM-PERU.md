@@ -96,3 +96,65 @@ SELECT * FROM propiedades WHERE agencia_id = 'agente-agencia';
 | `propiedades` | `ciudad` | Default 'Lima' |
 | `leads` | `telefono` | Formato +51 XXXXXXXXX |
 | `metricas_clicks` | `sesion_id` | UUID sin datos personales |
+
+---
+
+# INFORME DE AUDITORÍA TÉCNICA Y DISEÑO FRONTEND (MVP PERÚ)
+
+**Responsable Tecnológico:** Diego Medardo Saavedra García
+
+**Componentes Evaluados:** Showroom Principal (Móvil) y Acceso Administrativo (Autenticación)
+
+## 1. Validación de UI/UX frente a Requerimientos de Negocio
+
+El análisis del código HTML/Tailwind demuestra correspondencia exacta con reglas de negocio peruanas:
+
+### A. Soporte Bimoneda y Consistencia Comercial (REQ-02)
+- **Implementación en UI:** Detalle de propiedad muestra precio dual: **$450,000** y **S/ 1,690,000**
+- **Impacto:** Evita fricción cognitiva, respeta estándar bimoneda peruano
+
+### B. Blindaje Legal Automático (LPDP N° 29733)
+- **Mecanismo de Consentimiento:** Formulario LeadForm incluye checkbox REQUIRED con texto exacto: "He leído y acepto la Política de Privacidad según la Ley N° 29733"
+- **Prefijo telefónico:** Campo muestra +51 fijo para validación local
+
+## 2. Métricas de Rendimiento y Carga Visual
+
+| Aspecto | Implementación | Target Perú |
+|---------|---------------|-------------|
+| Map container | `h-[442px]` con `object-cover` | Optimizado móvil |
+| Marker animation | `map-marker-pulse` CSS | 60fps en móviles |
+| Bottom sheet | `transform transition duration-300` | Sin bloqueo CPU |
+
+## 3. Matriz de Trazabilidad UI-Diseño (RTM-UI)
+
+| Componente UI | Elemento | Status | Observación |
+|-------------|----------|--------|-------------|
+| Showroom | `id="detail-panel"` (Bottom Sheet) | ✅ | Touch handlers implementados |
+| Captura Leads | `id="contact-form"` | ✅ | Prefijo +51 fijo |
+| Login Admin | `id="loginForm"` | ⚠️ | Conectar a Supabase Auth |
+
+## 4. Ajustes Técnicos para Integración
+
+### A. Mapeo de Atributos Dinámicos
+```tsx
+// Estados dinámicos en tarjetas
+const estadoClasses = {
+  disponible: "bg-tertiary/10 text-tertiary",
+  separado: "bg-secondary/10 text-secondary",
+  vendido: "bg-error/10 text-error"
+};
+```
+
+### B. Sync de Clicks Asíncrona
+```tsx
+// En MapView handleMarkerClick
+const { trackClick } = useClickTracker();
+const handleMarkerClick = useCallback((p: Propiedad) => {
+  setSelected(p);
+  setDetailOpen(true);
+  trackClick(p.id); // Fire-and-forget
+}, [trackClick]);
+```
+
+## Conclusión
+Diseño premium compatible con mercado inmobiliario Lima Top. Integración limpia con base de datos y arquitectura Serverless.
