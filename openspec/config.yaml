@@ -3,15 +3,15 @@
 schema: spec-driven
 
 context: |
-  Showroom Digital Inmobiliario — plataforma PropTech para el mercado peruano.
-  
-  Stack: Next.js 16 (App Router) + TypeScript (strict) + Tailwind CSS v4 + shadcn/ui
-         + Supabase (PostgreSQL, Auth, Realtime, Storage)
-         + Leaflet/react-leaflet (mapas interactivos)
-         + Zustand (client state) + TanStack Query (server state) + Zod (validación)
-  
-  Despliegue: Vercel + Supabase Cloud
-  Mercado: Perú (Lima Metropolitana como mercado inicial)
+   Showroom Digital Inmobiliario — plataforma PropTech para el mercado peruano.
+   
+   Stack: Vite 8 + React 19 + TypeScript (strict) + Tailwind CSS v4 + shadcn/ui
+          + Supabase (PostgreSQL, Auth, Realtime, Storage)
+          + Leaflet/react-leaflet (mapas interactivos)
+          + Zustand (client state) + TanStack Query (server state) + Zod (validación)
+   
+   Despliegue: GitHub Pages (estático) + Supabase Cloud
+   Mercado: Perú (Lima Metropolitana como mercado inicial)
   Público: Compradores de vivienda, corredores inmobiliarios, inmobiliarias pequeñas/medianas
   Diferenciación: Mapas interactivos con capas de datos, scoring de leads con ML, tours virtuales 3D/360°
   
