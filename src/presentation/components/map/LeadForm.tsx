@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { leadsRepository } from "@/data/repositories";
 import type { Propiedad } from "@/domain/entities/propiedad";
+
+const THROTTLE_MS = 30_000;
 
 export function LeadForm({
   propiedad,
@@ -21,12 +23,21 @@ export function LeadForm({
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [saving, setSaving] = useState(false);
+  const lastSubmit = useRef(0);
 
   if (!propiedad) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nombre.trim() || !email.trim()) return;
+
+    const now = Date.now();
+    if (now - lastSubmit.current < THROTTLE_MS) {
+      toast.warning("Ya enviaste una solicitud recientemente", {
+        description: "Espera un momento antes de intentar de nuevo.",
+      });
+      return;
+    }
 
     setSaving(true);
     try {
@@ -36,6 +47,7 @@ export function LeadForm({
         email: email.trim(),
         telefono: telefono.trim() || undefined,
       });
+      lastSubmit.current = now;
       toast.success("Solicitud enviada", {
         description: "Te contactaremos pronto sobre esta propiedad.",
       });

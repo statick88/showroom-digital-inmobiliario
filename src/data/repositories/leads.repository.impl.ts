@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase/client";
+import { rethrowIfPresent } from "@/lib/supabase/errors";
 import type { LeadsRepository, CrearLeadData } from "@/domain/repositories/propiedades.repository";
 import type { Lead } from "@/domain/entities/propiedad";
 
@@ -25,7 +26,7 @@ export const leadsRepository: LeadsRepository = {
       .eq("propiedades.agencia_id", agenciaId)
       .order("created_at", { ascending: false });
 
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al cargar leads");
     return (data ?? []).map(mapLead);
   },
 
@@ -41,7 +42,7 @@ export const leadsRepository: LeadsRepository = {
       })
       .select("*")
       .single();
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al enviar solicitud");
     return mapLead(row);
   },
 
@@ -52,7 +53,7 @@ export const leadsRepository: LeadsRepository = {
       .eq("id", id)
       .select("*")
       .single();
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al actualizar lead");
     return mapLead(row);
   },
 };

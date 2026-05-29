@@ -2,14 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { leadsRepository } from "@/data/repositories";
+import { env } from "@/config/env";
 
-const AGENCIA_ID = "a0000000-0000-0000-0000-000000000001";
-
-export const LEADS_QUERY_KEY = ["leads", AGENCIA_ID];
+export const LEADS_QUERY_KEY = ["leads", env.agenciaId];
 
 export function useLeads() {
   return useQuery({
     queryKey: LEADS_QUERY_KEY,
-    queryFn: () => leadsRepository.listarPorAgencia(AGENCIA_ID),
+    queryFn: () => leadsRepository.listarPorAgencia(env.agenciaId),
   });
 }

@@ -102,7 +102,9 @@ export function MapView() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <MapController flyTo={flyTo} />
-          {masterPlanVisible && env.masterPlanImageUrl && <MasterPlanOverlay imageUrl={env.masterPlanImageUrl} />}
+          {masterPlanVisible && env.masterPlanImageUrl && (
+            <MasterPlanOverlay imageUrl={env.masterPlanImageUrl} />
+          )}
           {markers.map((p) => {
             const color = COLORS[p.estado];
             const isSelected = p.id === selected?.id;
@@ -145,7 +147,11 @@ export function MapView() {
           onClick={() => setMasterPlanVisible((v) => !v)}
           className="absolute top-3 right-3 z-[1000] flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/90 dark:bg-zinc-900/90 shadow-md hover:bg-white dark:hover:bg-zinc-900 transition-colors"
         >
-          {masterPlanVisible ? <EyeOffIcon className="size-3.5" /> : <EyeIcon className="size-3.5" />}
+          {masterPlanVisible ? (
+            <EyeOffIcon className="size-3.5" />
+          ) : (
+            <EyeIcon className="size-3.5" />
+          )}
           {masterPlanVisible ? "Ocultar plano" : "Ver plano"}
         </button>
       </div>

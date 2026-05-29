@@ -1,10 +1,17 @@
 import { supabase } from "@/lib/supabase/client";
+import { rethrowIfPresent } from "@/lib/supabase/errors";
 import type {
   PropiedadesRepository,
   FiltrosPropiedades,
   CrearPropiedadData,
 } from "@/domain/repositories/propiedades.repository";
 import type { Propiedad, DashboardMetricas } from "@/domain/entities/propiedad";
+
+const LISTAR_LIMIT = 200;
+
+function sanitizeSearch(term: string): string {
+  return term.replace(/[%_]/g, "");
+}
 
 function mapPropiedad(row: Record<string, unknown>): Propiedad {
   const ubicacion = row.ubicacion as { x: number; y: number } | null;
@@ -36,7 +43,11 @@ function mapPropiedad(row: Record<string, unknown>): Propiedad {
 
 export const propiedadesRepository: PropiedadesRepository = {
   async listar(filtros?: FiltrosPropiedades) {
-    let query = supabase.from("propiedades").select("*").order("created_at", { ascending: false });
+    let query = supabase
+      .from("propiedades")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(LISTAR_LIMIT);
 
     if (filtros?.tipo) query = query.eq("tipo", filtros.tipo);
     if (filtros?.estado) query = query.eq("estado", filtros.estado);
@@ -45,13 +56,14 @@ export const propiedadesRepository: PropiedadesRepository = {
     if (filtros?.precioMin) query = query.gte("precio", filtros.precioMin);
     if (filtros?.precioMax) query = query.lte("precio", filtros.precioMax);
     if (filtros?.search) {
+      const sanitized = sanitizeSearch(filtros.search);
       query = query.or(
-        `titulo.ilike.%${filtros.search}%,codigo.ilike.%${filtros.search}%,descripcion.ilike.%${filtros.search}%`,
+        `titulo.ilike.%${sanitized}%,codigo.ilike.%${sanitized}%,descripcion.ilike.%${sanitized}%`,
       );
     }
 
     const { data, error } = await query;
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al cargar propiedades");
     return (data ?? []).map(mapPropiedad);
   },
 
@@ -81,7 +93,7 @@ export const propiedadesRepository: PropiedadesRepository = {
       })
       .select("*")
       .single();
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al crear propiedad");
     return mapPropiedad(row);
   },
 
@@ -102,13 +114,13 @@ export const propiedadesRepository: PropiedadesRepository = {
       .eq("id", id)
       .select("*")
       .single();
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al actualizar propiedad");
     return mapPropiedad(row);
   },
 
   async eliminar(id: string) {
     const { error } = await supabase.from("propiedades").delete().eq("id", id);
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al eliminar propiedad");
   },
 
   async cambiarEstado(id: string, estado: Propiedad["estado"]) {
@@ -118,7 +130,7 @@ export const propiedadesRepository: PropiedadesRepository = {
       .eq("id", id)
       .select("*")
       .single();
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al cambiar estado");
     return mapPropiedad(row);
   },
 
@@ -126,7 +138,7 @@ export const propiedadesRepository: PropiedadesRepository = {
     const { data, error } = await supabase
       .rpc("obtener_metricas_dashboard", { p_agencia_id: agenciaId })
       .single();
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al obtener métricas");
     return data as DashboardMetricas;
   },
 };

@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase/client";
+import { rethrowIfPresent } from "@/lib/supabase/errors";
 import type {
   MetricasRepository,
   CrearMetricaData,
@@ -38,7 +39,7 @@ export const metricasRepository: MetricasRepository = {
       perfil_id: data.perfilId,
       pagina_origen: data.paginaOrigen,
     });
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al registrar métrica");
   },
 
   async obtenerTopClicks(agenciaId: string, limite = 10) {
@@ -47,7 +48,7 @@ export const metricasRepository: MetricasRepository = {
       p_limite: limite,
     });
 
-    if (error) throw error;
+    rethrowIfPresent(error, "Error al obtener top clics");
 
     return ((data ?? []) as Record<string, unknown>[]).map((row) => ({
       propiedad: mapPropiedad(row as Record<string, unknown>),

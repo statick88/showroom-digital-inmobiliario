@@ -37,7 +37,13 @@ const cards: CardDef[] = [
   { key: "vendidas", label: "Vendidas", icon: XCircleIcon, color: "text-red-600" },
   { key: "totalClicks", label: "Clics", icon: MousePointerClickIcon, color: "text-blue-600" },
   { key: "totalLeads", label: "Leads", icon: MessageCircleIcon, color: "text-violet-600" },
-  { key: "avancePorcentaje", label: "Avance", icon: TrendingUpIcon, color: "text-emerald-600", suffix: "%" },
+  {
+    key: "avancePorcentaje",
+    label: "Avance",
+    icon: TrendingUpIcon,
+    color: "text-emerald-600",
+    suffix: "%",
+  },
 ];
 
 export function MetricasPanel() {
@@ -58,9 +64,7 @@ export function MetricasPanel() {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {cards.map(({ key, label, icon: Icon, color, suffix }) => {
-        const display = key === "avancePorcentaje"
-          ? `${data[key]}${suffix ?? ""}`
-          : `${data[key]}`;
+        const display = key === "avancePorcentaje" ? `${data[key]}${suffix ?? ""}` : `${data[key]}`;
 
         return (
           <div

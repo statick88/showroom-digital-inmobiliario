@@ -65,7 +65,7 @@ function PropiedadesTab() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Propiedades</h1>
-      {(!data || data.length === 0) ? (
+      {!data || data.length === 0 ? (
         <p className="text-sm text-zinc-500">No hay propiedades.</p>
       ) : (
         <div className="overflow-x-auto">
@@ -98,9 +98,7 @@ function PropiedadesTab() {
                       {p.estado}
                     </Badge>
                   </td>
-                  <td className="py-2 tabular-nums">
-                    S/ {p.precio.toLocaleString("es-PE")}
-                  </td>
+                  <td className="py-2 tabular-nums">S/ {p.precio.toLocaleString("es-PE")}</td>
                 </tr>
               ))}
             </tbody>
@@ -119,7 +117,7 @@ function LeadsTab() {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Leads</h1>
-      {(!data || data.length === 0) ? (
+      {!data || data.length === 0 ? (
         <p className="text-sm text-zinc-500">No hay leads aún.</p>
       ) : (
         <div className="overflow-x-auto">
