@@ -1,9 +1,10 @@
+import { Building } from "lucide-react";
 import type { Propiedad } from "@/domain/entities/propiedad";
 
 const ESTADO_STYLES: Record<Propiedad["estado"], { label: string; bg: string; text: string }> = {
-  disponible: { label: "Disponible", bg: "bg-emerald-500", text: "text-emerald-600" },
-  separado: { label: "Separado", bg: "bg-amber-500", text: "text-amber-600" },
-  vendido: { label: "Vendido", bg: "bg-red-500", text: "text-red-600" },
+  disponible: { label: "Disponible", bg: "bg-status-success", text: "text-status-success" },
+  separado: { label: "Separado", bg: "bg-status-warning", text: "text-status-warning" },
+  vendido: { label: "Vendido", bg: "bg-status-destructive", text: "text-status-destructive" },
 };
 
 function formatPrice(precio: number, moneda: string) {
@@ -29,10 +30,10 @@ export function PropertyCard({
     <button
       type="button"
       onClick={onClick}
-      className={`flex gap-3 p-3 rounded-xl text-left transition-all ring-1 ${
+      className={`flex gap-3 p-3 rounded-xl text-left transition-all duration-150 border ${
         selected
-          ? "ring-primary bg-primary/5"
-          : "ring-zinc-200 dark:ring-zinc-800 hover:ring-zinc-300 dark:hover:ring-zinc-700"
+          ? "border-primary bg-primary/5 shadow-card"
+          : "border-zinc-200 dark:border-zinc-800 hover:border-primary/40 hover:shadow-card-hover dark:hover:border-primary/30"
       }`}
     >
       <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800">
@@ -43,8 +44,8 @@ export function PropertyCard({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-xl text-zinc-400">
-            🏗️
+          <div className="w-full h-full flex items-center justify-center">
+            <Building size={20} className="text-zinc-400" aria-label="Sin imagen" />
           </div>
         )}
       </div>

@@ -17,9 +17,9 @@ import type { Propiedad } from "@/domain/entities/propiedad";
 import type { FiltrosPropiedades } from "@/domain/repositories/propiedades.repository";
 
 const COLORS: Record<Propiedad["estado"], string> = {
-  disponible: "#22c55e",
-  separado: "#eab308",
-  vendido: "#ef4444",
+  disponible: "var(--status-success)",
+  separado: "var(--status-warning)",
+  vendido: "var(--status-destructive)",
 };
 
 const LABELS: Record<Propiedad["estado"], string> = {

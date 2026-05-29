@@ -32,16 +32,16 @@ type MetricasData = {
 
 const cards: CardDef[] = [
   { key: "totalPropiedades", label: "Total", icon: Building2Icon, color: "text-zinc-600" },
-  { key: "disponibles", label: "Disponibles", icon: CheckCircleIcon, color: "text-emerald-600" },
-  { key: "separadas", label: "Separadas", icon: ClockIcon, color: "text-amber-600" },
-  { key: "vendidas", label: "Vendidas", icon: XCircleIcon, color: "text-red-600" },
+  { key: "disponibles", label: "Disponibles", icon: CheckCircleIcon, color: "text-status-success" },
+  { key: "separadas", label: "Separadas", icon: ClockIcon, color: "text-status-warning" },
+  { key: "vendidas", label: "Vendidas", icon: XCircleIcon, color: "text-status-destructive" },
   { key: "totalClicks", label: "Clics", icon: MousePointerClickIcon, color: "text-blue-600" },
   { key: "totalLeads", label: "Leads", icon: MessageCircleIcon, color: "text-violet-600" },
   {
     key: "avancePorcentaje",
     label: "Avance",
     icon: TrendingUpIcon,
-    color: "text-emerald-600",
+    color: "text-status-success",
     suffix: "%",
   },
 ];

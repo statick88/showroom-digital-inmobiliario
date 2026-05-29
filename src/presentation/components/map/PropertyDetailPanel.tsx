@@ -1,12 +1,16 @@
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Building, ChevronLeft } from "lucide-react";
+import { HeroImage } from "./HeroImage";
+import { SpecsGrid } from "./SpecsGrid";
+import { Gallery } from "./Gallery";
 import type { Propiedad } from "@/domain/entities/propiedad";
 
 const ESTADO_CONFIG: Record<Propiedad["estado"], { label: string; color: string }> = {
-  disponible: { label: "Disponible", color: "bg-emerald-500" },
-  separado: { label: "Separado", color: "bg-amber-500" },
-  vendido: { label: "Vendido", color: "bg-red-500" },
+  disponible: { label: "Disponible", color: "bg-status-success" },
+  separado: { label: "Separado", color: "bg-status-warning" },
+  vendido: { label: "Vendido", color: "bg-status-destructive" },
 };
 
 function formatPrice(precio: number, moneda: string) {
@@ -50,7 +54,7 @@ export function PropertyDetailPanel({
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <span className="text-5xl text-zinc-700">🏗️</span>
+              <Building size={40} className="text-zinc-700" aria-label="Sin imagen" />
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
