@@ -1,0 +1,77 @@
+# openspec/config.yaml
+# SDD Configuration — SHOWROOM_DIGITAL_INMOBILIARIO
+schema: spec-driven
+
+context: |
+  Showroom Digital Inmobiliario — plataforma PropTech para el mercado peruano.
+  
+  Stack: Next.js 16 (App Router) + TypeScript (strict) + Tailwind CSS v4 + shadcn/ui
+         + Supabase (PostgreSQL, Auth, Realtime, Storage)
+         + Leaflet/react-leaflet (mapas interactivos)
+         + Zustand (client state) + TanStack Query (server state) + Zod (validación)
+  
+  Despliegue: Vercel + Supabase Cloud
+  Mercado: Perú (Lima Metropolitana como mercado inicial)
+  Público: Compradores de vivienda, corredores inmobiliarios, inmobiliarias pequeñas/medianas
+  Diferenciación: Mapas interactivos con capas de datos, scoring de leads con ML, tours virtuales 3D/360°
+  
+  Investigación de mercado: INFORME_TENDENCIAS_PROPTECH_PERU_2026.md, docs/investigacion-proptech-showroom-digital.md
+
+strict_tdd: true
+
+testing:
+  runner:
+    framework: Vitest
+    command: npx vitest
+  layers:
+    unit:
+      available: true
+      tool: Vitest
+    integration:
+      available: true
+      tool: Vitest + Testing Library (@testing-library/react)
+    e2e:
+      available: true
+      tool: Playwright
+  coverage:
+    available: true
+    command: npx vitest --coverage
+  quality:
+    linter:
+      available: true
+      command: npx next lint
+    type_checker:
+      available: true
+      command: npx tsc --noEmit
+    formatter:
+      available: true
+      command: npx prettier --check
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Reference market research findings where relevant
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Include mobile-first acceptance criteria (82% mobile traffic)
+    - Include data protection requirements (DS 016-2024-JUS)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+    - Mobile-first responsive design (Tailwind breakpoints)
+    - Accessibility (WCAG 2.1 AA minimum)
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    - Follow existing code patterns
+    tdd: true
+    test_command: npx vitest run --reporter=verbose
+  verify:
+    test_command: npx vitest run
+    build_command: npx next build
+    coverage_threshold: 80
+    e2e_command: npx playwright test
+  archive:
+    - Warn before merging destructive deltas

@@ -1,0 +1,17 @@
+.next
+node_modules
+pnpm-lock.yaml
+.next
+out
+build
+public
+docs
+.atl
+openspec
+INFORME_TENDENCIAS_PROPTECH_PERU_2026.md
+AGENTS.md
+CLAUDE.md
+README.md
+*.yaml
+*.yml
+supabase/.temp
