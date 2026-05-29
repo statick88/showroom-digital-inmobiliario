@@ -39,12 +39,6 @@ export function LeadForm({
       return;
     }
 
-  if (!propiedad) return null;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nombre.trim() || !email.trim()) return;
-
     const now = Date.now();
     if (now - lastSubmit.current < THROTTLE_MS) {
       toast.warning("Ya enviaste una solicitud recientemente", {
