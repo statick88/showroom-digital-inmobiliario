@@ -29,6 +29,11 @@ const ESTADOS = [
   { value: "vendido", label: "Vendido" },
 ] as const;
 
+const MONEDAS = [
+  { value: "PEN", label: "S/." },
+  { value: "USD", label: "$" },
+] as const;
+
 export function PropertyFilters({
   filters,
   onChange,
@@ -47,8 +52,8 @@ export function PropertyFilters({
     return Array.from(set).sort();
   }, [propiedades]);
 
-  const hasFilters =
-    filters.tipo || filters.estado || filters.distrito || filters.precioMin || filters.precioMax;
+const hasFilters =
+  filters.tipo || filters.estado || filters.distrito || filters.moneda || filters.precioMin || filters.precioMax;
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -101,6 +106,24 @@ export function PropertyFilters({
           {distritos.map((d) => (
             <SelectItem key={d} value={d}>
               {d}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Moneda */}
+      <Select
+        value={filters.moneda ?? ""}
+        onValueChange={(value) => onChange({ ...filters, moneda: value || undefined })}
+      >
+        <SelectTrigger className="w-28">
+          <SelectValue placeholder="Moneda" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="">Todas</SelectItem>
+          {MONEDAS.map((m) => (
+            <SelectItem key={m.value} value={m.value}>
+              {m.label}
             </SelectItem>
           ))}
         </SelectContent>
