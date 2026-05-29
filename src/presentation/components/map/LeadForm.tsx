@@ -22,9 +22,22 @@ export function LeadForm({
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [consent, setConsent] = useState(false);
   const [saving, setSaving] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const lastSubmit = useRef(0);
+
+  if (!propiedad) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nombre.trim() || !email.trim()) return;
+    if (!consent) {
+      toast.warning("Consentimiento requerido", {
+        description: "Acepta la política de privacidad para continuar.",
+      });
+      return;
+    }
 
   if (!propiedad) return null;
 
@@ -62,6 +75,7 @@ export function LeadForm({
       setNombre("");
       setEmail("");
       setTelefono("");
+      setConsent(false);
       setTurnstileToken(null);
       onClose();
     } catch (err) {
@@ -128,7 +142,21 @@ export function LeadForm({
             />
           )}
 
-          <Button type="submit" className="w-full" disabled={saving || (!!env.turnstileSiteKey && !turnstileToken)}>
+          {/* LPDP Consentimiento */}
+          <label className="flex gap-2 items-start cursor-pointer">
+            <input
+              type="checkbox"
+              required
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              className="mt-1 rounded border-outline-variant text-primary"
+            />
+            <span className="text-xs text-on-surface-variant leading-snug">
+              He leído y acepto la <b>Política de Privacidad</b> según la Ley N° 29733 (Protección de Datos Personales del Perú).
+            </span>
+          </label>
+
+          <Button type="submit" className="w-full" disabled={saving || (!consent || (!!env.turnstileSiteKey && !turnstileToken))}>
             {saving ? "Enviando..." : "Enviar solicitud"}
           </Button>
         </form>
