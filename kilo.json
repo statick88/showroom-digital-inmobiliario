@@ -1,0 +1,31 @@
+{
+  "agent": {
+    "gentle-orchestrator": {
+      "model": "kilo-auto/free"
+    },
+    "sdd-explore": {
+      "model": "kilo-auto/free"
+    },
+    "sdd-propose": {
+      "model": "kilo-auto/free"
+    },
+    "sdd-spec": {
+      "model": "kilo-auto/free"
+    },
+    "sdd-design": {
+      "model": "kilo-auto/free"
+    },
+    "sdd-tasks": {
+      "model": "kilo-auto/free"
+    },
+    "sdd-apply": {
+      "model": "kilo-auto/free"
+    },
+    "sdd-verify": {
+      "model": "kilo-auto/free"
+    },
+    "sdd-archive": {
+      "model": "kilo-auto/free"
+    }
+  }
+}

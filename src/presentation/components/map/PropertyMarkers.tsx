@@ -3,25 +3,17 @@
 import { Marker, Popup } from "react-leaflet";
 import { divIcon } from "leaflet";
 import type { Propiedad } from "@/domain/entities/propiedad";
-import { getMarkerColor, getMarkerHtml } from "@/config/markers";
+import { createMarkerHtml } from "@/config/markers";
 import { MarkerPopup } from "./MarkerPopup";
 
 function createIcon(estado: Propiedad["estado"]) {
   return divIcon({
     className: "",
-    html: getMarkerHtml(estado),
+    html: createMarkerHtml(estado),
     iconSize: [16, 16],
     iconAnchor: [8, 8],
     popupAnchor: [0, -12],
   });
-}
-
-function formatPrice(precio: number, moneda: string) {
-  return new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: moneda === "USD" ? "USD" : "PEN",
-    maximumFractionDigits: 0,
-  }).format(precio);
 }
 
 export function PropertyMarkers({

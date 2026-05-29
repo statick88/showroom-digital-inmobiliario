@@ -1,17 +1,7 @@
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Building, ChevronLeft } from "lucide-react";
-import { HeroImage } from "./HeroImage";
-import { SpecsGrid } from "./SpecsGrid";
-import { Gallery } from "./Gallery";
-import type { Propiedad } from "@/domain/entities/propiedad";
+"use client";
 
-const ESTADO_CONFIG: Record<Propiedad["estado"], { label: string; color: string }> = {
-  disponible: { label: "Disponible", color: "bg-status-success" },
-  separado: { label: "Separado", color: "bg-status-warning" },
-  vendido: { label: "Vendido", color: "bg-status-destructive" },
-};
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import type { Propiedad } from "@/domain/entities/propiedad";
 
 function formatPrice(precio: number, moneda: string) {
   return new Intl.NumberFormat("es-PE", {
@@ -20,6 +10,15 @@ function formatPrice(precio: number, moneda: string) {
     maximumFractionDigits: 0,
   }).format(precio);
 }
+
+const ESTADO_CONFIG: Record<
+  Propiedad["estado"],
+  { label: string; color: string; bg: string }
+> = {
+  disponible: { label: "Disponible", color: "text-tertiary", bg: "bg-tertiary/10" },
+  separado: { label: "Separado", color: "text-secondary", bg: "bg-secondary/10" },
+  vendido: { label: "Vendido", color: "text-error", bg: "bg-error/10" },
+};
 
 export function PropertyDetailPanel({
   propiedad,
@@ -38,14 +37,14 @@ export function PropertyDetailPanel({
   const hasImage = propiedad.imagenes.length > 0;
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(v) => {
-        if (!v) onClose();
-      }}
+    <div
+      className={`fixed inset-y-0 right-0 w-[420px] bg-white dark:bg-zinc-900 shadow-2xl z-[60] transform transition-transform duration-300 ease-in-out ${
+        open ? "translate-x-0" : "translate-x-full"
+      }`}
     >
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0">
-        <div className="relative h-48 bg-gradient-to-br from-zinc-800 to-zinc-900 overflow-hidden shrink-0 isolate">
+      <div className="h-full flex flex-col relative overflow-hidden">
+        {/* Hero Image */}
+        <div className="relative h-72 shrink-0">
           {hasImage ? (
             <img
               src={propiedad.imagenes[0]!}
@@ -53,85 +52,111 @@ export function PropertyDetailPanel({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <Building size={40} className="text-zinc-700" aria-label="Sin imagen" />
-            </div>
+            <div className="w-full h-full bg-surface-container-high" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          <div className="absolute top-3 left-3">
-            <Badge className={`${cfg.color} text-white border-none`}>{cfg.label}</Badge>
+
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+          >
+            <svg className="size-5" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+            </svg>
+          </button>
+
+          {/* Badge Estado */}
+          <div className="absolute top-4 left-4">
+            <span className={`${cfg.bg} ${cfg.color} px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider`}>
+              {cfg.label}
+            </span>
           </div>
-          <div className="absolute bottom-3 left-3 right-3">
-            <p className="text-white font-bold text-xl drop-shadow-sm">
-              {formatPrice(propiedad.precio, propiedad.moneda)}
-            </p>
-            <p className="text-white/80 text-xs">{propiedad.codigo}</p>
+
+          {/* Info inferior */}
+          <div className="absolute bottom-4 left-6 right-6 flex justify-between items-end">
+            <div className="text-white">
+              <p className="text-xs opacity-80 mb-1">CÓDIGO: {propiedad.codigo}</p>
+              <h2 className="font-display text-headline-md leading-tight">{propiedad.titulo}</h2>
+            </div>
+            <div className="text-right text-white">
+              <p className="font-currency-md text-headline-md text-tertiary-fixed">
+                {formatPrice(propiedad.precio, propiedad.moneda)}
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="p-4 space-y-4">
-          <div>
-            <DialogTitle className="text-lg font-semibold leading-snug">
-              {propiedad.titulo}
-            </DialogTitle>
-            <DialogDescription className="text-sm text-zinc-500 mt-0.5">
-              {propiedad.distrito && `${propiedad.distrito}, `}
-              {propiedad.ciudad}, Perú
-            </DialogDescription>
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+          {/* Ubicación */}
+          <div className="flex items-start gap-2">
+            <svg className="size-5 text-primary mt-0.5" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5z" />
+            </svg>
+            <div>
+              <p className="text-body-md font-bold text-on-surface">
+                {[propiedad.distrito, propiedad.ciudad].filter(Boolean).join(", ")}
+              </p>
+              <p className="text-label-md text-on-surface-variant">{propiedad.direccion}</p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          {/* Specs Grid */}
+          <div className="grid grid-cols-3 gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant">
             {propiedad.areaM2 && (
-              <div className="text-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800">
-                <p className="text-lg font-bold">{propiedad.areaM2}</p>
-                <p className="text-xs text-zinc-500">m²</p>
+              <div className="flex flex-col items-center gap-1">
+                <svg className="size-5 text-primary-container" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
+                </svg>
+                <span className="text-label-md text-on-surface-variant">Área</span>
+                <span className="text-body-md font-bold text-on-surface">{propiedad.areaM2} m²</span>
               </div>
             )}
             {propiedad.cuartos && (
-              <div className="text-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800">
-                <p className="text-lg font-bold">{propiedad.cuartos}</p>
-                <p className="text-xs text-zinc-500">Dorm.</p>
+              <div className="flex flex-col items-center gap-1 border-x border-outline-variant">
+                <svg className="size-5 text-primary-container" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M7 13c1.1 0 2-.9 2-2S8.1 9 7 9 5 9.9 5 11s.9 2 2 2zm0 1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm7 0c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm0-2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" />
+                </svg>
+                <span className="text-label-md text-on-surface-variant">Dorm.</span>
+                <span className="text-body-md font-bold text-on-surface">{propiedad.cuartos}</span>
               </div>
             )}
             {propiedad.banios && (
-              <div className="text-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800">
-                <p className="text-lg font-bold">{propiedad.banios}</p>
-                <p className="text-xs text-zinc-500">Baños</p>
+              <div className="flex flex-col items-center gap-1">
+                <svg className="size-5 text-primary-container" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M22 10V4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v6c0 .55.45 1 1 1v12c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V11c.55 0 1-.45 1-1zm-2 0H4V4h16v6z" />
+                </svg>
+                <span className="text-label-md text-on-surface-variant">Baños</span>
+                <span className="text-body-md font-bold text-on-surface">{propiedad.banios}</span>
               </div>
             )}
           </div>
 
+          {/* Descripción */}
           {propiedad.descripcion && (
-            <div>
-              <h4 className="text-sm font-medium mb-1">Descripción</h4>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            <div className="space-y-3">
+              <h3 className="font-headline-md text-on-surface">Descripción</h3>
+              <p className="text-on-surface-variant text-label-md leading-relaxed">
                 {propiedad.descripcion}
               </p>
             </div>
           )}
-
-          {propiedad.imagenes.length > 1 && (
-            <div>
-              <h4 className="text-sm font-medium mb-2">Galería</h4>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {propiedad.imagenes.slice(1).map((url, i) => (
-                  <div key={i} className="relative h-20 w-28 shrink-0 rounded-lg overflow-hidden">
-                    <img
-                      src={url!}
-                      alt={`${propiedad.titulo} - ${i + 2}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <Button className="w-full" size="lg" onClick={() => onContact?.(propiedad)}>
-            Contactar
-          </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        {/* CTA Sticky */}
+        <div className="p-4 bg-white dark:bg-zinc-900 border-t border-outline-variant">
+          <button
+            onClick={() => onContact?.(propiedad)}
+            className="w-full h-12 bg-primary text-white font-bold rounded-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+          >
+            <svg className="size-5" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+            </svg>
+            Contactar
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

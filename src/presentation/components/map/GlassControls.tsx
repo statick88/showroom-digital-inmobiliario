@@ -2,7 +2,7 @@
 
 import { MapController } from "./MapController";
 import { Button } from "@/components/ui/button";
-import { SearchIcon, MapPinIcon, GlobeAltIcon } from "lucide-react";
+import { SearchIcon, MapPinIcon, GlobeIcon } from "lucide-react";
 
 export function GlassControls() {
   return (
@@ -14,7 +14,7 @@ export function GlassControls() {
         <MapPinIcon className="size-4" />
       </Button>
       <Button variant="ghost" size="icon" aria-label="Cambiar tipo de mapa">
-        <GlobeAltIcon className="size-4" />
+        <GlobeIcon className="size-4" />
       </Button>
       <MapController />
     </div>

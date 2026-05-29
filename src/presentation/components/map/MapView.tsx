@@ -1,40 +1,20 @@
 "use client";
 
 import { useCallback, useState, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { divIcon } from "leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { usePropiedades } from "@/presentation/hooks/usePropiedades";
-import { PropertyDetailPanel } from "./PropertyDetailPanel";
 import { PropertyList } from "./PropertyList";
 import { PropertyFilters } from "./PropertyFilters";
 import { LeadForm } from "./LeadForm";
 import { MetricasPanel } from "./MetricasPanel";
 import { MapController } from "./MapController";
 import { MasterPlanOverlay } from "./MasterPlanOverlay";
+import { PropertyMarkers } from "./PropertyMarkers";
+import { PropertyDetailPanel } from "./PropertyDetailPanel";
 import { env } from "@/config/env";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
 import type { Propiedad } from "@/domain/entities/propiedad";
 import type { FiltrosPropiedades } from "@/domain/repositories/propiedades.repository";
-
-const COLORS: Record<Propiedad["estado"], string> = {
-  disponible: "var(--status-success)",
-  separado: "var(--status-warning)",
-  vendido: "var(--status-destructive)",
-};
-
-const LABELS: Record<Propiedad["estado"], string> = {
-  disponible: "Disponible",
-  separado: "Separado",
-  vendido: "Vendido",
-};
-
-function formatPrice(precio: number, moneda: string) {
-  return new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: moneda === "USD" ? "USD" : "PEN",
-    maximumFractionDigits: 0,
-  }).format(precio);
-}
 
 export function MapView() {
   const [filters, setFilters] = useState<FiltrosPropiedades>({});
@@ -55,6 +35,8 @@ export function MapView() {
     if (p.ubicacion) {
       setFlyTo({ lat: p.ubicacion.y, lng: p.ubicacion.x });
     }
+    // On mobile, open detail panel
+    setDetailOpen(true);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -73,24 +55,53 @@ export function MapView() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="w-full h-[50vh] bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-500">
-          Cargando mapa...
+      <div className="flex h-screen">
+        <div className="w-[320px] h-full bg-surface-container-low border-r border-outline-variant p-4 space-y-4">
+          <div className="h-8 w-48 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
+          <div className="space-y-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-16 bg-zinc-100 dark:bg-zinc-800 rounded-xl animate-pulse" />
+            ))}
+          </div>
+        </div>
+        <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+          <span className="text-zinc-500">Cargando mapa...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Filters */}
-      <PropertyFilters filters={filters} onChange={setFilters} />
+    <div className="flex h-screen bg-background">
+      {/* Sidebar - Desktop */}
+      <aside className="hidden lg:flex w-[320px] h-full bg-surface-container-low border-r border-outline-variant flex-col overflow-hidden">
+        {/* Filters Header */}
+        <div className="p-4 border-b border-outline-variant space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="font-display text-headline-md text-on-surface">Explorar Lima</h2>
+            <button
+              onClick={() => setFilters({})}
+              className="text-primary font-label-md text-label-md hover:underline"
+            >
+              Limpiar
+            </button>
+          </div>
+          <PropertyFilters filters={filters} onChange={setFilters} />
+        </div>
 
-      {/* Metrics */}
-      <MetricasPanel />
+        {/* Property List */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          <PropertyList
+            propiedades={propiedades}
+            isLoading={isLoading}
+            selectedId={selected?.id}
+            onSelect={handleCardClick}
+          />
+        </div>
+      </aside>
 
-      {/* Map */}
-      <div className="relative w-full h-[50vh] rounded-xl overflow-hidden">
+      {/* Map Section */}
+      <section className="flex-1 relative bg-surface-container-low">
         <MapContainer
           center={[-12.1354, -76.9967]}
           zoom={14}
@@ -105,66 +116,45 @@ export function MapView() {
           {masterPlanVisible && env.masterPlanImageUrl && (
             <MasterPlanOverlay imageUrl={env.masterPlanImageUrl} />
           )}
-          {markers.map((p) => {
-            const color = COLORS[p.estado];
-            const isSelected = p.id === selected?.id;
-            return (
-              <Marker
-                key={p.id}
-                position={[p.ubicacion!.y, p.ubicacion!.x]}
-                icon={divIcon({
-                  className: "",
-                  html: `<div style="width:${isSelected ? 20 : 16}px;height:${isSelected ? 20 : 16}px;border-radius:50%;background:${color};border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer"></div>`,
-                  iconSize: [isSelected ? 20 : 16, isSelected ? 20 : 16],
-                  iconAnchor: [isSelected ? 10 : 8, isSelected ? 10 : 8],
-                  popupAnchor: [0, -12],
-                })}
-                eventHandlers={{ click: () => handleMarkerClick(p) }}
-              >
-                <Popup>
-                  <div className="font-sans text-sm leading-snug min-w-[180px]">
-                    <p className="font-semibold text-base mb-1">{p.titulo}</p>
-                    <p className="text-zinc-600 mb-1">
-                      {p.distrito && `${p.distrito}, `}
-                      {p.ciudad}
-                    </p>
-                    <p className="font-bold text-lg mb-1">{formatPrice(p.precio, p.moneda)}</p>
-                    <span
-                      className="inline-block text-xs font-medium px-2 py-0.5 rounded-full"
-                      style={{ background: color + "22", color }}
-                    >
-                      {LABELS[p.estado]}
-                    </span>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+          <PropertyMarkers propiedades={markers} onSelect={handleMarkerClick} />
         </MapContainer>
 
-        {/* Toggle master plan */}
+        {/* Map Controls */}
+        <div className="absolute top-md right-md flex flex-col gap-sm items-end z-10">
+          <div className="glass-panel rounded-xl p-1 flex shadow-lg">
+            <button className="px-4 py-2 bg-primary text-white rounded-lg font-label-md text-label-md shadow-md">
+              Mapa
+            </button>
+            <button className="px-4 py-2 text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors rounded-lg">
+              Satélite
+            </button>
+          </div>
+          <div className="glass-panel rounded-xl p-3 flex items-center gap-3 shadow-lg">
+            <span className="font-label-md text-label-md text-on-surface font-semibold">Ver plano</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={masterPlanVisible}
+                onChange={(e) => setMasterPlanVisible(e.target.checked)}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
+            </label>
+          </div>
+        </div>
+
+        {/* Mobile Filters Button */}
         <button
-          onClick={() => setMasterPlanVisible((v) => !v)}
-          className="absolute top-3 right-3 z-[1000] flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-white/90 dark:bg-zinc-900/90 shadow-md hover:bg-white dark:hover:bg-zinc-900 transition-colors"
+          className="lg:hidden absolute top-4 left-4 z-10 glass-panel rounded-full p-2 shadow-lg"
+          onClick={() => setFilters({ ...filters, mobileOpen: true })}
         >
-          {masterPlanVisible ? (
-            <EyeOffIcon className="size-3.5" />
-          ) : (
-            <EyeIcon className="size-3.5" />
-          )}
-          {masterPlanVisible ? "Ocultar plano" : "Ver plano"}
+          <svg className="size-5 text-primary" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" />
+          </svg>
         </button>
-      </div>
+      </section>
 
-      {/* Property list */}
-      <PropertyList
-        propiedades={propiedades}
-        isLoading={isLoading}
-        selectedId={selected?.id}
-        onSelect={handleCardClick}
-      />
-
-      {/* Detail panel */}
+      {/* Property Detail Slide-over */}
       <PropertyDetailPanel
         propiedad={selected}
         open={detailOpen}

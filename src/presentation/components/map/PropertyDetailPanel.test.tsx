@@ -25,7 +25,7 @@ const basePropiedad: Propiedad = {
 };
 
 describe("PropertyDetailPanel", () => {
-  it("renders the Building icon in image fallback when no images", () => {
+  it("renders property title when open", () => {
     render(
       <PropertyDetailPanel
         propiedad={basePropiedad}
@@ -34,13 +34,19 @@ describe("PropertyDetailPanel", () => {
       />,
     );
 
-    // The Building icon should be rendered as an SVG inside the dialog
-    const svgs = document.querySelectorAll("svg");
-    // Find the Building icon by aria-label
-    const buildingSvg = Array.from(svgs).find(
-      (svg) => svg.getAttribute("aria-label") === "Sin imagen",
+    expect(screen.getByText("Departamento Test")).toBeInTheDocument();
+  });
+
+  it("shows estado badge when open", () => {
+    render(
+      <PropertyDetailPanel
+        propiedad={basePropiedad}
+        open={true}
+        onClose={() => {}}
+      />,
     );
-    expect(buildingSvg).toBeInTheDocument();
+
+    expect(screen.getByText("Disponible")).toBeInTheDocument();
   });
 
   it("does NOT render 🏗️ emoji", () => {
