@@ -8,9 +8,10 @@ import type {
 import type { Propiedad, DashboardMetricas } from "@/domain/entities/propiedad";
 
 const LISTAR_LIMIT = 200;
+const SEARCH_MAX_LENGTH = 100;
 
 function sanitizeSearch(term: string): string {
-  return term.replace(/[%_]/g, "");
+  return term.replace(/[%_\\]/g, "").slice(0, SEARCH_MAX_LENGTH);
 }
 
 function mapPropiedad(row: Record<string, unknown>): Propiedad {
@@ -138,7 +139,7 @@ export const propiedadesRepository: PropiedadesRepository = {
     const { data, error } = await supabase
       .rpc("obtener_metricas_dashboard", { p_agencia_id: agenciaId })
       .single();
-    rethrowIfPresent(error, "Error al obtener métricas");
+    rethrowIfPresent(error, "Error al obtener metricas");
     return data as DashboardMetricas;
   },
 };

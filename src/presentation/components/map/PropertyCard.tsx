@@ -1,6 +1,3 @@
-"use client";
-
-import Image from "next/image";
 import type { Propiedad } from "@/domain/entities/propiedad";
 
 const ESTADO_STYLES: Record<Propiedad["estado"], { label: string; bg: string; text: string }> = {
@@ -38,15 +35,12 @@ export function PropertyCard({
           : "ring-zinc-200 dark:ring-zinc-800 hover:ring-zinc-300 dark:hover:ring-zinc-700"
       }`}
     >
-      {/* Thumbnail */}
       <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-800">
         {propiedad.imagenes.length > 0 ? (
-          <Image
+          <img
             src={propiedad.imagenes[0]!}
             alt={propiedad.titulo}
-            fill
-            className="object-cover"
-            sizes="80px"
+            className="w-full h-full object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-xl text-zinc-400">
@@ -55,7 +49,6 @@ export function PropertyCard({
         )}
       </div>
 
-      {/* Info */}
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium truncate">{propiedad.titulo}</p>
         <p className="text-xs text-zinc-500 truncate mt-0.5">

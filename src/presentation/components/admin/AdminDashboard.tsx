@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { MetricasPanel } from "@/presentation/components/map/MetricasPanel";
 import { usePropiedades } from "@/presentation/hooks/usePropiedades";
@@ -20,7 +18,6 @@ export function AdminDashboard() {
 
   return (
     <div className="flex min-h-[80vh] gap-6">
-      {/* Sidebar */}
       <nav className="w-48 shrink-0 space-y-1">
         {TABS.map(({ key, label, icon: Icon }) => (
           <button
@@ -38,7 +35,6 @@ export function AdminDashboard() {
         ))}
       </nav>
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
         {tab === "dashboard" && <DashboardTab />}
         {tab === "propiedades" && <PropiedadesTab />}
@@ -137,7 +133,11 @@ function LeadsTab() {
                   <td className="py-2 font-medium">{l.nombre}</td>
                   <td className="py-2 text-zinc-500">{l.email}</td>
                   <td className="py-2 text-zinc-500">{l.telefono ?? "—"}</td>
-                  <td className="py-2 text-zinc-500">{l.propiedadId}</td>
+                  <td className="py-2 text-zinc-500">
+                    {l.propiedadTitulo
+                      ? `${l.propiedadCodigo ?? ""} — ${l.propiedadTitulo}`
+                      : l.propiedadId}
+                  </td>
                   <td className="py-2 text-zinc-500">
                     {new Date(l.createdAt).toLocaleDateString("es-PE")}
                   </td>

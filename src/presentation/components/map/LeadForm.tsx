@@ -1,11 +1,11 @@
-"use client";
-
 import { useState, useRef } from "react";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { leadsRepository } from "@/data/repositories";
+import { env } from "@/config/env";
 import type { Propiedad } from "@/domain/entities/propiedad";
 
 const THROTTLE_MS = 30_000;
@@ -23,6 +23,7 @@ export function LeadForm({
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [saving, setSaving] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const lastSubmit = useRef(0);
 
   if (!propiedad) return null;
@@ -35,6 +36,13 @@ export function LeadForm({
     if (now - lastSubmit.current < THROTTLE_MS) {
       toast.warning("Ya enviaste una solicitud recientemente", {
         description: "Espera un momento antes de intentar de nuevo.",
+      });
+      return;
+    }
+
+    if (env.turnstileSiteKey && !turnstileToken) {
+      toast.warning("Verifica que no eres un robot", {
+        description: "Completa el captcha para continuar.",
       });
       return;
     }
@@ -54,8 +62,10 @@ export function LeadForm({
       setNombre("");
       setEmail("");
       setTelefono("");
+      setTurnstileToken(null);
       onClose();
-    } catch {
+    } catch (err) {
+      console.error("[LeadForm] Error al enviar lead:", err);
       toast.error("Error al enviar", {
         description: "Intenta de nuevo más tarde.",
       });
@@ -107,7 +117,18 @@ export function LeadForm({
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={saving}>
+          {env.turnstileSiteKey && (
+            <Turnstile
+              siteKey={env.turnstileSiteKey}
+              onSuccess={setTurnstileToken}
+              options={{
+                theme: "light",
+                size: "flexible",
+              }}
+            />
+          )}
+
+          <Button type="submit" className="w-full" disabled={saving || (!!env.turnstileSiteKey && !turnstileToken)}>
             {saving ? "Enviando..." : "Enviar solicitud"}
           </Button>
         </form>

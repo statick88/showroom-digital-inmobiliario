@@ -4,6 +4,7 @@ import type { LeadsRepository, CrearLeadData } from "@/domain/repositories/propi
 import type { Lead } from "@/domain/entities/propiedad";
 
 function mapLead(row: Record<string, unknown>): Lead {
+  const propiedades = row.propiedades as Record<string, unknown> | undefined;
   return {
     id: row.id as string,
     propiedadId: row.propiedad_id as string,
@@ -14,6 +15,8 @@ function mapLead(row: Record<string, unknown>): Lead {
     score: row.score as number,
     estado: row.estado as Lead["estado"],
     notas: row.notas as string | undefined,
+    propiedadTitulo: (propiedades?.titulo as string) ?? undefined,
+    propiedadCodigo: (propiedades?.codigo as string) ?? undefined,
     createdAt: row.created_at as string,
   };
 }
@@ -22,7 +25,7 @@ export const leadsRepository: LeadsRepository = {
   async listarPorAgencia(agenciaId: string) {
     const { data, error } = await supabase
       .from("leads")
-      .select("*, propiedades!inner(agencia_id)")
+      .select("*, propiedades!inner(codigo, titulo, agencia_id)")
       .eq("propiedades.agencia_id", agenciaId)
       .order("created_at", { ascending: false });
 

@@ -74,6 +74,8 @@ export interface Lead {
   score: number;
   estado: EstadoLead;
   notas?: string;
+  propiedadTitulo?: string;
+  propiedadCodigo?: string;
   createdAt: string;
 }
 

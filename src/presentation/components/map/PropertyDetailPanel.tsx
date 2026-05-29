@@ -1,6 +1,3 @@
-"use client";
-
-import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -44,15 +41,12 @@ export function PropertyDetailPanel({
       }}
     >
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0">
-        {/* Hero */}
         <div className="relative h-48 bg-gradient-to-br from-zinc-800 to-zinc-900 overflow-hidden shrink-0 isolate">
           {hasImage ? (
-            <Image
+            <img
               src={propiedad.imagenes[0]!}
               alt={propiedad.titulo}
-              fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, 512px"
+              className="w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
@@ -71,7 +65,6 @@ export function PropertyDetailPanel({
           </div>
         </div>
 
-        {/* Body */}
         <div className="p-4 space-y-4">
           <div>
             <DialogTitle className="text-lg font-semibold leading-snug">
@@ -83,7 +76,6 @@ export function PropertyDetailPanel({
             </DialogDescription>
           </div>
 
-          {/* Specs grid */}
           <div className="grid grid-cols-3 gap-3">
             {propiedad.areaM2 && (
               <div className="text-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800">
@@ -105,7 +97,6 @@ export function PropertyDetailPanel({
             )}
           </div>
 
-          {/* Description */}
           {propiedad.descripcion && (
             <div>
               <h4 className="text-sm font-medium mb-1">Descripción</h4>
@@ -115,19 +106,16 @@ export function PropertyDetailPanel({
             </div>
           )}
 
-          {/* Extra images */}
           {propiedad.imagenes.length > 1 && (
             <div>
               <h4 className="text-sm font-medium mb-2">Galería</h4>
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {propiedad.imagenes.slice(1).map((url, i) => (
                   <div key={i} className="relative h-20 w-28 shrink-0 rounded-lg overflow-hidden">
-                    <Image
+                    <img
                       src={url!}
                       alt={`${propiedad.titulo} - ${i + 2}`}
-                      fill
-                      className="object-cover"
-                      sizes="112px"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 ))}
@@ -135,7 +123,6 @@ export function PropertyDetailPanel({
             </div>
           )}
 
-          {/* Contact button */}
           <Button className="w-full" size="lg" onClick={() => onContact?.(propiedad)}>
             Contactar
           </Button>
