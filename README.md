@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Showroom Digital Inmobiliario
 
-## Getting Started
+Showroom inmobiliario interactivo con mapa de propiedades, filtros avanzados y formulario de contacto.
 
-First, run the development server:
+## Stack
+
+- **React 19** + **Vite 8** (static site)
+- **TypeScript** (strict mode)
+- **Tailwind CSS 4** + **shadcn/ui**
+- **React Query** + **Zustand** (state management)
+- **Leaflet** (mapas interactivos)
+- **Supabase** (base de datos y autenticación)
+
+## Development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Instalar dependencias
+pnpm install
+
+# Servidor de desarrollo
 pnpm dev
-# or
-bun dev
+
+# Build de producción
+pnpm build
+
+# Preview del build
+pnpm preview
+
+# Tests
+pnpm test
+
+# Verificar (typecheck + lint + test + build)
+pnpm verify
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+El proyecto se despliega automáticamente en **GitHub Pages** cuando se hace push a `main`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+https://statick88.github.io/showroom-digital-inmobiliario/
+```
 
-## Learn More
+### Capturas
 
-To learn more about Next.js, take a look at the following resources:
+| Showroom Mapa | Dashboard Admin |
+|--------------|----------------|
+| ![Showroom Mapa](docs/screenshots/showroom-map.png) | ![Admin Dashboard](docs/screenshots/admin-dashboard.png) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Secrets requeridos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Secret | Descripción |
+|--------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Clave publicable de Supabase |
+| `NEXT_PUBLIC_AGENCIA_ID` | ID de la agencia inmobiliaria |
 
-## Deploy on Vercel
+## Estructura
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── domain/           # Entidades y repositorios
+├── data/             # Implementaciones de repositorios
+├── presentation/     # Componentes y hooks
+│   └── components/
+│       ├── map/      # Componentes del mapa de propiedades
+│       └── ui/       # Componentes shadcn/ui
+├── lib/              # Utilidades
+└── config/           # Configuraciones
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Licencia
+
+MIT
