@@ -1,8 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
-import { RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import type { FiltrosPropiedades } from "@/domain/repositories/propiedades.repository";
 
 const ESTADOS = [

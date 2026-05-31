@@ -146,11 +146,16 @@ export function LeadForm({
               className="mt-1 rounded border-outline-variant text-primary"
             />
             <span className="text-xs text-on-surface-variant leading-snug">
-              He leído y acepto la <b>Política de Privacidad</b> según la Ley N° 29733 (Protección de Datos Personales del Perú).
+              He leído y acepto la <b>Política de Privacidad</b> según la Ley N° 29733 (Protección
+              de Datos Personales del Perú).
             </span>
           </label>
 
-          <Button type="submit" className="w-full" disabled={saving || (!consent || (!!env.turnstileSiteKey && !turnstileToken))}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={saving || !consent || (!!env.turnstileSiteKey && !turnstileToken)}
+          >
             {saving ? "Enviando..." : "Enviar solicitud"}
           </Button>
         </form>

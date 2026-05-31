@@ -1,6 +1,5 @@
 "use client";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { Propiedad } from "@/domain/entities/propiedad";
 
 function formatPrice(precio: number, moneda: string) {
@@ -11,10 +10,7 @@ function formatPrice(precio: number, moneda: string) {
   }).format(precio);
 }
 
-const ESTADO_CONFIG: Record<
-  Propiedad["estado"],
-  { label: string; color: string; bg: string }
-> = {
+const ESTADO_CONFIG: Record<Propiedad["estado"], { label: string; color: string; bg: string }> = {
   disponible: { label: "Disponible", color: "text-tertiary", bg: "bg-tertiary/10" },
   separado: { label: "Separado", color: "text-secondary", bg: "bg-secondary/10" },
   vendido: { label: "Vendido", color: "text-error", bg: "bg-error/10" },
@@ -62,13 +58,18 @@ export function PropertyDetailPanel({
             className="absolute top-4 right-4 z-10 w-10 h-10 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/50 transition-colors"
           >
             <svg className="size-5" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+              <path
+                fill="currentColor"
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"
+              />
             </svg>
           </button>
 
           {/* Badge Estado */}
           <div className="absolute top-4 left-4">
-            <span className={`${cfg.bg} ${cfg.color} px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider`}>
+            <span
+              className={`${cfg.bg} ${cfg.color} px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider`}
+            >
               {cfg.label}
             </span>
           </div>
@@ -92,7 +93,10 @@ export function PropertyDetailPanel({
           {/* Ubicación */}
           <div className="flex items-start gap-2">
             <svg className="size-5 text-primary mt-0.5" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5z" />
+              <path
+                fill="currentColor"
+                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5z"
+              />
             </svg>
             <div>
               <p className="text-body-md font-bold text-on-surface">
@@ -107,16 +111,24 @@ export function PropertyDetailPanel({
             {propiedad.areaM2 && (
               <div className="flex flex-col items-center gap-1">
                 <svg className="size-5 text-primary-container" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z" />
+                  <path
+                    fill="currentColor"
+                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"
+                  />
                 </svg>
                 <span className="text-label-md text-on-surface-variant">Área</span>
-                <span className="text-body-md font-bold text-on-surface">{propiedad.areaM2} m²</span>
+                <span className="text-body-md font-bold text-on-surface">
+                  {propiedad.areaM2} m²
+                </span>
               </div>
             )}
             {propiedad.cuartos && (
               <div className="flex flex-col items-center gap-1 border-x border-outline-variant">
                 <svg className="size-5 text-primary-container" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M7 13c1.1 0 2-.9 2-2S8.1 9 7 9 5 9.9 5 11s.9 2 2 2zm0 1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm7 0c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm0-2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" />
+                  <path
+                    fill="currentColor"
+                    d="M7 13c1.1 0 2-.9 2-2S8.1 9 7 9 5 9.9 5 11s.9 2 2 2zm0 1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm7 0c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm0-2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"
+                  />
                 </svg>
                 <span className="text-label-md text-on-surface-variant">Dorm.</span>
                 <span className="text-body-md font-bold text-on-surface">{propiedad.cuartos}</span>
@@ -125,7 +137,10 @@ export function PropertyDetailPanel({
             {propiedad.banios && (
               <div className="flex flex-col items-center gap-1">
                 <svg className="size-5 text-primary-container" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M22 10V4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v6c0 .55.45 1 1 1v12c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V11c.55 0 1-.45 1-1zm-2 0H4V4h16v6z" />
+                  <path
+                    fill="currentColor"
+                    d="M22 10V4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v6c0 .55.45 1 1 1v12c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V11c.55 0 1-.45 1-1zm-2 0H4V4h16v6z"
+                  />
                 </svg>
                 <span className="text-label-md text-on-surface-variant">Baños</span>
                 <span className="text-body-md font-bold text-on-surface">{propiedad.banios}</span>
@@ -151,7 +166,10 @@ export function PropertyDetailPanel({
             className="w-full h-12 bg-primary text-white font-bold rounded-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
           >
             <svg className="size-5" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+              <path
+                fill="currentColor"
+                d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
+              />
             </svg>
             Contactar
           </button>

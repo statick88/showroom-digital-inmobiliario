@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { metricasRepository } from "@/data/repositories";
 
@@ -17,11 +17,14 @@ function getOrCreateSessionId(): string {
 }
 
 export function useClickTracker() {
-  const sessionId = useRef<string | null>(null);
-  if (typeof window !== "undefined" && sessionId.current === null) {
-    sessionId.current = getOrCreateSessionId();
-  }
+  const sessionId = useRef<string | undefined>(undefined);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionId.current === undefined) {
+      sessionId.current = getOrCreateSessionId();
+    }
+  }, []);
 
   const trackMutation = useMutation({
     mutationFn: (propiedadId: string) =>
@@ -37,9 +40,12 @@ export function useClickTracker() {
     },
   });
 
-  const trackClick = useCallback((propiedadId: string) => {
-    trackMutation.mutate(propiedadId);
-  }, [trackMutation]);
+  const trackClick = useCallback(
+    (propiedadId: string) => {
+      trackMutation.mutate(propiedadId);
+    },
+    [trackMutation],
+  );
 
   return { trackClick, isTracking: trackMutation.isPending };
 }

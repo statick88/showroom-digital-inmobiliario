@@ -66,5 +66,3 @@ const iconMap = new Map<string, LucideIcon>([
 export function getIcon(name: string): LucideIcon | undefined {
   return iconMap.get(name);
 }
-
-

@@ -19,12 +19,48 @@ export function MetricasPanel() {
   if (!data) return null;
 
   const cards = [
-    { key: "totalPropiedades", label: "Total", value: data.totalPropiedades, icon: TrendingUp, color: "text-primary" },
-    { key: "disponibles", label: "Disponibles", value: data.disponibles, icon: TrendingUp, color: "text-tertiary" },
-    { key: "separadas", label: "Separadas", value: data.separadas, icon: TrendingUp, color: "text-secondary" },
-    { key: "vendidas", label: "Vendidas", value: data.vendidas, icon: TrendingUp, color: "text-on-surface-variant" },
-    { key: "totalClicks", label: "Clics", value: data.totalClicks, icon: MousePointerClick, color: "text-blue-600" },
-    { key: "totalLeads", label: "Leads", value: data.totalLeads, icon: MessageCircle, color: "text-violet-600" },
+    {
+      key: "totalPropiedades",
+      label: "Total",
+      value: data.totalPropiedades,
+      icon: TrendingUp,
+      color: "text-primary",
+    },
+    {
+      key: "disponibles",
+      label: "Disponibles",
+      value: data.disponibles,
+      icon: TrendingUp,
+      color: "text-tertiary",
+    },
+    {
+      key: "separadas",
+      label: "Separadas",
+      value: data.separadas,
+      icon: TrendingUp,
+      color: "text-secondary",
+    },
+    {
+      key: "vendidas",
+      label: "Vendidas",
+      value: data.vendidas,
+      icon: TrendingUp,
+      color: "text-on-surface-variant",
+    },
+    {
+      key: "totalClicks",
+      label: "Clics",
+      value: data.totalClicks,
+      icon: MousePointerClick,
+      color: "text-blue-600",
+    },
+    {
+      key: "totalLeads",
+      label: "Leads",
+      value: data.totalLeads,
+      icon: MessageCircle,
+      color: "text-violet-600",
+    },
   ];
 
   return (

@@ -1,0 +1,631 @@
+<!doctype html>
+
+<html lang="es-PE">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Showroom Digital Inmobiliario - Lima</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #dcc1ba;
+        border-radius: 10px;
+      }
+      .glass-panel {
+        background: rgba(255, 248, 243, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(220, 193, 186, 0.3);
+      }
+      .map-marker {
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.8);
+        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .map-marker:hover {
+        transform: scale(1.3);
+      }
+    </style>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#f6ece3",
+              "on-primary-fixed": "#3c0700",
+              "on-secondary-fixed-variant": "#6a3a26",
+              "on-error": "#ffffff",
+              "secondary-container": "#ffb99f",
+              "tertiary-fixed-dim": "#6dd8c8",
+              "primary-container": "#b85941",
+              tertiary: "#00685d",
+              outline: "#89726d",
+              "surface-dim": "#e2d8cf",
+              "tertiary-container": "#008376",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-fixed-variant": "#005048",
+              error: "#ba1a1a",
+              "surface-tint": "#9b432e",
+              secondary: "#86513b",
+              "primary-fixed-dim": "#ffb4a2",
+              "on-primary-container": "#fffbff",
+              "inverse-surface": "#35302a",
+              "on-tertiary-fixed": "#00201c",
+              "surface-variant": "#ebe1d8",
+              "on-background": "#1f1b15",
+              "on-primary": "#ffffff",
+              "surface-container-highest": "#ebe1d8",
+              "surface-container-low": "#fcf2e9",
+              "secondary-fixed": "#ffdbce",
+              "on-primary-fixed-variant": "#7d2d19",
+              "on-secondary-fixed": "#351002",
+              background: "#fff8f3",
+              "outline-variant": "#dcc1ba",
+              "inverse-on-surface": "#f9efe6",
+              "on-surface": "#1f1b15",
+              "on-tertiary": "#ffffff",
+              "inverse-primary": "#ffb4a2",
+              "on-secondary-container": "#7a4732",
+              "surface-bright": "#fff8f3",
+              "on-tertiary-container": "#f4fffb",
+              "surface-container-high": "#f0e6dd",
+              "on-error-container": "#93000a",
+              primary: "#98412c",
+              surface: "#fff8f3",
+              "error-container": "#ffdad6",
+              "secondary-fixed-dim": "#fcb69c",
+              "tertiary-fixed": "#8af5e4",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#55423e",
+              "primary-fixed": "#ffdad2",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              sm: "12px",
+              xs: "4px",
+              xl: "80px",
+              lg: "48px",
+              base: "8px",
+              md: "24px",
+              gutter: "24px",
+              "margin-mobile": "16px",
+              "margin-desktop": "64px",
+            },
+            fontFamily: {
+              "headline-md": ["Plus Jakarta Sans"],
+              "body-md": ["Hanken Grotesk"],
+              "label-md": ["Hanken Grotesk"],
+              display: ["Plus Jakarta Sans"],
+              "headline-lg": ["Plus Jakarta Sans"],
+              "body-lg": ["Hanken Grotesk"],
+              "currency-md": ["Hanken Grotesk"],
+            },
+            fontSize: {
+              "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+              "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+              "label-md": [
+                "14px",
+                { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500" },
+              ],
+              display: [
+                "48px",
+                { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" },
+              ],
+              "headline-lg": [
+                "32px",
+                { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "700" },
+              ],
+              "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+              "currency-md": ["20px", { lineHeight: "24px", fontWeight: "700" }],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-background text-on-surface font-body-md overflow-hidden">
+    <!-- TopNavBar -->
+    <header
+      class="flex justify-between items-center w-full px-margin-desktop h-16 z-50 bg-surface dark:bg-surface-dim shadow-sm fixed top-0"
+    >
+      <div class="flex items-center gap-4">
+        <span
+          class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary"
+          >Showroom Inmobiliario</span
+        >
+      </div>
+      <div class="flex items-center gap-md">
+        <nav class="hidden md:flex gap-md">
+          <a
+            class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md"
+            href="#"
+            >Mapa</a
+          >
+          <a
+            class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md"
+            href="#"
+            >Listado</a
+          >
+          <a
+            class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md"
+            href="#"
+            >Proyectos</a
+          >
+        </nav>
+        <button
+          class="flex items-center gap-2 px-4 py-2 bg-surface-container-low hover:bg-surface-container-high transition-all duration-200 rounded-full text-primary font-bold active:scale-95"
+        >
+          <span class="material-symbols-outlined" data-icon="lock">lock</span>
+          <span class="font-label-md text-label-md">Admin</span>
+        </button>
+      </div>
+    </header>
+    <main class="flex h-screen pt-16">
+      <!-- Sidebar (Left) -->
+      <aside class="w-[380px] h-full flex flex-col bg-surface border-r border-outline-variant z-40">
+        <!-- PropertyFilters -->
+        <div class="p-md border-b border-outline-variant space-y-4">
+          <div class="flex justify-between items-center">
+            <h2 class="font-headline-md text-headline-md text-on-surface">Explorar Lima</h2>
+            <button class="text-primary font-label-md text-label-md hover:underline">
+              Limpiar
+            </button>
+          </div>
+          <div class="grid grid-cols-2 gap-sm">
+            <div class="flex flex-col gap-1">
+              <label class="font-label-md text-label-md text-on-surface-variant">Tipo</label>
+              <select
+                class="bg-surface-container-low border border-outline-variant rounded-lg p-2 text-label-md focus:ring-primary focus:border-primary outline-none"
+              >
+                <option>Departamento</option>
+                <option>Casa</option>
+                <option>Oficina</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="font-label-md text-label-md text-on-surface-variant">Distrito</label>
+              <select
+                class="bg-surface-container-low border border-outline-variant rounded-lg p-2 text-label-md focus:ring-primary focus:border-primary outline-none"
+              >
+                <option>San Isidro</option>
+                <option>Miraflores</option>
+                <option>Surco</option>
+              </select>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="font-label-md text-label-md text-on-surface-variant">Precio Max</label>
+              <input
+                class="bg-surface-container-low border border-outline-variant rounded-lg p-2 text-label-md focus:ring-primary focus:border-primary outline-none"
+                placeholder="S/ 0.00"
+                type="text"
+              />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="font-label-md text-label-md text-on-surface-variant">Estado</label>
+              <select
+                class="bg-surface-container-low border border-outline-variant rounded-lg p-2 text-label-md focus:ring-primary focus:border-primary outline-none"
+              >
+                <option>Disponible</option>
+                <option>Vendido</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- PropertyList -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-sm space-y-sm">
+          <!-- Card 1 -->
+          <div
+            class="flex gap-4 p-3 bg-white rounded-xl shadow-sm border border-transparent hover:border-primary cursor-pointer transition-all duration-200 group"
+            onclick="openDetail()"
+          >
+            <div
+              class="relative w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-surface-container"
+            >
+              <img
+                class="w-full h-full object-cover"
+                data-alt="A luxurious modern apartment interior in San Isidro, Lima, featuring floor-to-ceiling windows overlooking a lush park. The lighting is warm and golden during sunset, highlighting the premium terracotta and white marble finishes. The architectural style is minimalist yet warm, embodying high-end Peruvian real estate elegance with a clean, light-mode aesthetic."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQStR4hVeFzL20Y3GTOMAQakeXiZeu3i8pyhocJkBNv1_xhoeIZ_9r2s925HxLTNua3FMt9EPUMCBqMIlPcqyK8WeKkxVTECOKsmhJj6ldQI-1fSIb8PYU8TebyrTba3y7xCwITk7yqpcgGcxKB3J5wrF8wrPR3xawD43rIIPHP3R79dO5Ka7k0rrU5rC6YwxQVyM9mo4LF68yfAActn8JQ9YpB5q6KJtm3N3Yfib-3nd6JESGJwb5MI-QLqluFOlEgCvcqk6fhTg"
+              />
+            </div>
+            <div class="flex flex-col justify-between flex-1">
+              <div>
+                <div class="flex justify-between items-start">
+                  <h3 class="font-bold text-on-surface text-body-md line-clamp-1">
+                    Depa en San Isidro
+                  </h3>
+                  <span
+                    class="px-2 py-0.5 bg-tertiary/10 text-tertiary text-[10px] font-bold rounded-full uppercase"
+                    >Disponible</span
+                  >
+                </div>
+                <p class="text-on-surface-variant text-label-md flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]" data-icon="location_on"
+                    >location_on</span
+                  >
+                  San Isidro, Lima
+                </p>
+              </div>
+              <p class="font-currency-md text-currency-md text-primary">S/ 450,000</p>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div
+            class="flex gap-4 p-3 bg-white rounded-xl shadow-sm border border-transparent hover:border-primary cursor-pointer transition-all duration-200"
+          >
+            <div
+              class="relative w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-surface-container"
+            >
+              <img
+                class="w-full h-full object-cover"
+                data-alt="Modern high-rise residential building in Miraflores, Lima, capturing the sleek glass facade reflecting the bright blue coastal sky. The image emphasizes high-end urban living with a professional, airy atmosphere. The color palette is composed of pristine whites, soft grays, and the vibrant earthy tones of the Peruvian landscape, presented in a clean, minimalist style."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBaIM-4sD4FylT-1lGZ9Xc52Ziu5VFtusWXRnmc9a7NccajnjhLpyhEv52q15C4Xb364FhlCmC4hBoQT-FkmoZzPFfXykbJX6qJ-51qw7JMU5odhV_tn8Od0DT9BaIhUJUXblj470NdaJvsMU4emNnQmhhFT5KsyNeQuBDQCd0pCe_Ro6MGfZ3VTOOxV_Y3yio9tZEBK0Mw1B-2uITkeEu-ep_HWPQ4GbyyGKkHjF6gVMpqBnhM80MthSOVMQTek53Lcohzp5AzEI"
+              />
+            </div>
+            <div class="flex flex-col justify-between flex-1">
+              <div>
+                <div class="flex justify-between items-start">
+                  <h3 class="font-bold text-on-surface text-body-md line-clamp-1">
+                    Penthouse Miraflores
+                  </h3>
+                  <span
+                    class="px-2 py-0.5 bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-full uppercase"
+                    >Separado</span
+                  >
+                </div>
+                <p class="text-on-surface-variant text-label-md flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]" data-icon="location_on"
+                    >location_on</span
+                  >
+                  Miraflores, Lima
+                </p>
+              </div>
+              <p class="font-currency-md text-currency-md text-primary">S/ 720,000</p>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div
+            class="flex gap-4 p-3 bg-white rounded-xl shadow-sm border border-transparent hover:border-primary cursor-pointer transition-all duration-200"
+          >
+            <div
+              class="relative w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-surface-container"
+            >
+              <img
+                class="w-full h-full object-cover"
+                data-alt="A spacious contemporary family home in Surco, Lima, with a terracotta roof and large glass doors opening to a manicured garden. The lighting is soft and natural, emphasizing the house's clean lines and high-quality construction. The visual style is premium corporate with a warm, inviting feel, showcasing the adobe and white color scheme characteristic of the brand."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIG_Ox4y6NULqK6Sug1Pt1w-pg6TYFeac4VLawpz-tv7SZmfhVojLUs41BUzfG5P-qKj-c4-r-xmHYMoCp7gSXlvKBNq43gHep9DMrPFk9kEwWrhYTjsvGMgaF8AhyDPLNT1Zg2s53XsOv7WsYALIuhFxv8FBNZ5vwcMpWrgZ0oGeN9zdzHvyYObscBY1UEVXe68mHUXwXpDTBfufcXGKtmQdb1mvrfWSVI4fTfkDGazqQMqu_eip2IM04pKI6u4diEcBrjAHtqfs"
+              />
+            </div>
+            <div class="flex flex-col justify-between flex-1">
+              <div>
+                <div class="flex justify-between items-start">
+                  <h3 class="font-bold text-on-surface text-body-md line-clamp-1">
+                    Casa de Lujo Surco
+                  </h3>
+                  <span
+                    class="px-2 py-0.5 bg-tertiary/10 text-tertiary text-[10px] font-bold rounded-full uppercase"
+                    >Disponible</span
+                  >
+                </div>
+                <p class="text-on-surface-variant text-label-md flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]" data-icon="location_on"
+                    >location_on</span
+                  >
+                  Surco, Lima
+                </p>
+              </div>
+              <p class="font-currency-md text-currency-md text-primary">S/ 1,250,000</p>
+            </div>
+          </div>
+          <!-- Card 4 -->
+          <div
+            class="flex gap-4 p-3 bg-white rounded-xl shadow-sm border border-transparent hover:border-primary cursor-pointer transition-all duration-200"
+          >
+            <div
+              class="relative w-20 h-20 shrink-0 overflow-hidden rounded-lg bg-surface-container"
+            >
+              <img
+                class="w-full h-full object-cover"
+                data-alt="Sleek apartment interior with a designer kitchen in Barranco, Lima, featuring wooden accents and warm lighting. The space is bright and airy, reflecting a modern minimalist aesthetic aimed at young professionals. The colors are earthy and neutral, harmonizing with the brand's terracotta and warm white palette, presented as a high-end catalog image."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBupldVTC1t74D9MPsRI1-D51BDJKZb1OODDVlhMdTY553Az0kbO6nWg3WKGlxTwci5K45sHH4IhcfyBeG-8IgHlwpftqbMeCriuZgWPt3KSz2liJdbFZFihDx9RMciuml2x0XGtkYMqY_0ogiP_WXmGzmxa3xQ-AfhkIVboPMTllDaLMHHw4BUpEpFrccFmhCa7NVv9GCG4MfS_ZINvGlNJ6nvVWbxq3-hBEk4r_3uXqJgq5QPxXxCxIeZXwpCZ2YczNgqtqjIQSw"
+              />
+            </div>
+            <div class="flex flex-col justify-between flex-1">
+              <div>
+                <div class="flex justify-between items-start">
+                  <h3 class="font-bold text-on-surface text-body-md line-clamp-1">Loft Barranco</h3>
+                  <span
+                    class="px-2 py-0.5 bg-error/10 text-error text-[10px] font-bold rounded-full uppercase"
+                    >Vendido</span
+                  >
+                </div>
+                <p class="text-on-surface-variant text-label-md flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]" data-icon="location_on"
+                    >location_on</span
+                  >
+                  Barranco, Lima
+                </p>
+              </div>
+              <p class="font-currency-md text-currency-md text-primary">S/ 380,000</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+      <!-- Map (Right) -->
+      <section class="flex-1 relative bg-surface-container-low overflow-hidden">
+        <!-- Simulated Map -->
+        <div class="absolute inset-0 grayscale-[0.2] contrast-[0.8] opacity-60">
+          <img
+            class="w-full h-full object-cover opacity-20"
+            data-location="Lima, Peru"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEgDXYy4txcu5uXOVrcrv4L0zd6b25nSKjqrrv5vmtchp-OArKHXb6AOy0ElhTQAFbot-FfayTXIKRBeo6ri3niM6H3qUG0MWLCpCd-AnintbFM2GhxyxpvkSTo3nHVOqyJ6pvZ2VAGYxTW0njrvjEAVLBJYbhsRu_hYxTdkOvABxc1zLZWqweLCeE0JA5_0FBSpVjrJwKnZB-Zady0e_WWpHDiCD8m_UThyClVoOCHhzNX6RxwkLXIr8PPvXtr7qu_kVGpP3PgGw"
+          />
+        </div>
+        <!-- Map Overlay UI -->
+        <div class="absolute top-md right-md flex flex-col gap-sm items-end z-10">
+          <div class="glass-panel rounded-xl p-1 flex shadow-lg">
+            <button
+              class="px-4 py-2 bg-primary text-white rounded-lg font-label-md text-label-md shadow-md"
+            >
+              Mapa
+            </button>
+            <button
+              class="px-4 py-2 text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors rounded-lg"
+            >
+              Satélite
+            </button>
+          </div>
+          <div class="glass-panel rounded-xl p-3 flex items-center gap-3 shadow-lg">
+            <span class="font-label-md text-label-md text-on-surface font-semibold">Ver plano</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input class="sr-only peer" type="checkbox" />
+              <div
+                class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"
+              ></div>
+            </label>
+          </div>
+        </div>
+        <!-- Map Markers -->
+        <!-- Marker Disponible -->
+        <div class="absolute top-[35%] left-[45%] group cursor-pointer" onclick="openDetail()">
+          <div class="map-marker w-4 h-4 rounded-full bg-tertiary border-2 border-white"></div>
+          <div
+            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white px-2 py-1 rounded shadow-lg hidden group-hover:block whitespace-nowrap"
+          >
+            <p class="text-[10px] font-bold">Depa San Isidro - S/ 450k</p>
+          </div>
+        </div>
+        <!-- Marker Separado -->
+        <div class="absolute top-[55%] left-[58%] group">
+          <div class="map-marker w-4 h-4 rounded-full bg-secondary border-2 border-white"></div>
+          <div
+            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white px-2 py-1 rounded shadow-lg hidden group-hover:block whitespace-nowrap"
+          >
+            <p class="text-[10px] font-bold">Penthouse Miraflores - S/ 720k</p>
+          </div>
+        </div>
+        <!-- Marker Vendido -->
+        <div class="absolute top-[42%] left-[65%] group">
+          <div class="map-marker w-4 h-4 rounded-full bg-error border-2 border-white"></div>
+          <div
+            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white px-2 py-1 rounded shadow-lg hidden group-hover:block whitespace-nowrap"
+          >
+            <p class="text-[10px] font-bold">Vendido</p>
+          </div>
+        </div>
+        <!-- Marker Disponible 2 -->
+        <div class="absolute top-[68%] left-[32%] group">
+          <div class="map-marker w-4 h-4 rounded-full bg-tertiary border-2 border-white"></div>
+          <div
+            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white px-2 py-1 rounded shadow-lg hidden group-hover:block whitespace-nowrap"
+          >
+            <p class="text-[10px] font-bold">Casa Surco - S/ 1.25M</p>
+          </div>
+        </div>
+        <!-- Map Navigation Controls -->
+        <div class="absolute bottom-md right-md flex flex-col gap-2">
+          <button
+            class="w-10 h-10 glass-panel rounded-full flex items-center justify-center text-primary shadow-lg active:scale-95 transition-all"
+          >
+            <span class="material-symbols-outlined">add</span>
+          </button>
+          <button
+            class="w-10 h-10 glass-panel rounded-full flex items-center justify-center text-primary shadow-lg active:scale-95 transition-all"
+          >
+            <span class="material-symbols-outlined">remove</span>
+          </button>
+          <button
+            class="w-10 h-10 glass-panel rounded-full flex items-center justify-center text-primary shadow-lg active:scale-95 transition-all mt-2"
+          >
+            <span class="material-symbols-outlined">my_location</span>
+          </button>
+        </div>
+      </section>
+    </main>
+    <!-- PropertyDetailPanel (Slide-over) -->
+    <div
+      class="fixed inset-y-0 right-0 w-[420px] bg-white shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 ease-in-out"
+      id="detail-panel"
+    >
+      <div class="h-full flex flex-col relative overflow-hidden">
+        <!-- Close Button -->
+        <button
+          class="absolute top-4 right-4 z-20 w-10 h-10 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+          onclick="closeDetail()"
+        >
+          <span class="material-symbols-outlined">close</span>
+        </button>
+        <!-- Hero Image -->
+        <div class="relative h-[280px] shrink-0">
+          <img
+            class="w-full h-full object-cover"
+            data-alt="Expansive views of Lima's skyline from a luxury apartment balcony in San Isidro at dusk. The sky is a beautiful blend of deep indigo and soft orange. The balcony features high-end outdoor furniture and glass railings, reflecting a contemporary and exclusive lifestyle. The photographic style is professional architectural photography with a focus on depth and elegant lighting."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB91Ryn1_gilHG_E5BKAi_-Dx5DmaRdfVsV0WCW-XhX4RIAEO_IWJrZ2r6G_SSFQ792giVLSSN3FLouLWdMhH5cgkFPKO2HOHTaf13BhavGSsYzMuKl5WlxWDlDP1EAq-iPcFKp3oUi08B8mbRffsdzC9R5vgKwydQQnyA7Du19rZxK64lKPsWJ8skjY9sMfkHQ-x3eZhNi1R7slGwmkYrqVsWW44ZMmOCejTPTt-x_75xVTy2-zGCVWezWWrn_U4BzgR39_kOZJfo"
+          />
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"
+          ></div>
+          <div class="absolute top-4 left-4">
+            <span
+              class="px-3 py-1 bg-tertiary text-white text-[12px] font-bold rounded-full uppercase tracking-wider shadow-lg"
+              >Disponible</span
+            >
+          </div>
+          <div class="absolute bottom-4 left-6 right-6 flex justify-between items-end">
+            <div class="text-white">
+              <p class="text-label-md opacity-80 mb-1">CÓDIGO: SI-2024</p>
+              <h2 class="font-display text-headline-md leading-tight">Depa en San Isidro</h2>
+            </div>
+            <div class="text-right text-white">
+              <p class="font-currency-md text-headline-md text-primary-fixed">S/ 450,000</p>
+            </div>
+          </div>
+        </div>
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-md space-y-md">
+          <!-- Location -->
+          <div class="flex items-start gap-2">
+            <span class="material-symbols-outlined text-primary" data-icon="location_on"
+              >location_on</span
+            >
+            <div>
+              <p class="text-body-md font-bold text-on-surface">
+                Calle Las Orquídeas 450, San Isidro
+              </p>
+              <p class="text-label-md text-on-surface-variant">Lima, Perú - Cerca al Golf</p>
+            </div>
+          </div>
+          <!-- Specs Grid -->
+          <div
+            class="grid grid-cols-3 gap-base p-4 bg-surface-container-low rounded-xl border border-outline-variant"
+          >
+            <div class="flex flex-col items-center gap-1">
+              <span class="material-symbols-outlined text-primary-container">square_foot</span>
+              <span class="text-label-md text-on-surface-variant">Área</span>
+              <span class="text-body-md font-bold text-on-surface">120 m²</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 border-x border-outline-variant">
+              <span class="material-symbols-outlined text-primary-container">bed</span>
+              <span class="text-label-md text-on-surface-variant">Dorm.</span>
+              <span class="text-body-md font-bold text-on-surface">3</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <span class="material-symbols-outlined text-primary-container">bathtub</span>
+              <span class="text-label-md text-on-surface-variant">Baños</span>
+              <span class="text-body-md font-bold text-on-surface">2.5</span>
+            </div>
+          </div>
+          <!-- Description -->
+          <div class="space-y-base">
+            <h3 class="font-bold text-on-surface text-body-md">Descripción</h3>
+            <p class="text-on-surface-variant text-label-md leading-relaxed">
+              Espectacular departamento de estreno con vista directa al parque. Acabados de lujo,
+              pisos de madera estructurada, cocina con tablero de cuarzo y equipamiento premium. El
+              edificio cuenta con áreas comunes: gimnasio, sala de reuniones y seguridad 24/7.
+            </p>
+          </div>
+          <!-- Features -->
+          <div class="space-y-base">
+            <h3 class="font-bold text-on-surface text-body-md">Características</h3>
+            <div class="flex flex-wrap gap-2">
+              <span
+                class="px-3 py-1 bg-surface-container text-on-surface-variant text-label-md rounded-full"
+                >Terraza</span
+              >
+              <span
+                class="px-3 py-1 bg-surface-container text-on-surface-variant text-label-md rounded-full"
+                >Cochera (2)</span
+              >
+              <span
+                class="px-3 py-1 bg-surface-container text-on-surface-variant text-label-md rounded-full"
+                >Ascensor Directo</span
+              >
+              <span
+                class="px-3 py-1 bg-surface-container text-on-surface-variant text-label-md rounded-full"
+                >Pet Friendly</span
+              >
+            </div>
+          </div>
+          <!-- Project Info -->
+          <div class="p-4 bg-primary/5 rounded-xl border border-primary/10 flex items-center gap-4">
+            <img
+              class="w-12 h-12 rounded-lg object-cover"
+              data-alt="Company logo of a premium real estate developer in Peru, featuring minimalist and modern graphics. The design uses terracotta and adobe tones, reflecting deep roots in local heritage with a sophisticated modern twist. It is presented in a clean white space, signifying professional high-trust business values."
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuArDaoMdq5ZROVyoiKNVGHY8OOiNVll-tHha4Gw5Oo8i7TZSFOgNjBfgjHrAU6s0KR-ngieoNBgK2C23yxkpI90VzDaKWJPJAgOtGLfKkpbxusP3TWXaIU_c-ydmVOJ_-BVOKyClid4juJ0e7IADQ71ZZqgM-1ykUo89TT5oMcVvKzWzi64Z-badp7arXdjbGqQfUumU1zjHQKWWSEsPo3dEyz0GFpfhKLCT6EVgLF6p1bJ2eNTWVlUYXThnEtXcM7D-vL8QV4uf30"
+            />
+            <div>
+              <p class="text-label-md text-on-surface-variant">Desarrollado por:</p>
+              <p class="text-body-md font-bold text-primary">Constructora Horizonte</p>
+            </div>
+          </div>
+        </div>
+        <!-- Footer Action -->
+        <div class="p-md bg-white border-t border-outline-variant">
+          <button
+            class="w-full h-12 bg-primary hover:bg-primary-container text-white font-bold rounded-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+          >
+            <span class="material-symbols-outlined">chat_bubble</span>
+            Contactar
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Overlay Background when panel is open -->
+    <div
+      class="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 hidden transition-opacity duration-300"
+      id="panel-overlay"
+      onclick="closeDetail()"
+    ></div>
+    <script>
+      function openDetail() {
+        const panel = document.getElementById("detail-panel");
+        const overlay = document.getElementById("panel-overlay");
+        panel.classList.remove("translate-x-full");
+        overlay.classList.remove("hidden");
+        overlay.classList.add("opacity-100");
+      }
+
+      function closeDetail() {
+        const panel = document.getElementById("detail-panel");
+        const overlay = document.getElementById("panel-overlay");
+        panel.classList.add("translate-x-full");
+        overlay.classList.add("hidden");
+        overlay.classList.remove("opacity-100");
+      }
+
+      // Initialize with locale formatting
+      document.querySelectorAll(".font-currency-md").forEach((el) => {
+        // Numbers are already formatted in the template for demo purposes
+      });
+    </script>
+  </body>
+</html>

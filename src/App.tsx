@@ -1,10 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase/client";
-import { MapView } from "@/presentation/components/map/MapView";
 import { AdminDashboard } from "@/presentation/components/admin/AdminDashboard";
+
+const MapView = lazy(() =>
+  import("@/presentation/components/map/MapView").then((module) => ({
+    default: module.MapView,
+  })),
+);
 
 type Route = "map" | "admin";
 
@@ -50,7 +55,15 @@ export function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {effectiveRoute === "map" ? <MapView /> : <AdminDashboard />}
+      {effectiveRoute === "map" ? (
+        <Suspense
+          fallback={<div className="flex h-screen items-center justify-center">Cargando...</div>}
+        >
+          <MapView />
+        </Suspense>
+      ) : (
+        <AdminDashboard />
+      )}
       <Toaster />
     </QueryClientProvider>
   );

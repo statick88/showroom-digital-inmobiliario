@@ -26,60 +26,32 @@ const basePropiedad: Propiedad = {
 
 describe("PropertyDetailPanel", () => {
   it("renders property title when open", () => {
-    render(
-      <PropertyDetailPanel
-        propiedad={basePropiedad}
-        open={true}
-        onClose={() => {}}
-      />,
-    );
+    render(<PropertyDetailPanel propiedad={basePropiedad} open={true} onClose={() => {}} />);
 
     expect(screen.getByText("Departamento Test")).toBeInTheDocument();
   });
 
   it("shows estado badge when open", () => {
-    render(
-      <PropertyDetailPanel
-        propiedad={basePropiedad}
-        open={true}
-        onClose={() => {}}
-      />,
-    );
+    render(<PropertyDetailPanel propiedad={basePropiedad} open={true} onClose={() => {}} />);
 
     expect(screen.getByText("Disponible")).toBeInTheDocument();
   });
 
   it("does NOT render 🏗️ emoji", () => {
-    render(
-      <PropertyDetailPanel
-        propiedad={basePropiedad}
-        open={true}
-        onClose={() => {}}
-      />,
-    );
+    render(<PropertyDetailPanel propiedad={basePropiedad} open={true} onClose={() => {}} />);
 
     expect(screen.queryByText("🏗️")).not.toBeInTheDocument();
   });
 
   it("renders property title when open", () => {
-    render(
-      <PropertyDetailPanel
-        propiedad={basePropiedad}
-        open={true}
-        onClose={() => {}}
-      />,
-    );
+    render(<PropertyDetailPanel propiedad={basePropiedad} open={true} onClose={() => {}} />);
 
     expect(screen.getByText("Departamento Test")).toBeInTheDocument();
   });
 
   it("returns null when propiedad is null", () => {
     const { container } = render(
-      <PropertyDetailPanel
-        propiedad={null}
-        open={true}
-        onClose={() => {}}
-      />,
+      <PropertyDetailPanel propiedad={null} open={true} onClose={() => {}} />,
     );
 
     expect(container.innerHTML).toBe("");

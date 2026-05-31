@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { LayoutDashboard, Building2, MessageCircle, Plus, Search } from "lucide-react";
+import { LayoutDashboard, Building2, MessageCircle, Plus, Search, TrendingUp } from "lucide-react";
 import { usePropiedades } from "@/presentation/hooks/usePropiedades";
 import { useLeads } from "@/presentation/hooks/useLeads";
 import { useMetricas } from "@/presentation/hooks/useMetricas";
 import { useTopClicks } from "@/presentation/hooks/useTopClicks";
-import type { Propiedad } from "@/domain/entities/propiedad";
+import { StatusChip } from "@/components/ui/status-chip";
 
 type Tab = "dashboard" | "propiedades" | "leads";
 
@@ -16,10 +16,10 @@ export function AdminDashboard() {
   return (
     <div className="flex min-h-screen bg-background">
       {/* SideNavBar */}
-      <aside className="w-64 h-full bg-surface-container-low border-r border-outline-variant flex flex-col gap-6 p-6">
+      <aside className="w-64 h-full bg-card border-r border-border flex flex-col gap-6 p-6">
         <div>
-          <h1 className="font-headline-md text-headline-md text-primary">Admin Panel</h1>
-          <p className="font-label-md text-label-md text-on-surface-variant">Gestión Inmobiliaria</p>
+          <h1 className="typo-headline-md text-primary">Admin Panel</h1>
+          <p className="typo-label-md text-muted-foreground">Gestión Inmobiliaria</p>
         </div>
 
         <nav className="flex flex-col gap-2 flex-grow">
@@ -34,13 +34,13 @@ export function AdminDashboard() {
           </NavButton>
         </nav>
 
-        <div className="mt-auto flex items-center gap-3 p-2 border-t border-outline-variant pt-4">
-          <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold">
+        <div className="mt-auto flex items-center gap-3 p-2 border-t border-border pt-4">
+          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-bold">
             A
           </div>
           <div className="overflow-hidden">
-            <p className="font-label-md text-on-surface truncate">Admin User</p>
-            <p className="text-[10px] text-on-surface-variant uppercase">Super Admin</p>
+            <p className="typo-label-md text-foreground truncate">Admin User</p>
+            <p className="text-[10px] text-muted-foreground uppercase">Super Admin</p>
           </div>
         </div>
       </aside>
@@ -71,12 +71,12 @@ function NavButton({
       onClick={() => {}}
       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
         active
-          ? "bg-surface-container-highest text-primary font-bold translate-x-1"
-          : "text-on-surface-variant hover:bg-surface-container-high"
+          ? "bg-accent text-primary font-bold translate-x-1"
+          : "text-muted-foreground hover:bg-muted"
       }`}
     >
       <Icon className="size-5" />
-      <span className="font-label-md">{children}</span>
+      <span className="typo-label-md">{children}</span>
     </button>
   );
 }
@@ -88,34 +88,43 @@ function DashboardTab() {
     <div className="space-y-8">
       <header className="flex justify-between items-end">
         <div>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">Dashboard</h2>
-          <p className="font-body-md text-body-md text-on-surface-variant">Resumen operativo</p>
+          <h2 className="typo-headline-lg text-foreground">Dashboard</h2>
+          <p className="typo-body-md text-muted-foreground">Resumen operativo</p>
         </div>
       </header>
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-3">
-        <MetricCard label="Total Propiedades" value={data?.totalPropiedades ?? 0} trend="+4 este mes" />
+        <MetricCard
+          label="Total Propiedades"
+          value={data?.totalPropiedades ?? 0}
+          trend="+4 este mes"
+        />
         <MetricCard label="Disponibles" value={data?.disponibles ?? 0} barPercent={66} />
         <MetricCard label="Separados" value={data?.separadas ?? 0} subtitle="Pendiente firma" />
         <MetricCard label="Vendidos" value={data?.vendidas ?? 0} subtitle="Acumulado anual" />
         <MetricCard label="Total Leads" value={data?.totalLeads ?? 0} trend="12% conversión" />
-        <MetricCard label="% Avance" value={data?.avancePorcentaje ?? 0} suffix="%" subtitle="Meta: S/ 4.5M" />
+        <MetricCard
+          label="% Avance"
+          value={data?.avancePorcentaje ?? 0}
+          suffix="%"
+          subtitle="Meta: S/ 4.5M"
+        />
       </div>
 
       {/* Visual Analytics */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* Donut Chart */}
-        <div className="bg-surface border border-outline-variant rounded-xl p-6 flex items-center gap-6">
+        <div className="bg-card border border-border rounded-xl p-6 flex items-center gap-6">
           <DonutChart disponibles={60} separadas={15} vendidas={25} total={124} />
           <Legend />
         </div>
 
         {/* Top Clicks Ranking */}
-        <div className="bg-surface border border-outline-variant rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-headline-md text-on-surface">Top más clickeadas</h3>
-            <button className="text-primary font-label-md hover:underline">Ver todo</button>
+            <h3 className="typo-headline-md text-foreground">Top más clickeadas</h3>
+            <button className="text-primary typo-label-md hover:underline">Ver todo</button>
           </div>
           <TopClicksTable />
         </div>
@@ -142,35 +151,45 @@ function MetricCard({
   const display = suffix ? `${value}${suffix}` : value.toString();
 
   return (
-    <div className="bg-surface border border-outline-variant p-4 rounded-xl shadow-card">
-      <p className="font-label-md text-on-surface-variant mb-1">{label}</p>
-      <p className="text-headline-md font-bold text-primary">{display}</p>
+    <div className="bg-card border border-border p-4 rounded-xl shadow-card">
+      <p className="typo-label-md text-muted-foreground mb-1">{label}</p>
+      <p className="typo-headline-md font-bold text-primary">{display}</p>
       {trend && (
-        <p className="text-label-md text-tertiary flex items-center gap-1 mt-1">
+        <p className="flex items-center gap-1 mt-1 typo-label-md text-status-success">
           <TrendingUp className="size-4" />
           {trend}
         </p>
       )}
-      {subtitle && <p className="text-label-md text-on-surface-variant mt-1">{subtitle}</p>}
+      {subtitle && <p className="typo-label-md text-muted-foreground mt-1">{subtitle}</p>}
       {barPercent && (
-        <div className="w-full bg-surface-container-high h-1 rounded-full mt-3">
-          <div className="bg-tertiary h-1 rounded-full" style={{ width: `${barPercent}%` }} />
+        <div className="w-full bg-muted h-1 rounded-full mt-3">
+          <div className="bg-status-success h-1 rounded-full" style={{ width: `${barPercent}%` }} />
         </div>
       )}
     </div>
   );
 }
 
-function DonutChart({ disponibles, separadas, vendidas, total }: { disponibles: number; separadas: number; vendidas: number; total: number }) {
+function DonutChart({
+  disponibles,
+  separadas,
+  vendidas,
+  total,
+}: {
+  disponibles: number;
+  separadas: number;
+  vendidas: number;
+  total: number;
+}) {
   const size = 120;
   const strokeWidth = 12;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
   const segments = [
-    { value: disponibles, color: "stroke-primary" },
-    { value: separadas, color: "stroke-secondary" },
-    { value: vendidas, color: "stroke-tertiary" },
+    { value: disponibles, color: "stroke-status-success" },
+    { value: separadas, color: "stroke-status-warning" },
+    { value: vendidas, color: "stroke-status-destructive" },
   ];
 
   let offset = 0;
@@ -194,7 +213,13 @@ function DonutChart({ disponibles, separadas, vendidas, total }: { disponibles: 
           />
         );
       })}
-      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" className="text-headline-md font-bold fill-on-surface">
+      <text
+        x="50%"
+        y="50%"
+        dominant-baseline="middle"
+        text-anchor="middle"
+        className="typo-headline-md font-bold fill-foreground"
+      >
         {total}
       </text>
     </svg>
@@ -204,18 +229,18 @@ function DonutChart({ disponibles, separadas, vendidas, total }: { disponibles: 
 function Legend() {
   return (
     <div className="flex-grow space-y-3">
-      <h3 className="font-headline-md text-on-surface">Estado de Inventario</h3>
+      <h3 className="typo-headline-md text-foreground">Estado de Inventario</h3>
       {[
-        { color: "bg-primary", label: "Disponible", value: "60%" },
-        { color: "bg-secondary", label: "Separado", value: "15%" },
-        { color: "bg-tertiary", label: "Vendido", value: "25%" },
+        { color: "bg-status-success", label: "Disponible", value: "60%" },
+        { color: "bg-status-warning", label: "Separado", value: "15%" },
+        { color: "bg-status-destructive", label: "Vendido", value: "25%" },
       ].map((item) => (
         <div key={item.label} className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <span className={`w-3 h-3 rounded-full ${item.color}`} />
-            <span className="font-label-md text-on-surface-variant">{item.label}</span>
+            <span className="typo-label-md text-muted-foreground">{item.label}</span>
           </div>
-          <span className="font-bold text-on-surface">{item.value}</span>
+          <span className="font-bold text-foreground">{item.value}</span>
         </div>
       ))}
     </div>
@@ -228,14 +253,14 @@ function TopClicksTable() {
   return (
     <table className="w-full text-sm">
       <thead>
-        <tr className="border-b border-outline-variant text-left">
-          <th className="pb-2 font-label-md text-on-surface-variant">Rank</th>
-          <th className="pb-2 font-label-md text-on-surface-variant">Código</th>
-          <th className="pb-2 font-label-md text-on-surface-variant">Propiedad</th>
-          <th className="pb-2 font-label-md text-on-surface-variant text-right">Clics</th>
+        <tr className="border-b border-border text-left">
+          <th className="pb-2 typo-label-md text-muted-foreground">Rank</th>
+          <th className="pb-2 typo-label-md text-muted-foreground">Código</th>
+          <th className="pb-2 typo-label-md text-muted-foreground">Propiedad</th>
+          <th className="pb-2 typo-label-md text-muted-foreground text-right">Clics</th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-outline-variant">
+      <tbody className="divide-y divide-border">
         {isLoading ? (
           <tr>
             <td colSpan={4} className="p-8 text-center">
@@ -244,14 +269,14 @@ function TopClicksTable() {
           </tr>
         ) : topClicks && topClicks.length > 0 ? (
           topClicks.map((item, index) => (
-            <tr key={item.propiedad.id} className="hover:bg-surface-container-low transition-colors">
+            <tr key={item.propiedad.id} className="hover:bg-muted transition-colors">
               <td className="py-3">
-                <span className="w-6 h-6 rounded-full bg-primary-fixed-dim text-on-primary-fixed-variant flex items-center justify-center font-bold text-xs">
+                <span className="w-6 h-6 rounded-full bg-primary/20 text-primary-foreground flex items-center justify-center font-bold text-xs">
                   {index + 1}
                 </span>
               </td>
-              <td className="py-3 font-label-md text-primary">{item.propiedad.codigo}</td>
-              <td className="py-3 font-body-md text-on-surface">{item.propiedad.titulo}</td>
+              <td className="py-3 typo-label-md text-primary">{item.propiedad.codigo}</td>
+              <td className="py-3 typo-body-md text-foreground">{item.propiedad.titulo}</td>
               <td className="py-3 text-right font-bold text-primary">{item.clicks}</td>
             </tr>
           ))
@@ -274,25 +299,25 @@ function PropiedadesTab() {
     <div className="space-y-6">
       <header className="flex justify-between items-center">
         <div>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface">Gestión de Propiedades</h2>
-          <p className="font-body-md text-body-md text-on-surface-variant">Administra el inventario</p>
+          <h2 className="typo-headline-lg text-foreground">Gestión de Propiedades</h2>
+          <p className="typo-body-md text-muted-foreground">Administra el inventario</p>
         </div>
-        <button className="bg-primary text-on-primary px-6 py-2 rounded-xl font-bold flex items-center gap-2">
+        <button className="bg-primary text-primary-foreground px-6 py-2 rounded-xl font-bold flex items-center gap-2">
           <Plus className="size-4" />
           Nueva Propiedad
         </button>
       </header>
 
-      <div className="bg-surface border border-outline-variant rounded-xl overflow-hidden">
-        <div className="p-4 bg-surface-container-low border-b border-outline-variant flex flex-wrap gap-4">
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <div className="p-4 bg-muted border-b border-border flex flex-wrap gap-4">
           <div className="relative flex-grow max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-on-surface-variant" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <input
-              className="w-full pl-10 pr-4 py-2 rounded-lg border-outline-variant focus:border-primary outline-none bg-surface font-body-md"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-input focus:border-primary outline-none bg-card typo-body-md"
               placeholder="Buscar..."
             />
           </div>
-          <select className="bg-surface border-outline-variant rounded-lg px-4 py-2 font-label-md">
+          <select className="bg-card border border-input rounded-lg px-4 py-2 typo-label-md">
             <option>Todos los estados</option>
             <option>Disponible</option>
             <option>Separado</option>
@@ -302,17 +327,17 @@ function PropiedadesTab() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-surface-container-high">
+            <thead className="bg-muted">
               <tr>
-                <th className="p-4 font-label-md text-on-surface-variant">Código</th>
-                <th className="p-4 font-label-md text-on-surface-variant">Título</th>
-                <th className="p-4 font-label-md text-on-surface-variant">Tipo</th>
-                <th className="p-4 font-label-md text-on-surface-variant">Precio</th>
-                <th className="p-4 font-label-md text-on-surface-variant">Estado</th>
-                <th className="p-4 font-label-md text-on-surface-variant">Acciones</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Código</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Título</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Tipo</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Precio</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Estado</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-outline-variant">
+            <tbody className="divide-y divide-border">
               {isLoading ? (
                 <tr>
                   <td colSpan={6} className="p-8 text-center">
@@ -321,21 +346,16 @@ function PropiedadesTab() {
                 </tr>
               ) : data && data.length > 0 ? (
                 data.map((p) => (
-                  <tr key={p.id} className="hover:bg-surface-container-low transition-colors">
-                    <td className="p-4 font-label-md text-primary">{p.codigo}</td>
-                    <td className="p-4 font-body-md text-on-surface">{p.titulo}</td>
-                    <td className="p-4 font-label-md text-on-surface-variant capitalize">{p.tipo}</td>
-                    <td className="p-4 font-currency-md text-currency-md">S/ {p.precio.toLocaleString("es-PE")}</td>
+                  <tr key={p.id} className="hover:bg-muted transition-colors">
+                    <td className="p-4 typo-label-md text-primary">{p.codigo}</td>
+                    <td className="p-4 typo-body-md text-foreground">{p.titulo}</td>
+                    <td className="p-4 typo-label-md text-muted-foreground capitalize">{p.tipo}</td>
+                    <td className="p-4 typo-currency-md">S/ {p.precio.toLocaleString("es-PE")}</td>
                     <td className="p-4">
-                      <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase ${
-                        p.estado === "disponible" ? "bg-tertiary/10 text-tertiary" :
-                        p.estado === "separado" ? "bg-secondary/10 text-secondary" : "bg-error/10 text-error"
-                      }`}>
-                        {p.estado}
-                      </span>
+                      <StatusChip status={p.estado} size="sm" />
                     </td>
                     <td className="p-4 text-center">
-                      <button className="text-on-surface-variant hover:text-primary transition-colors">
+                      <button className="text-muted-foreground hover:text-primary transition-colors">
                         Editar
                       </button>
                     </td>
@@ -362,23 +382,23 @@ function LeadsTab() {
   return (
     <div className="space-y-6">
       <header>
-        <h2 className="font-headline-lg text-headline-lg text-on-surface">Leads</h2>
-        <p className="font-body-md text-body-md text-on-surface-variant">Gestiona contactos</p>
+        <h2 className="typo-headline-lg text-foreground">Leads</h2>
+        <p className="typo-body-md text-muted-foreground">Gestiona contactos</p>
       </header>
 
-      <div className="bg-surface border border-outline-variant rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-surface-container-high">
+            <thead className="bg-muted">
               <tr>
-                <th className="p-4 font-label-md text-on-surface-variant">Nombre</th>
-                <th className="p-4 font-label-md text-on-surface-variant">Email</th>
-                <th className="p-4 font-label-md text-on-surface-variant">Teléfono</th>
-                <th className="p-4 font-label-md text-on-surface-variant">Propiedad</th>
-                <th className="p-4 font-label-md text-on-surface-variant">Fecha</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Nombre</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Email</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Teléfono</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Propiedad</th>
+                <th className="p-4 typo-label-md text-muted-foreground">Fecha</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-outline-variant">
+            <tbody className="divide-y divide-border">
               {isLoading ? (
                 <tr>
                   <td colSpan={5} className="p-8 text-center">
@@ -387,14 +407,14 @@ function LeadsTab() {
                 </tr>
               ) : data && data.length > 0 ? (
                 data.map((l) => (
-                  <tr key={l.id} className="hover:bg-surface-container-low transition-colors">
-                    <td className="p-4 font-body-md text-on-surface">{l.nombre}</td>
-                    <td className="p-4 font-label-md text-on-surface-variant">{l.email}</td>
-                    <td className="p-4 font-label-md text-on-surface-variant">{l.telefono ?? "—"}</td>
-                    <td className="p-4 font-label-md text-on-surface-variant truncate max-w-xs">
+                  <tr key={l.id} className="hover:bg-muted transition-colors">
+                    <td className="p-4 typo-body-md text-foreground">{l.nombre}</td>
+                    <td className="p-4 typo-label-md text-muted-foreground">{l.email}</td>
+                    <td className="p-4 typo-label-md text-muted-foreground">{l.telefono ?? "—"}</td>
+                    <td className="p-4 typo-label-md text-muted-foreground truncate max-w-xs">
                       {[l.propiedadCodigo, l.propiedadTitulo].filter(Boolean).join(": ")}
                     </td>
-                    <td className="p-4 font-label-md text-on-surface-variant">
+                    <td className="p-4 typo-label-md text-muted-foreground">
                       {new Date(l.createdAt).toLocaleDateString("es-PE")}
                     </td>
                   </tr>

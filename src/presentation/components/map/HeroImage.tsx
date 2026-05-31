@@ -33,9 +33,7 @@ export function HeroImage({ propiedad }: HeroImageProps) {
         </p>
         <p className="text-white/80 text-xs">{propiedad.codigo}</p>
       </div>
-      <div className="absolute top-3 left-3">
-        {/* Badge will be injected by parent */}
-      </div>
+      <div className="absolute top-3 left-3">{/* Badge will be injected by parent */}</div>
     </div>
   );
 }

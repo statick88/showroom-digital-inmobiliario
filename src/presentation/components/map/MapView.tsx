@@ -2,13 +2,11 @@
 
 import { useCallback, useState, useMemo } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { usePropiedades } from "@/presentation/hooks/usePropiedades";
 import { useClickTracker } from "@/presentation/hooks/useClickTracker";
 import { PropertyList } from "./PropertyList";
 import { PropertyFilters } from "./PropertyFilters";
 import { LeadForm } from "./LeadForm";
-import { MetricasPanel } from "./MetricasPanel";
 import { MapController } from "./MapController";
 import { MasterPlanOverlay } from "./MasterPlanOverlay";
 import { PropertyMarkers } from "./PropertyMarkers";
@@ -27,19 +25,20 @@ export function MapView() {
   const [masterPlanVisible, setMasterPlanVisible] = useState(false);
   const { trackClick } = useClickTracker();
 
-  const handleMarkerClick = useCallback((p: Propiedad) => {
-    setSelected(p);
-    setDetailOpen(true);
-    // Track click for analytics
-    trackClick(p.id);
-  }, [trackClick]);
+  const handleMarkerClick = useCallback(
+    (p: Propiedad) => {
+      setSelected(p);
+      setDetailOpen(true);
+      trackClick(p.id);
+    },
+    [trackClick],
+  );
 
   const handleCardClick = useCallback((p: Propiedad) => {
     setSelected(p);
     if (p.ubicacion) {
       setFlyTo({ lat: p.ubicacion.y, lng: p.ubicacion.x });
     }
-    // On mobile, open detail panel
     setDetailOpen(true);
   }, []);
 
@@ -60,7 +59,7 @@ export function MapView() {
   if (isLoading) {
     return (
       <div className="flex h-screen">
-        <div className="w-[320px] h-full bg-surface-container-low border-r border-outline-variant p-4 space-y-4">
+        <div className="w-[320px] h-full bg-muted border-r border-border p-4 space-y-4">
           <div className="h-8 w-48 bg-zinc-200 dark:bg-zinc-700 rounded animate-pulse" />
           <div className="space-y-3">
             {[1, 2, 3, 4].map((i) => (
@@ -68,8 +67,8 @@ export function MapView() {
             ))}
           </div>
         </div>
-        <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-          <span className="text-zinc-500">Cargando mapa...</span>
+        <div className="flex-1 bg-muted flex items-center justify-center">
+          <span className="text-muted-foreground">Cargando mapa...</span>
         </div>
       </div>
     );
@@ -78,14 +77,14 @@ export function MapView() {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar - Desktop */}
-      <aside className="hidden lg:flex w-[320px] h-full bg-surface-container-low border-r border-outline-variant flex-col overflow-hidden">
+      <aside className="hidden lg:flex w-[320px] h-full bg-card border-r border-border flex-col overflow-hidden">
         {/* Filters Header */}
-        <div className="p-4 border-b border-outline-variant space-y-4">
+        <div className="p-4 border-b border-border space-y-4">
           <div className="flex justify-between items-center">
-            <h2 className="font-display text-headline-md text-on-surface">Explorar Lima</h2>
+            <h2 className="typo-headline-md text-foreground">Explorar Lima</h2>
             <button
               onClick={() => setFilters({})}
-              className="text-primary font-label-md text-label-md hover:underline"
+              className="text-primary typo-label-md hover:underline"
             >
               Limpiar
             </button>
@@ -105,7 +104,7 @@ export function MapView() {
       </aside>
 
       {/* Map Section */}
-      <section className="flex-1 relative bg-surface-container-low">
+      <section className="flex-1 relative bg-muted">
         <MapContainer
           center={[-12.1354, -76.9967]}
           zoom={14}
@@ -124,17 +123,17 @@ export function MapView() {
         </MapContainer>
 
         {/* Map Controls */}
-        <div className="absolute top-md right-md flex flex-col gap-sm items-end z-10">
-          <div className="glass-panel rounded-xl p-1 flex shadow-lg">
-            <button className="px-4 py-2 bg-primary text-white rounded-lg font-label-md text-label-md shadow-md">
+        <div className="absolute top-6 right-6 flex flex-col gap-3 items-end z-10">
+          <div className="glass-panel rounded-xl p-1 flex shadow-glass">
+            <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg typo-label-md font-semibold shadow-sm">
               Mapa
             </button>
-            <button className="px-4 py-2 text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-colors rounded-lg">
+            <button className="px-4 py-2 text-muted-foreground typo-label-md hover:bg-muted transition-colors rounded-lg">
               Satélite
             </button>
           </div>
-          <div className="glass-panel rounded-xl p-3 flex items-center gap-3 shadow-lg">
-            <span className="font-label-md text-label-md text-on-surface font-semibold">Ver plano</span>
+          <div className="glass-panel rounded-xl p-3 flex items-center gap-3 shadow-glass">
+            <span className="typo-label-md font-semibold text-foreground">Ver plano</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -142,20 +141,10 @@ export function MapView() {
                 onChange={(e) => setMasterPlanVisible(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
+              <div className="w-11 h-6 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
             </label>
           </div>
         </div>
-
-        {/* Mobile Filters Button */}
-        <button
-          className="lg:hidden absolute top-4 left-4 z-10 glass-panel rounded-full p-2 shadow-lg"
-          onClick={() => setFilters({ ...filters, mobileOpen: true })}
-        >
-          <svg className="size-5 text-primary" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" />
-          </svg>
-        </button>
       </section>
 
       {/* Property Detail Slide-over */}
