@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { LayoutDashboard, Building2, MessageCircle, Plus, Search, TrendingUp } from "lucide-react";
 import { usePropiedades } from "@/presentation/hooks/usePropiedades";
 import { useLeads } from "@/presentation/hooks/useLeads";
 import { useMetricas } from "@/presentation/hooks/useMetricas";
 import { useTopClicks } from "@/presentation/hooks/useTopClicks";
 import { StatusChip } from "@/components/ui/status-chip";
+import { Icon } from "@/components/ui/icon";
+import { Pagination } from "@/components/ui/pagination";
+import { cn } from "@/lib/utils";
 
 type Tab = "dashboard" | "propiedades" | "leads";
 
@@ -15,7 +17,6 @@ export function AdminDashboard() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* SideNavBar */}
       <aside className="w-64 h-full bg-card border-r border-border flex flex-col gap-6 p-6">
         <div>
           <h1 className="typo-headline-md text-primary">Admin Panel</h1>
@@ -23,13 +24,13 @@ export function AdminDashboard() {
         </div>
 
         <nav className="flex flex-col gap-2 flex-grow">
-          <NavButton tab="dashboard" current={tab} icon={LayoutDashboard}>
+          <NavButton tab="dashboard" current={tab} icon="dashboard" onClick={setTab}>
             Dashboard
           </NavButton>
-          <NavButton tab="propiedades" current={tab} icon={Building2}>
+          <NavButton tab="propiedades" current={tab} icon="domain" onClick={setTab}>
             Propiedades
           </NavButton>
-          <NavButton tab="leads" current={tab} icon={MessageCircle}>
+          <NavButton tab="leads" current={tab} icon="chat_bubble" onClick={setTab}>
             Leads
           </NavButton>
         </nav>
@@ -40,7 +41,9 @@ export function AdminDashboard() {
           </div>
           <div className="overflow-hidden">
             <p className="typo-label-md text-foreground truncate">Admin User</p>
-            <p className="text-[10px] text-muted-foreground uppercase">Super Admin</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+              Super Admin
+            </p>
           </div>
         </div>
       </aside>
@@ -57,44 +60,52 @@ export function AdminDashboard() {
 function NavButton({
   tab,
   current,
-  icon: Icon,
+  icon,
+  onClick,
   children,
 }: {
   tab: Tab;
   current: Tab;
-  icon: typeof LayoutDashboard;
+  icon: string;
+  onClick: (t: Tab) => void;
   children: React.ReactNode;
 }) {
   const active = tab === current;
   return (
     <button
-      onClick={() => {}}
-      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
+      onClick={() => onClick(tab)}
+      className={cn(
+        "w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200",
         active
           ? "bg-accent text-primary font-bold translate-x-1"
-          : "text-muted-foreground hover:bg-muted"
-      }`}
+          : "text-muted-foreground hover:bg-muted rounded-lg",
+      )}
     >
-      <Icon className="size-5" />
+      <Icon name={icon} size={20} filled={active} />
       <span className="typo-label-md">{children}</span>
     </button>
   );
 }
 
 function DashboardTab() {
-  const { data, isLoading } = useMetricas();
+  const { data } = useMetricas();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <header className="flex justify-between items-end">
         <div>
           <h2 className="typo-headline-lg text-foreground">Dashboard</h2>
-          <p className="typo-body-md text-muted-foreground">Resumen operativo</p>
+          <p className="typo-body-md text-muted-foreground">Resumen operativo de hoy</p>
+        </div>
+        <div className="flex gap-3">
+          <button className="px-4 py-2 bg-muted text-foreground rounded-lg typo-label-md flex items-center gap-2 border border-border">
+            <Icon name="calendar_today" size={18} />
+            Últimos 30 días
+          </button>
         </div>
       </header>
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-4">
         <MetricCard
           label="Total Propiedades"
           value={data?.totalPropiedades ?? 0}
@@ -112,16 +123,13 @@ function DashboardTab() {
         />
       </div>
 
-      {/* Visual Analytics */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        {/* Donut Chart */}
-        <div className="bg-card border border-border rounded-xl p-6 flex items-center gap-6">
+        <div className="bg-card border border-border rounded-xl shadow-card flex flex-col md:flex-row gap-6 p-6 items-center">
           <DonutChart disponibles={60} separadas={15} vendidas={25} total={124} />
           <Legend />
         </div>
 
-        {/* Top Clicks Ranking */}
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl shadow-card p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="typo-headline-md text-foreground">Top más clickeadas</h3>
             <button className="text-primary typo-label-md hover:underline">Ver todo</button>
@@ -151,12 +159,12 @@ function MetricCard({
   const display = suffix ? `${value}${suffix}` : value.toString();
 
   return (
-    <div className="bg-card border border-border p-4 rounded-xl shadow-card">
+    <div className="bg-card border border-border p-4 rounded-xl shadow-[0px_4px_20px_rgba(160,152,144,0.08)]">
       <p className="typo-label-md text-muted-foreground mb-1">{label}</p>
       <p className="typo-headline-md font-bold text-primary">{display}</p>
       {trend && (
         <p className="flex items-center gap-1 mt-1 typo-label-md text-status-success">
-          <TrendingUp className="size-4" />
+          <Icon name="trending_up" size={14} />
           {trend}
         </p>
       )}
@@ -243,6 +251,18 @@ function Legend() {
           <span className="font-bold text-foreground">{item.value}</span>
         </div>
       ))}
+      <div className="pt-4 border-t border-border">
+        <div className="flex justify-between mb-2">
+          <span className="typo-label-md text-muted-foreground">Cumplimiento de Ventas</span>
+          <span className="font-bold text-primary">S/ 3.2M / S/ 4.5M</span>
+        </div>
+        <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+          <div
+            className="bg-primary h-full rounded-full transition-all duration-1000"
+            style={{ width: "71%" }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
@@ -271,7 +291,14 @@ function TopClicksTable() {
           topClicks.map((item, index) => (
             <tr key={item.propiedad.id} className="hover:bg-muted transition-colors">
               <td className="py-3">
-                <span className="w-6 h-6 rounded-full bg-primary/20 text-primary-foreground flex items-center justify-center font-bold text-xs">
+                <span
+                  className={cn(
+                    "w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs",
+                    index === 0
+                      ? "bg-primary/20 text-primary-foreground"
+                      : "bg-muted text-muted-foreground",
+                  )}
+                >
                   {index + 1}
                 </span>
               </td>
@@ -294,35 +321,60 @@ function TopClicksTable() {
 
 function PropiedadesTab() {
   const { data, isLoading } = usePropiedades({});
+  const [page, setPage] = useState(1);
+  const pageSize = 4;
+  const totalItems = data?.length ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const paginated = data?.slice((page - 1) * pageSize, page * pageSize) ?? [];
+  const [filter, setFilter] = useState("");
+
+  const filtered = filter
+    ? paginated.filter(
+        (p) =>
+          p.codigo.toLowerCase().includes(filter.toLowerCase()) ||
+          p.titulo.toLowerCase().includes(filter.toLowerCase()),
+      )
+    : paginated;
 
   return (
     <div className="space-y-6">
       <header className="flex justify-between items-center">
         <div>
           <h2 className="typo-headline-lg text-foreground">Gestión de Propiedades</h2>
-          <p className="typo-body-md text-muted-foreground">Administra el inventario</p>
+          <p className="typo-body-md text-muted-foreground">Administra el inventario y estados</p>
         </div>
-        <button className="bg-primary text-primary-foreground px-6 py-2 rounded-xl font-bold flex items-center gap-2">
-          <Plus className="size-4" />
+        <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:brightness-110 transition-all">
+          <Icon name="add" size={20} />
           Nueva Propiedad
         </button>
       </header>
 
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="p-4 bg-muted border-b border-border flex flex-wrap gap-4">
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-[0px_12px_32px_rgba(160,152,144,0.15)]">
+        <div className="p-4 bg-muted/50 border-b border-border flex flex-wrap gap-4 items-center">
           <div className="relative flex-grow max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Icon
+              name="search"
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
             <input
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-input focus:border-primary outline-none bg-card typo-body-md"
-              placeholder="Buscar..."
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card typo-body-md"
+              placeholder="Buscar por código o título..."
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
             />
           </div>
-          <select className="bg-card border border-input rounded-lg px-4 py-2 typo-label-md">
-            <option>Todos los estados</option>
-            <option>Disponible</option>
-            <option>Separado</option>
-            <option>Vendido</option>
-          </select>
+          <div className="flex gap-3">
+            <select className="bg-card border border-input rounded-lg px-4 py-2 typo-label-md">
+              <option>Todos los estados</option>
+              <option>Disponible</option>
+              <option>Separado</option>
+              <option>Vendido</option>
+            </select>
+            <button className="p-2 border border-border rounded-lg text-muted-foreground hover:bg-muted transition-colors">
+              <Icon name="filter_list" size={20} />
+            </button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -334,7 +386,7 @@ function PropiedadesTab() {
                 <th className="p-4 typo-label-md text-muted-foreground">Tipo</th>
                 <th className="p-4 typo-label-md text-muted-foreground">Precio</th>
                 <th className="p-4 typo-label-md text-muted-foreground">Estado</th>
-                <th className="p-4 typo-label-md text-muted-foreground">Acciones</th>
+                <th className="p-4 typo-label-md text-muted-foreground text-center">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -344,9 +396,9 @@ function PropiedadesTab() {
                     Cargando...
                   </td>
                 </tr>
-              ) : data && data.length > 0 ? (
-                data.map((p) => (
-                  <tr key={p.id} className="hover:bg-muted transition-colors">
+              ) : filtered.length > 0 ? (
+                filtered.map((p) => (
+                  <tr key={p.id} className="hover:bg-muted transition-colors group">
                     <td className="p-4 typo-label-md text-primary">{p.codigo}</td>
                     <td className="p-4 typo-body-md text-foreground">{p.titulo}</td>
                     <td className="p-4 typo-label-md text-muted-foreground capitalize">{p.tipo}</td>
@@ -356,7 +408,7 @@ function PropiedadesTab() {
                     </td>
                     <td className="p-4 text-center">
                       <button className="text-muted-foreground hover:text-primary transition-colors">
-                        Editar
+                        <Icon name="edit" size={18} />
                       </button>
                     </td>
                   </tr>
@@ -371,6 +423,16 @@ function PropiedadesTab() {
             </tbody>
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={setPage}
+          />
+        )}
       </div>
     </div>
   );
@@ -383,10 +445,10 @@ function LeadsTab() {
     <div className="space-y-6">
       <header>
         <h2 className="typo-headline-lg text-foreground">Leads</h2>
-        <p className="typo-body-md text-muted-foreground">Gestiona contactos</p>
+        <p className="typo-body-md text-muted-foreground">Gestiona contactos e intereses</p>
       </header>
 
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-[0px_12px_32px_rgba(160,152,144,0.15)]">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-muted">
