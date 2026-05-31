@@ -1,12 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { propiedadesRepository } from "@/data/repositories";
+import { transaccionesRepository } from "@/data/repositories/supabase-transacciones.repository.impl";
 import { env } from "@/config/env";
 
 export function useMetricas() {
   return useQuery({
-    queryKey: ["metricas"],
-    queryFn: () => propiedadesRepository.obtenerDashboard(env.agenciaId),
+    queryKey: ["metricas", env.proyectoId],
+    queryFn: () => transaccionesRepository.obtenerMetricas(env.proyectoId),
   });
 }

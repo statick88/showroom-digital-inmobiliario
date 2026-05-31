@@ -1,6 +1,5 @@
 "use client";
 
-import { PropertyCard } from "./PropertyCard";
 import type { Propiedad } from "@/domain/entities/propiedad";
 
 export function PropertyList({
@@ -33,12 +32,18 @@ export function PropertyList({
   return (
     <div className="space-y-3">
       {propiedades.map((p) => (
-        <PropertyCard
+        <div
           key={p.id}
-          propiedad={p}
-          selected={p.id === selectedId}
+          className={`p-4 rounded-xl border cursor-pointer transition-all ${
+            p.id === selectedId
+              ? "border-primary bg-primary/5"
+              : "border-border bg-card hover:border-primary/50"
+          }`}
           onClick={() => onSelect?.(p)}
-        />
+        >
+          <p className="font-semibold text-foreground">{p.titulo}</p>
+          <p className="text-sm text-muted-foreground">{p.distrito}</p>
+        </div>
       ))}
     </div>
   );

@@ -2,15 +2,12 @@
 
 import { useCallback, useState, useMemo } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
-import { usePropiedades } from "@/presentation/hooks/usePropiedades";
+import { usePropiedades } from "@/presentation/hooks/usePropiedades.legacy";
 import { useClickTracker } from "@/presentation/hooks/useClickTracker";
-import { PropertyList } from "./PropertyList";
-import { PropertyFilters } from "./PropertyFilters";
-import { LeadForm } from "./LeadForm";
+import { PropertyList } from "./PropertyList.legacy";
 import { MapController } from "./MapController";
 import { MasterPlanOverlay } from "./MasterPlanOverlay";
-import { PropertyMarkers } from "./PropertyMarkers";
-import { PropertyDetailPanel } from "./PropertyDetailPanel";
+import { PropertyMarkers } from "./PropertyMarkers.legacy";
 import { env } from "@/config/env";
 import type { Propiedad } from "@/domain/entities/propiedad";
 import type { FiltrosPropiedades } from "@/domain/repositories/propiedades.repository";
@@ -19,8 +16,6 @@ export function MapView() {
   const [filters, setFilters] = useState<FiltrosPropiedades>({});
   const { data: propiedades, isLoading } = usePropiedades(filters);
   const [selected, setSelected] = useState<Propiedad | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
-  const [leadPropiedad, setLeadPropiedad] = useState<Propiedad | null>(null);
   const [flyTo, setFlyTo] = useState<{ lat: number; lng: number } | undefined>(undefined);
   const [masterPlanVisible, setMasterPlanVisible] = useState(false);
   const { trackClick } = useClickTracker();
@@ -28,7 +23,6 @@ export function MapView() {
   const handleMarkerClick = useCallback(
     (p: Propiedad) => {
       setSelected(p);
-      setDetailOpen(true);
       trackClick(p.id);
     },
     [trackClick],
@@ -39,16 +33,6 @@ export function MapView() {
     if (p.ubicacion) {
       setFlyTo({ lat: p.ubicacion.y, lng: p.ubicacion.x });
     }
-    setDetailOpen(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setDetailOpen(false);
-  }, []);
-
-  const handleContact = useCallback((p: Propiedad) => {
-    setDetailOpen(false);
-    setLeadPropiedad(p);
   }, []);
 
   const markers = useMemo(() => {
@@ -89,7 +73,6 @@ export function MapView() {
               Limpiar
             </button>
           </div>
-          <PropertyFilters filters={filters} onChange={setFilters} />
         </div>
 
         {/* Property List */}
@@ -147,19 +130,6 @@ export function MapView() {
         </div>
       </section>
 
-      {/* Property Detail Slide-over */}
-      <PropertyDetailPanel
-        propiedad={selected}
-        open={detailOpen}
-        onClose={handleClose}
-        onContact={handleContact}
-      />
-
-      <LeadForm
-        propiedad={leadPropiedad}
-        open={leadPropiedad !== null}
-        onClose={() => setLeadPropiedad(null)}
-      />
     </div>
   );
 }
