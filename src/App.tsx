@@ -10,11 +10,13 @@ import { useProyecto } from "@/presentation/hooks/useProyectos";
 import { AdminDashboard } from "@/presentation/components/admin/AdminDashboard";
 
 const MapaLotes = lazy(() =>
-  import("@/presentation/components/lotes/MapaLotes").then((m) => ({ default: m.MapaLotes }))
+  import("@/presentation/components/lotes/MapaLotes").then((m) => ({ default: m.MapaLotes })),
 );
 
 const FichaTecnicaLote = lazy(() =>
-  import("@/presentation/components/lotes/FichaTecnicaLote").then((m) => ({ default: m.FichaTecnicaLote }))
+  import("@/presentation/components/lotes/FichaTecnicaLote").then((m) => ({
+    default: m.FichaTecnicaLote,
+  })),
 );
 
 type Route = "app" | "admin";
@@ -88,24 +90,22 @@ export function App() {
 
 function AppContent() {
   const [tab, setTab] = useState<TabView>("inicio");
-  const [selectedLote, setSelectedLote] = useState<import("@/domain/entities/lote").Lote | null>(null);
+  const [selectedLote, setSelectedLote] = useState<import("@/domain/entities/lote").Lote | null>(
+    null,
+  );
   const { data: proyecto } = useProyecto(env.proyectoId);
 
   return (
     <div className="min-h-screen bg-background">
-      <HeaderNav
-        currentTab={tab}
-        onTabChange={setTab}
-        proyectoNombre={proyecto?.nombre}
-      />
+      <HeaderNav currentTab={tab} onTabChange={setTab} proyectoNombre={proyecto?.nombre} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {tab === "lotizacion" && (
-          <Suspense fallback={<div className="flex h-96 items-center justify-center">Cargando mapa...</div>}>
+          <Suspense
+            fallback={<div className="flex h-96 items-center justify-center">Cargando mapa...</div>}
+          >
             <div className="h-[600px] rounded-xl overflow-hidden border border-border">
-              <MapaLotes
-                onLoteClick={setSelectedLote}
-              />
+              <MapaLotes onLoteClick={setSelectedLote} />
             </div>
           </Suspense>
         )}
@@ -140,10 +140,7 @@ function AppContent() {
 
       {selectedLote && (
         <Suspense fallback={null}>
-          <FichaTecnicaLote
-            lote={selectedLote}
-            onClose={() => setSelectedLote(null)}
-          />
+          <FichaTecnicaLote lote={selectedLote} onClose={() => setSelectedLote(null)} />
         </Suspense>
       )}
 

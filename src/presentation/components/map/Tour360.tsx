@@ -63,9 +63,7 @@ export function Tour360({ imagenes, titulo, onClose }: Tour360Props) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 h-[400px] bg-muted rounded-xl">
         <Icon name="360" size={48} className="text-muted-foreground/40" />
-        <p className="typo-body-md text-muted-foreground">
-          Tour 360° no disponible
-        </p>
+        <p className="typo-body-md text-muted-foreground">Tour 360° no disponible</p>
       </div>
     );
   }

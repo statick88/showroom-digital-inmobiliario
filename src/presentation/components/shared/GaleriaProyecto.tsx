@@ -16,9 +16,7 @@ export function GaleriaProyecto({ imagenes, titulo }: GaleriaProyectoProps) {
 
   return (
     <div className="space-y-4">
-      {titulo && (
-        <h2 className="typo-headline-md text-foreground">{titulo}</h2>
-      )}
+      {titulo && <h2 className="typo-headline-md text-foreground">{titulo}</h2>}
       <div className="relative rounded-xl overflow-hidden border border-border h-[400px]">
         <img
           src={imagenes[selected]}
@@ -50,7 +48,9 @@ export function GaleriaProyecto({ imagenes, titulo }: GaleriaProyectoProps) {
               onClick={() => setSelected(i)}
               className={cn(
                 "flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-colors",
-                i === selected ? "border-primary" : "border-transparent opacity-60 hover:opacity-100",
+                i === selected
+                  ? "border-primary"
+                  : "border-transparent opacity-60 hover:opacity-100",
               )}
             >
               <img src={img} alt="" className="w-full h-full object-cover" />

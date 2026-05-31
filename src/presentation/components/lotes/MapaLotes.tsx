@@ -30,7 +30,10 @@ interface MapaLotesProps {
 
 export function MapaLotes({ onLoteClick, filtroEstado }: MapaLotesProps) {
   const proyectoId = env.proyectoId;
-  const { data: lotes, isLoading } = useLotes(proyectoId, filtroEstado ? { estado: filtroEstado } : undefined);
+  const { data: lotes, isLoading } = useLotes(
+    proyectoId,
+    filtroEstado ? { estado: filtroEstado } : undefined,
+  );
   const { data: proyecto } = useProyecto(proyectoId);
 
   const center: [number, number] = proyecto?.coordenadasCentro
@@ -47,12 +50,7 @@ export function MapaLotes({ onLoteClick, filtroEstado }: MapaLotesProps) {
 
   return (
     <div className="relative h-full w-full">
-      <MapContainer
-        center={center}
-        zoom={17}
-        className="h-full w-full z-0"
-        zoomControl={true}
-      >
+      <MapContainer center={center} zoom={17} className="h-full w-full z-0" zoomControl={true}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

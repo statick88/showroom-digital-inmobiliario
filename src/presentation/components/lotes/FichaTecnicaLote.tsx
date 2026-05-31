@@ -19,7 +19,10 @@ export function FichaTecnicaLote({ lote, onClose, modoVendedor }: FichaTecnicaLo
   const [showConsulta, setShowConsulta] = useState(false);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
       <div
         className="bg-card border border-border rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
@@ -68,9 +71,7 @@ export function FichaTecnicaLote({ lote, onClose, modoVendedor }: FichaTecnicaLo
                   <Icon name="straighten" size={18} className="text-primary" />
                   <p className="typo-label-md text-muted-foreground">Frente</p>
                 </div>
-                <p className="typo-headline-md font-bold text-foreground">
-                  {lote.frente} m
-                </p>
+                <p className="typo-headline-md font-bold text-foreground">{lote.frente} m</p>
               </div>
             )}
             {lote.fondo && (
@@ -79,9 +80,7 @@ export function FichaTecnicaLote({ lote, onClose, modoVendedor }: FichaTecnicaLo
                   <Icon name="straighten" size={18} className="text-primary" />
                   <p className="typo-label-md text-muted-foreground">Fondo</p>
                 </div>
-                <p className="typo-headline-md font-bold text-foreground">
-                  {lote.fondo} m
-                </p>
+                <p className="typo-headline-md font-bold text-foreground">{lote.fondo} m</p>
               </div>
             )}
           </div>
@@ -118,9 +117,7 @@ export function FichaTecnicaLote({ lote, onClose, modoVendedor }: FichaTecnicaLo
         </div>
       </div>
 
-      {showConsulta && (
-        <ConsultaLote lote={lote} onClose={() => setShowConsulta(false)} />
-      )}
+      {showConsulta && <ConsultaLote lote={lote} onClose={() => setShowConsulta(false)} />}
     </div>
   );
 }

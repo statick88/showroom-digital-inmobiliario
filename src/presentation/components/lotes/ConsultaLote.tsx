@@ -18,7 +18,10 @@ export function ConsultaLote({ lote, onClose }: ConsultaLoteProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
       <div
         className="bg-card border border-border rounded-2xl shadow-xl max-w-md w-full p-6"
         onClick={(e) => e.stopPropagation()}

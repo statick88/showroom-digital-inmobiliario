@@ -2,11 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { lotesRepository } from "@/data/repositories";
-import type {
-  CrearLoteData,
-  EstadoLote,
-  FiltrosLotes,
-} from "@/domain/entities/lote";
+import type { CrearLoteData, EstadoLote, FiltrosLotes } from "@/domain/entities/lote";
 
 export function useLotes(proyectoId: string, filtros?: FiltrosLotes) {
   return useQuery({

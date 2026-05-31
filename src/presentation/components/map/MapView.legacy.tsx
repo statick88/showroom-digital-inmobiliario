@@ -129,7 +129,6 @@ export function MapView() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }

@@ -1,11 +1,7 @@
 import { supabase } from "@/lib/supabase/client";
 import { rethrowIfPresent } from "@/lib/supabase/errors";
 import type { ITransaccionesRepository } from "@/domain/repositories/transacciones.repository";
-import type {
-  Transaccion,
-  CrearTransaccionData,
-  DashboardMetricas,
-} from "@/domain/entities/lote";
+import type { Transaccion, CrearTransaccionData, DashboardMetricas } from "@/domain/entities/lote";
 
 function mapTransaccion(row: Record<string, unknown>): Transaccion {
   return {

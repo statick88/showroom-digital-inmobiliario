@@ -30,7 +30,7 @@ src/
 │   └── repositories/propiedades.repository.ts  # Interfaces: PropiedadesRepository, MetricasRepository, LeadsRepository
 ├── data/
 │   ├── datasources/                 # Vacío
-│   ├── models/                      # Vacío  
+│   ├── models/                      # Vacío
 │   └── repositories/
 │       ├── index.ts                 # Exporta 3 repos
 │       ├── propiedades.repository.impl.ts  # CRUD propiedades + dashboard
@@ -83,13 +83,13 @@ src/
 
 ### 1.2 Schema actual Supabase
 
-| Tabla | Columnas clave | Notas |
-|-------|---------------|-------|
-| `agencias` | id, nombre, logo_url, ruc, plan (gratis/premium), activa | Se mantiene |
-| `perfiles` | id, auth_user_id, email, nombre, rol (admin/agente/comprador), agencia_id | Roles cambian |
-| `propiedades` | id, codigo, tipo (enum: lote/departamento/casa/local/oficina/terreno), estado, precio, moneda, area_m2, cuartos, banios, ubicacion(point), distrito, imagenes, agencia_id, publicada | **Se reemplaza** |
-| `metricas_clicks` | propiedad_id, tipo_evento, sesion_id | Se adapta a lotes |
-| `leads` | propiedad_id, nombre, email, telefono, consent_timestamp, cci | **Se reemplaza** por transacciones |
+| Tabla             | Columnas clave                                                                                                                                                                       | Notas                              |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| `agencias`        | id, nombre, logo_url, ruc, plan (gratis/premium), activa                                                                                                                             | Se mantiene                        |
+| `perfiles`        | id, auth_user_id, email, nombre, rol (admin/agente/comprador), agencia_id                                                                                                            | Roles cambian                      |
+| `propiedades`     | id, codigo, tipo (enum: lote/departamento/casa/local/oficina/terreno), estado, precio, moneda, area_m2, cuartos, banios, ubicacion(point), distrito, imagenes, agencia_id, publicada | **Se reemplaza**                   |
+| `metricas_clicks` | propiedad_id, tipo_evento, sesion_id                                                                                                                                                 | Se adapta a lotes                  |
+| `leads`           | propiedad_id, nombre, email, telefono, consent_timestamp, cci                                                                                                                        | **Se reemplaza** por transacciones |
 
 ### 1.3 Estado del Stitch Design System
 
@@ -101,39 +101,39 @@ src/
 
 ### 1.4 Mapeo archivos existentes → nuevo estado
 
-| Archivo actual | Acción | Justificación |
-|---------------|--------|---------------|
-| **MapView.tsx** | REFACTOR → MapaLotes.tsx | Cambia propósito: de mapa de propiedades genéricas a mapa de lotización con polígonos. Leaflet con Polygon layers reemplaza a Markers. |
-| **MarkerPopup.tsx** | REFACTOR → FichaTecnicaLote.tsx | Misma función pero para datos de lote (área, dimensiones, precio, estado). El popup ahora muestra ficha técnica completa. |
-| **PropertyMarkers.tsx** | REFACTOR → PolygonLayer.tsx | De markers circulares a polígonos dibujados con coordenadas GeoJSON. Color-coded por estado. |
-| **PropertyCard.tsx** | ADAPTAR → LoteCard.tsx | Misma card pero con datos específicos de lote. Sin cuartos/baños. Con área y dimensiones. |
-| **PropertyFilters.tsx** | ELIMINAR | Demasiado complejo para el target. Reemplazar por tabs ultra-simples (Todos / Disponibles / Reservados / Vendidos). |
-| **PropertyDetailPanel.tsx** | ELIMINAR → reemplazar por FichaTecnicaLote | El slide-over es complejo. Preferir modal o popup simple. |
-| **PropertyList.tsx** | ADAPTAR → ListaLotes.tsx | Misma lista pero con LoteCard. Sidebar ultra-simple. |
-| **AdminDashboard.tsx** | REFACTOR | Cambia de gestión de propiedades genéricas a gestión de proyectos de lotización + lotes + transacciones. |
-| **AdminLogin.tsx** | MANTENER | Solo ajustar texto. La lógica de Supabase Auth es válida. |
-| **HeaderNav.tsx** | REFACTOR → Navegación ultra-simple | Pasar de botón "Admin" a 3-4 tabs de navegación principal. |
-| **HeroImage.tsx** | ADAPTAR → HeroProyecto.tsx | Hero ahora muestra imagen del proyecto (drone 360°), no de propiedad individual. |
-| **LeadForm.tsx** | ELIMINAR | No aplica a lotización. Reemplazar por formulario de consulta simple integrado en FichaTecnicaLote. |
-| **MetricasPanel.tsx** | ADAPTAR → MetricasLotes.tsx | Misma estructura pero queries adaptadas a lotes. |
-| **SpecsGrid.tsx** | ELIMINAR | No aplica (cuartos/baños). Dimensiones de lote van en FichaTecnicaLote. |
-| **Gallery.tsx** | ADAPTAR → Galeria360.tsx | Galería ahora muestra imágenes 360° del proyecto y vistas de drone. |
-| **GlassControls.tsx** | MANTENER | Efecto visual válido para cualquier mapa. |
-| **MasterPlanOverlay.tsx** | MANTENER | El overlay de plano maestro se reutiliza como capa opcional sobre el mapa de lotes. |
-| **MapController.tsx** | MANTENER | FlyTo sigue siendo útil para navegar entre lotes. |
-| **usePropiedades.ts** | RENOMBRAR → useLotes.ts | Mismo patrón, nuevo schema. |
-| **useLeads.ts** | RENOMBRAR → useTransacciones.ts | Leads → transacciones (reservas/ventas). |
-| **useMetricas.ts** | ADAPTAR → queries de lotes | Mismos hooks, queries cambian a tablas de lotes. |
-| **useTopClicks.ts** | ADAPTAR → top lotes clickeados | Misma lógica, aplicada a lotes. |
-| **useClickTracker.ts** | MANTENER | Lógica de tracking es independiente del tipo de entidad. |
-| **icon-map.ts** | MANTENER | Muchos iconos (MapPin, Ruler, CheckCircle, etc.) siguen aplicando. Agregar iconos específicos de lotes si es necesario. |
-| **formatters.ts** | MANTENER | formatPrice para PEN aplica igual. |
-| **status-chip.tsx** | MANTENER | Estados exactamente iguales: disponible/separado/vendido. |
-| **contrast.test.ts** | MANTENER | Los colores Stitch no cambian. |
-| **globals.css** | MANTENER | Stitch tokens ya están correctos. |
-| **glass.css** | MANTENER | Efectos glassmorphism. |
-| **env.ts** | ADAPTAR | Eliminar VITE_AGENCIA_ID (ya no aplica multi-agencia). Agregar VITE_PROYECTO_ID. |
-| **markers.ts** | RENOMBRAR → polygon-styles.ts | De colores de marcadores a colores de relleno de polígonos. |
+| Archivo actual              | Acción                                     | Justificación                                                                                                                          |
+| --------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **MapView.tsx**             | REFACTOR → MapaLotes.tsx                   | Cambia propósito: de mapa de propiedades genéricas a mapa de lotización con polígonos. Leaflet con Polygon layers reemplaza a Markers. |
+| **MarkerPopup.tsx**         | REFACTOR → FichaTecnicaLote.tsx            | Misma función pero para datos de lote (área, dimensiones, precio, estado). El popup ahora muestra ficha técnica completa.              |
+| **PropertyMarkers.tsx**     | REFACTOR → PolygonLayer.tsx                | De markers circulares a polígonos dibujados con coordenadas GeoJSON. Color-coded por estado.                                           |
+| **PropertyCard.tsx**        | ADAPTAR → LoteCard.tsx                     | Misma card pero con datos específicos de lote. Sin cuartos/baños. Con área y dimensiones.                                              |
+| **PropertyFilters.tsx**     | ELIMINAR                                   | Demasiado complejo para el target. Reemplazar por tabs ultra-simples (Todos / Disponibles / Reservados / Vendidos).                    |
+| **PropertyDetailPanel.tsx** | ELIMINAR → reemplazar por FichaTecnicaLote | El slide-over es complejo. Preferir modal o popup simple.                                                                              |
+| **PropertyList.tsx**        | ADAPTAR → ListaLotes.tsx                   | Misma lista pero con LoteCard. Sidebar ultra-simple.                                                                                   |
+| **AdminDashboard.tsx**      | REFACTOR                                   | Cambia de gestión de propiedades genéricas a gestión de proyectos de lotización + lotes + transacciones.                               |
+| **AdminLogin.tsx**          | MANTENER                                   | Solo ajustar texto. La lógica de Supabase Auth es válida.                                                                              |
+| **HeaderNav.tsx**           | REFACTOR → Navegación ultra-simple         | Pasar de botón "Admin" a 3-4 tabs de navegación principal.                                                                             |
+| **HeroImage.tsx**           | ADAPTAR → HeroProyecto.tsx                 | Hero ahora muestra imagen del proyecto (drone 360°), no de propiedad individual.                                                       |
+| **LeadForm.tsx**            | ELIMINAR                                   | No aplica a lotización. Reemplazar por formulario de consulta simple integrado en FichaTecnicaLote.                                    |
+| **MetricasPanel.tsx**       | ADAPTAR → MetricasLotes.tsx                | Misma estructura pero queries adaptadas a lotes.                                                                                       |
+| **SpecsGrid.tsx**           | ELIMINAR                                   | No aplica (cuartos/baños). Dimensiones de lote van en FichaTecnicaLote.                                                                |
+| **Gallery.tsx**             | ADAPTAR → Galeria360.tsx                   | Galería ahora muestra imágenes 360° del proyecto y vistas de drone.                                                                    |
+| **GlassControls.tsx**       | MANTENER                                   | Efecto visual válido para cualquier mapa.                                                                                              |
+| **MasterPlanOverlay.tsx**   | MANTENER                                   | El overlay de plano maestro se reutiliza como capa opcional sobre el mapa de lotes.                                                    |
+| **MapController.tsx**       | MANTENER                                   | FlyTo sigue siendo útil para navegar entre lotes.                                                                                      |
+| **usePropiedades.ts**       | RENOMBRAR → useLotes.ts                    | Mismo patrón, nuevo schema.                                                                                                            |
+| **useLeads.ts**             | RENOMBRAR → useTransacciones.ts            | Leads → transacciones (reservas/ventas).                                                                                               |
+| **useMetricas.ts**          | ADAPTAR → queries de lotes                 | Mismos hooks, queries cambian a tablas de lotes.                                                                                       |
+| **useTopClicks.ts**         | ADAPTAR → top lotes clickeados             | Misma lógica, aplicada a lotes.                                                                                                        |
+| **useClickTracker.ts**      | MANTENER                                   | Lógica de tracking es independiente del tipo de entidad.                                                                               |
+| **icon-map.ts**             | MANTENER                                   | Muchos iconos (MapPin, Ruler, CheckCircle, etc.) siguen aplicando. Agregar iconos específicos de lotes si es necesario.                |
+| **formatters.ts**           | MANTENER                                   | formatPrice para PEN aplica igual.                                                                                                     |
+| **status-chip.tsx**         | MANTENER                                   | Estados exactamente iguales: disponible/separado/vendido.                                                                              |
+| **contrast.test.ts**        | MANTENER                                   | Los colores Stitch no cambian.                                                                                                         |
+| **globals.css**             | MANTENER                                   | Stitch tokens ya están correctos.                                                                                                      |
+| **glass.css**               | MANTENER                                   | Efectos glassmorphism.                                                                                                                 |
+| **env.ts**                  | ADAPTAR                                    | Eliminar VITE_AGENCIA_ID (ya no aplica multi-agencia). Agregar VITE_PROYECTO_ID.                                                       |
+| **markers.ts**              | RENOMBRAR → polygon-styles.ts              | De colores de marcadores a colores de relleno de polígonos.                                                                            |
 
 ---
 
@@ -428,60 +428,61 @@ src/
 
 #### C.1 Mapa 360° de lotes
 
-| Decisión | Opciones | Elegida | Razón |
-|----------|----------|---------|-------|
-| Render de lotes | Leaflet Polygon vs ThreeJS/WebGL | **Leaflet Polygon** | Leaflet ya está instalado, Polygon layers son nativos. ThreeJS es overkill para 2D. El target no necesita WebGL. |
-| Tour 360° | Pannellum vs ThreeJS vs Kuula embebido | **Pannellum** | Librería ultra-liviana (sin dependencias), open source, fácil de incrustar. Las imágenes las provee el cliente (drone). |
-| Formato coordenadas | GeoJSON vs WKT vs array simple | **GeoJSON Polygon** | Estándar web, nativo en Leaflet (L.geoJSON), fácil de almacenar en JSONB de Supabase. |
-| Almacenamiento imágenes 360 | Supabase Storage vs URLs externas | **Supabase Storage (URLs públicas)** | Ya usamos Supabase. El cliente sube las imágenes renderizadas del drone. |
+| Decisión                    | Opciones                               | Elegida                              | Razón                                                                                                                   |
+| --------------------------- | -------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Render de lotes             | Leaflet Polygon vs ThreeJS/WebGL       | **Leaflet Polygon**                  | Leaflet ya está instalado, Polygon layers son nativos. ThreeJS es overkill para 2D. El target no necesita WebGL.        |
+| Tour 360°                   | Pannellum vs ThreeJS vs Kuula embebido | **Pannellum**                        | Librería ultra-liviana (sin dependencias), open source, fácil de incrustar. Las imágenes las provee el cliente (drone). |
+| Formato coordenadas         | GeoJSON vs WKT vs array simple         | **GeoJSON Polygon**                  | Estándar web, nativo en Leaflet (L.geoJSON), fácil de almacenar en JSONB de Supabase.                                   |
+| Almacenamiento imágenes 360 | Supabase Storage vs URLs externas      | **Supabase Storage (URLs públicas)** | Ya usamos Supabase. El cliente sube las imágenes renderizadas del drone.                                                |
 
 #### C.2 Autenticación y Roles
 
-| Decisión | Opciones | Elegida | Razón |
-|----------|----------|---------|-------|
-| Gestión de roles | app_metadata vs tabla separada | **Tabla `usuarios_rol`** | app_metadata no es consultable vía RLS fácilmente. Con tabla separada podemos hacer RLS policies eficientes y reportes. |
-| Registro de vendedores | Auto-registro vs solo admin crea | **Solo admin crea** | Target son personas mayores. Seguridad primero. El admin registra vendedores manualmente. |
-| RLS por rol | Policy por rol vs helper function | **Policy directa** | Más simple de mantener. El schema tiene pocas tablas. |
+| Decisión               | Opciones                          | Elegida                  | Razón                                                                                                                   |
+| ---------------------- | --------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| Gestión de roles       | app_metadata vs tabla separada    | **Tabla `usuarios_rol`** | app_metadata no es consultable vía RLS fácilmente. Con tabla separada podemos hacer RLS policies eficientes y reportes. |
+| Registro de vendedores | Auto-registro vs solo admin crea  | **Solo admin crea**      | Target son personas mayores. Seguridad primero. El admin registra vendedores manualmente.                               |
+| RLS por rol            | Policy por rol vs helper function | **Policy directa**       | Más simple de mantener. El schema tiene pocas tablas.                                                                   |
 
 #### C.3 Navegación Ultra-Simple
 
-| Decisión | Elegida | Razón |
-|----------|---------|-------|
-| Número de items nav | **4 como máximo** | Target: personas mayores. Más de 4 items = confusión. |
-| Layout | **Tabs horizontales grandes con iconos** | Botones grandes y claros. Sin hamburguer menus. |
-| Contraste | **Textos grandes (≥16px), iconos grandes** | WCAG AA para adultos mayores. |
-| Mobile first | **Sí** | Muchos usuarios acceden desde tablet/celular. |
+| Decisión            | Elegida                                    | Razón                                                 |
+| ------------------- | ------------------------------------------ | ----------------------------------------------------- |
+| Número de items nav | **4 como máximo**                          | Target: personas mayores. Más de 4 items = confusión. |
+| Layout              | **Tabs horizontales grandes con iconos**   | Botones grandes y claros. Sin hamburguer menus.       |
+| Contraste           | **Textos grandes (≥16px), iconos grandes** | WCAG AA para adultos mayores.                         |
+| Mobile first        | **Sí**                                     | Muchos usuarios acceden desde tablet/celular.         |
 
 #### C.4 Export CSV
 
-| Decisión | Elegida | Razón |
-|----------|---------|-------|
-| Librería | **papaparse** | Liviana, sin dependencias, soporta grandes volúmenes, streaming. |
-| Disparo | **Botón en AdminDashboard → exporta data filtrada** | UX simple: un click y descarga. |
-| Formato | **UTF-8 BOM + separador ;** | Compatible con Excel en español (reconoce UTF-8 por BOM y separador ; correctamente). |
+| Decisión | Elegida                                             | Razón                                                                                 |
+| -------- | --------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Librería | **papaparse**                                       | Liviana, sin dependencias, soporta grandes volúmenes, streaming.                      |
+| Disparo  | **Botón en AdminDashboard → exporta data filtrada** | UX simple: un click y descarga.                                                       |
+| Formato  | **UTF-8 BOM + separador ;**                         | Compatible con Excel en español (reconoce UTF-8 por BOM y separador ; correctamente). |
 
 #### C.5 Polígonos de Lotes
 
-| Decisión | Elegida | Razón |
-|----------|---------|-------|
-| Formato | **GeoJSON Polygon en JSONB** | Nativo en Leaflet `L.geoJSON()`, consultable desde Supabase, sin dependencias extra. |
-| Tooltip | **Hover muestra código + área** | Feedback inmediato sin click. |
-| Click | **Abre FichaTecnicaLote** | Popup y/o modal según dispositivo. |
-| Color por estado | **disponible=success, reservado=warning, vendido=destructive** | Reutiliza las variables CSS existentes de Stitch. Consistencia visual. |
+| Decisión         | Elegida                                                        | Razón                                                                                |
+| ---------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Formato          | **GeoJSON Polygon en JSONB**                                   | Nativo en Leaflet `L.geoJSON()`, consultable desde Supabase, sin dependencias extra. |
+| Tooltip          | **Hover muestra código + área**                                | Feedback inmediato sin click.                                                        |
+| Click            | **Abre FichaTecnicaLote**                                      | Popup y/o modal según dispositivo.                                                   |
+| Color por estado | **disponible=success, reservado=warning, vendido=destructive** | Reutiliza las variables CSS existentes de Stitch. Consistencia visual.               |
 
 #### C.6 Tour 360° con Pannellum
 
-| Decisión | Elegida | Razón |
-|----------|---------|-------|
+| Decisión    | Elegida                                            | Razón                                                                  |
+| ----------- | -------------------------------------------------- | ---------------------------------------------------------------------- |
 | Integración | **Componente React que monta Pannellum en un div** | Pannellum no tiene bindings React oficiales, pero montarlo es trivial. |
-| Fallback | **Imagen estática si no hay 360** | Para proyectos sin imágenes de drone. |
-| Carga | **Lazy load** | No bloquear el mapa principal. |
+| Fallback    | **Imagen estática si no hay 360**                  | Para proyectos sin imágenes de drone.                                  |
+| Carga       | **Lazy load**                                      | No bloquear el mapa principal.                                         |
 
 ---
 
 ### D) Entidades del Nuevo Dominio
 
 #### domain/entities/lote.ts
+
 ```typescript
 export type EstadoLote = "disponible" | "reservado" | "vendido";
 export type TipoTransaccion = "reserva" | "venta";
@@ -489,15 +490,15 @@ export type TipoTransaccion = "reserva" | "venta";
 export interface Lote {
   id: string;
   proyectoId: string;
-  codigo: string;           // "Lote 127", "MZ-A LT-3"
-  areaTotal: number;        // m²
-  frente?: number;          // metros lineales
-  fondo?: number;           // metros lineales
+  codigo: string; // "Lote 127", "MZ-A LT-3"
+  areaTotal: number; // m²
+  frente?: number; // metros lineales
+  fondo?: number; // metros lineales
   precio: number;
   moneda: "PEN" | "USD";
   estado: EstadoLote;
-  poligonoCoords: number[][][];  // GeoJSON Polygon coordinates
-  imagenPlano?: string;     // URL del plano
+  poligonoCoords: number[][][]; // GeoJSON Polygon coordinates
+  imagenPlano?: string; // URL del plano
   descripcion?: string;
   orden: number;
   createdAt: string;
@@ -511,7 +512,7 @@ export interface Proyecto {
   ubicacion?: string;
   coordenadasCentro: { lat: number; lng: number };
   imagenHero?: string;
-  imagenes360: string[];    // URLs para Pannellum
+  imagenes360: string[]; // URLs para Pannellum
   activo: boolean;
   createdAt: string;
   updatedAt: string;
@@ -555,6 +556,7 @@ export interface DashboardMetricas {
 ```
 
 #### domain/repositories/lotes.repository.ts
+
 ```typescript
 export interface ILotesRepository {
   listar(proyectoId: string, filtros?: FiltrosLotes): Promise<Lote[]>;
@@ -577,26 +579,26 @@ export interface FiltrosLotes {
 
 Cada HU debe pasar los gates: QA (tests + linting + typecheck) → Security → Design → Emulator Test.
 
-| # | HU | Descripción | Depende de | Archivos afectados | Gate clave |
-|---|----|-------------|-----------|-------------------|------------|
-| **HU-001** | Schema Supabase | Crear migración `00005_lotizacion_schema.sql` con tablas proyectos, lotes, usuarios_rol, transacciones + RLS + migración de datos existentes | Ninguna | `supabase/migrations/00005_lotizacion_schema.sql` | QA |
-| **HU-002** | Entities + Repos | Crear tipos, interfaces, repositorios para Lote, Proyecto, Transaccion | HU-001 | `src/domain/entities/{lote,proyecto,transaccion,usuario-rol}.ts`, `src/domain/repositories/lotes.repository.ts`, `src/data/repositories/*.ts` | QA |
-| **HU-003** | Hooks useLotes | Crear hooks useLotes, useProyectos, useTransacciones con TanStack Query | HU-002 | `src/presentation/hooks/{useLotes,useProyectos,useTransacciones}.ts` | QA |
-| **HU-004** | Mapa de lotes con polígonos | Refactor MapView → MapaLotes con Leaflet Polygon. PolygonLayer renderiza lotes desde GeoJSON. Color por estado. | HU-003 | `src/presentation/components/lotes/{MapaLotes,PolygonLayer}.tsx` | QA + Security |
-| **HU-005** | Ficha técnica del lote | Refactor MarkerPopup → FichaTecnicaLote. Muestra: código, área, frente, fondo, precio, estado, imagen plano, botón consulta. | HU-004 | `src/presentation/components/lotes/FichaTecnicaLote.tsx` | QA + Design |
-| **HU-006** | Navegación ultra-simple | Refactor HeaderNav. 4 tabs grandes: Inicio, Ubicación, Lotización, Financiamiento. Sin hamburguer. Textos grandes. | HU-003 | `src/presentation/components/shared/HeaderNav.tsx`, `src/App.tsx` | Design |
-| **HU-007** | Roles y autenticación | Integrar Supabase Auth con tabla usuarios_rol. AdminLogin mantiene. Vendedor login con restricción. RLS ya en migración. | HU-001 | `src/presentation/components/admin/AdminLogin.tsx`, `src/lib/supabase/client.ts` | Security |
-| **HU-008** | Rol vendedor + estado en tiempo real | Vendedor: después de login, ve mapa de lotes + botón para cambiar estado. Actualización en tiempo real (Supabase Realtime o polling). | HU-007, HU-004 | `src/presentation/components/vendedor/*.tsx` | QA + Security |
-| **HU-009** | AdminDashboard para lotes | Refactor AdminDashboard: tabs → Dashboard, Lotes, Proyectos, Reportes. Export CSV con papaparse. | HU-001, HU-002 | `src/presentation/components/admin/{AdminDashboard,GestionLotes,GestionProyectos,ReportesLotes,MetricasLotes}.tsx` | QA + Security |
-| **HU-010** | Landing + Hero + Ubicación | HeroProyecto muestra imagen del proyecto (drone). Sección Ubicación con OpenStreetMap centrado en coordenadas del proyecto. | HU-003 | `src/presentation/components/shared/HeroProyecto.tsx`, `src/presentation/components/map/UbicacionMapa.tsx` | Design |
-| **HU-011** | Tour 360° con Pannellum | Componente Tour360 que carga Pannellum con imágenes del proyecto. Lazy load. Fallback a imagen estática. | HU-001 | `src/presentation/components/map/Tour360.tsx` | QA + Design |
-| **HU-012** | Filtros ultra-simples | FiltrosLotes con tabs: Todos / Disponibles / Reservados / Vendidos. Sin selects, sin inputs numéricos. | HU-003 | `src/presentation/components/lotes/FiltrosLotes.tsx` | Design |
-| **HU-013** | Consulta de lote (comprador) | Formulario simple desde FichaTecnica: nombre + teléfono + email. Sin captcha (target mayores). Guarda en transacciones como "reserva". | HU-002, HU-005 | `src/presentation/components/lotes/ConsultaLote.tsx` | QA + Security |
-| **HU-014** | Migración de datos legacy | Script SQL para migrar propiedades (tipo=lote/terreno) → lotes, leads → transacciones. Verificar integridad. | HU-001 | `supabase/migrations/00006_migracion_legacy.sql` | QA |
-| **HU-015** | Cleanup archivos legacy | Eliminar componentes obsoletos: PropertyFilters, PropertyDetailPanel, SpecsGrid, LeadForm, PropertyCard, PropertyMarkers, PropertyList. | HU-004, HU-005, HU-012, HU-013 | Múltiples archivos en `src/presentation/components/map/` | QA |
-| **HU-016** | Config y env cleanup | Eliminar VITE_AGENCIA_ID. Agregar VITE_PROYECTO_ID. Actualizar env.ts. | HU-001 | `src/config/env.ts`, `.env.example` | QA |
-| **HU-017** | Financiamiento (opcional) | Sección de financiamiento: cuotas, opciones de pago. Según requiera la inmobiliaria. Puede ser HU futura. | HU-006 | Depende de diseño final | Design |
-| **HU-018** | Responsive + accesibilidad | Ajustes finales: mobile, tablet, desktop. Textos grandes. Touch targets ≥ 48px. | TODAS | Varios componentes | QA + Design |
+| #          | HU                                   | Descripción                                                                                                                                  | Depende de                     | Archivos afectados                                                                                                                            | Gate clave    |
+| ---------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| **HU-001** | Schema Supabase                      | Crear migración `00005_lotizacion_schema.sql` con tablas proyectos, lotes, usuarios_rol, transacciones + RLS + migración de datos existentes | Ninguna                        | `supabase/migrations/00005_lotizacion_schema.sql`                                                                                             | QA            |
+| **HU-002** | Entities + Repos                     | Crear tipos, interfaces, repositorios para Lote, Proyecto, Transaccion                                                                       | HU-001                         | `src/domain/entities/{lote,proyecto,transaccion,usuario-rol}.ts`, `src/domain/repositories/lotes.repository.ts`, `src/data/repositories/*.ts` | QA            |
+| **HU-003** | Hooks useLotes                       | Crear hooks useLotes, useProyectos, useTransacciones con TanStack Query                                                                      | HU-002                         | `src/presentation/hooks/{useLotes,useProyectos,useTransacciones}.ts`                                                                          | QA            |
+| **HU-004** | Mapa de lotes con polígonos          | Refactor MapView → MapaLotes con Leaflet Polygon. PolygonLayer renderiza lotes desde GeoJSON. Color por estado.                              | HU-003                         | `src/presentation/components/lotes/{MapaLotes,PolygonLayer}.tsx`                                                                              | QA + Security |
+| **HU-005** | Ficha técnica del lote               | Refactor MarkerPopup → FichaTecnicaLote. Muestra: código, área, frente, fondo, precio, estado, imagen plano, botón consulta.                 | HU-004                         | `src/presentation/components/lotes/FichaTecnicaLote.tsx`                                                                                      | QA + Design   |
+| **HU-006** | Navegación ultra-simple              | Refactor HeaderNav. 4 tabs grandes: Inicio, Ubicación, Lotización, Financiamiento. Sin hamburguer. Textos grandes.                           | HU-003                         | `src/presentation/components/shared/HeaderNav.tsx`, `src/App.tsx`                                                                             | Design        |
+| **HU-007** | Roles y autenticación                | Integrar Supabase Auth con tabla usuarios_rol. AdminLogin mantiene. Vendedor login con restricción. RLS ya en migración.                     | HU-001                         | `src/presentation/components/admin/AdminLogin.tsx`, `src/lib/supabase/client.ts`                                                              | Security      |
+| **HU-008** | Rol vendedor + estado en tiempo real | Vendedor: después de login, ve mapa de lotes + botón para cambiar estado. Actualización en tiempo real (Supabase Realtime o polling).        | HU-007, HU-004                 | `src/presentation/components/vendedor/*.tsx`                                                                                                  | QA + Security |
+| **HU-009** | AdminDashboard para lotes            | Refactor AdminDashboard: tabs → Dashboard, Lotes, Proyectos, Reportes. Export CSV con papaparse.                                             | HU-001, HU-002                 | `src/presentation/components/admin/{AdminDashboard,GestionLotes,GestionProyectos,ReportesLotes,MetricasLotes}.tsx`                            | QA + Security |
+| **HU-010** | Landing + Hero + Ubicación           | HeroProyecto muestra imagen del proyecto (drone). Sección Ubicación con OpenStreetMap centrado en coordenadas del proyecto.                  | HU-003                         | `src/presentation/components/shared/HeroProyecto.tsx`, `src/presentation/components/map/UbicacionMapa.tsx`                                    | Design        |
+| **HU-011** | Tour 360° con Pannellum              | Componente Tour360 que carga Pannellum con imágenes del proyecto. Lazy load. Fallback a imagen estática.                                     | HU-001                         | `src/presentation/components/map/Tour360.tsx`                                                                                                 | QA + Design   |
+| **HU-012** | Filtros ultra-simples                | FiltrosLotes con tabs: Todos / Disponibles / Reservados / Vendidos. Sin selects, sin inputs numéricos.                                       | HU-003                         | `src/presentation/components/lotes/FiltrosLotes.tsx`                                                                                          | Design        |
+| **HU-013** | Consulta de lote (comprador)         | Formulario simple desde FichaTecnica: nombre + teléfono + email. Sin captcha (target mayores). Guarda en transacciones como "reserva".       | HU-002, HU-005                 | `src/presentation/components/lotes/ConsultaLote.tsx`                                                                                          | QA + Security |
+| **HU-014** | Migración de datos legacy            | Script SQL para migrar propiedades (tipo=lote/terreno) → lotes, leads → transacciones. Verificar integridad.                                 | HU-001                         | `supabase/migrations/00006_migracion_legacy.sql`                                                                                              | QA            |
+| **HU-015** | Cleanup archivos legacy              | Eliminar componentes obsoletos: PropertyFilters, PropertyDetailPanel, SpecsGrid, LeadForm, PropertyCard, PropertyMarkers, PropertyList.      | HU-004, HU-005, HU-012, HU-013 | Múltiples archivos en `src/presentation/components/map/`                                                                                      | QA            |
+| **HU-016** | Config y env cleanup                 | Eliminar VITE_AGENCIA_ID. Agregar VITE_PROYECTO_ID. Actualizar env.ts.                                                                       | HU-001                         | `src/config/env.ts`, `.env.example`                                                                                                           | QA            |
+| **HU-017** | Financiamiento (opcional)            | Sección de financiamiento: cuotas, opciones de pago. Según requiera la inmobiliaria. Puede ser HU futura.                                    | HU-006                         | Depende de diseño final                                                                                                                       | Design        |
+| **HU-018** | Responsive + accesibilidad           | Ajustes finales: mobile, tablet, desktop. Textos grandes. Touch targets ≥ 48px.                                                              | TODAS                          | Varios componentes                                                                                                                            | QA + Design   |
 
 #### Orden de ejecución recomendado
 
@@ -619,6 +621,7 @@ Fase 4 (Polish):
 ### F) Justificaciones Técnicas
 
 #### ¿Por qué Leaflet y no ThreeJS/WebGL?
+
 - Leaflet ya es dependencia instalada
 - Polygon layers son nativos de Leaflet y soportan GeoJSON directamente
 - ThreeJS requeriría cargar una escena 3D completa para algo que es esencialmente 2D
@@ -626,6 +629,7 @@ Fase 4 (Polish):
 - Consumo de recursos: Leaflet es significativamente más liviano
 
 #### ¿Por qué Pannellum y no Kuula/Matterport?
+
 - Pannellum es open source, sin costo
 - No requiere cuenta de terceros
 - Las imágenes se alojan en Supabase Storage (control total del cliente)
@@ -633,24 +637,28 @@ Fase 4 (Polish):
 - Pannellum se integra como un componente React simple
 
 #### ¿Por qué tabla usuarios_rol y no app_metadata?
+
 - RLS no puede consultar app_metadata de forma declarativa
 - Con tabla separada podemos hacer políticas como `auth.uid() IN (SELECT auth_user_id FROM usuarios_rol WHERE rol = 'admin')`
 - Reportes y consultas SQL directas son posibles
 - Separación clara entre auth (Supabase) y autorización (nuestra tabla)
 
 #### ¿Por qué eliminar filtros complejos?
+
 - Target: personas mayores que no dominan tecnología
 - Más de 2-3 opciones de filtro = abandono
 - Tabs visuales con iconos grandes son más intuitivos que selects y rangos numéricos
 - Los filtros actuales (PropertyFilters.tsx) asumen conocimiento técnico (tipo de propiedad, distritos de Lima)
 
 #### ¿Por qué eliminar el modelo multi-agencia?
+
 - El cliente es una inmobiliaria de Ayacucho
 - No hay requerimiento de multi-tenant
 - Simplifica enormemente RLS policies, queries y UX
 - Si en futuro necesitan multi-agencia, se puede extender agregando `inmobiliaria_id` a proyectos
 
 #### ¿Por qué StatusChip se mantiene sin cambios?
+
 - Los estados disponibles/separado/vendido se alinean exactamente con disponible/reservado/vendido
 - Los colores CSS (`--status-success/warning/destructive`) son idénticos
 - El componente es genérico y no depende del dominio
@@ -660,26 +668,26 @@ Fase 4 (Polish):
 
 ### G) Riesgos y Mitigaciones
 
-| Riesgo | Impacto | Mitigación |
-|--------|---------|------------|
-| Cliente no provee imágenes 360° de drone | Tour 360° no funcional | Fallback a imagen estática + galería tradicional |
-| Coordenadas de polígono incorrectas | Lotes mal posicionados | Validación en frontend (Leaflet bounds check). Herramienta de ajuste manual para admin. |
-| Migración de datos legacy corrupta | Pérdida de lotes existentes | Migración con transacción SQL, verificación post-migración, rollback preparado. |
-| Usuarios mayores confundidos con UI | Abandono del sistema | Test de usabilidad con 3-5 usuarios del target ANTES de producción. Iterar. |
-| Pannellum no funciona en iOS Safari | Tour 360° roto en iPhone | Verificar compatibilidad cross-browser. Fallback a imagen estática + galería. Pannellum es compatible con Safari 12+. |
+| Riesgo                                   | Impacto                     | Mitigación                                                                                                            |
+| ---------------------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Cliente no provee imágenes 360° de drone | Tour 360° no funcional      | Fallback a imagen estática + galería tradicional                                                                      |
+| Coordenadas de polígono incorrectas      | Lotes mal posicionados      | Validación en frontend (Leaflet bounds check). Herramienta de ajuste manual para admin.                               |
+| Migración de datos legacy corrupta       | Pérdida de lotes existentes | Migración con transacción SQL, verificación post-migración, rollback preparado.                                       |
+| Usuarios mayores confundidos con UI      | Abandono del sistema        | Test de usabilidad con 3-5 usuarios del target ANTES de producción. Iterar.                                           |
+| Pannellum no funciona en iOS Safari      | Tour 360° roto en iPhone    | Verificar compatibilidad cross-browser. Fallback a imagen estática + galería. Pannellum es compatible con Safari 12+. |
 
 ---
 
 ### H) Cronograma Estimado
 
-| Fase | HUs | Esfuerzo estimado | Dependencias |
-|------|-----|-------------------|-------------|
-| Fase 1 (Fundación) | 001-003, 014, 016 | 3-4 días | - |
-| Fase 2 (Core público) | 004-006, 010-013, 015 | 4-6 días | Fase 1 |
-| Fase 3 (Staff) | 007-009 | 3-4 días | Fase 1 |
-| Fase 4 (Polish) | 017-018 | 2-3 días | Fase 2 + 3 |
-| Testing + QA | TODAS | 2-3 días | TODAS |
-| **Total** | **18 HU** | **14-20 días hábiles** | — |
+| Fase                  | HUs                   | Esfuerzo estimado      | Dependencias |
+| --------------------- | --------------------- | ---------------------- | ------------ |
+| Fase 1 (Fundación)    | 001-003, 014, 016     | 3-4 días               | -            |
+| Fase 2 (Core público) | 004-006, 010-013, 015 | 4-6 días               | Fase 1       |
+| Fase 3 (Staff)        | 007-009               | 3-4 días               | Fase 1       |
+| Fase 4 (Polish)       | 017-018               | 2-3 días               | Fase 2 + 3   |
+| Testing + QA          | TODAS                 | 2-3 días               | TODAS        |
+| **Total**             | **18 HU**             | **14-20 días hábiles** | —            |
 
 ---
 
@@ -698,4 +706,4 @@ Antes de implementar, deben cerrarse:
 
 ---
 
-*Documento generado por statick. Próximo paso: validación con el equipo (gentle-orchestrator + sdd-apply + qa-engineer)*
+_Documento generado por statick. Próximo paso: validación con el equipo (gentle-orchestrator + sdd-apply + qa-engineer)_

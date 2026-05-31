@@ -106,15 +106,15 @@ function DashboardTab() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-4">
-        <MetricCard
-          label="Total Lotes"
-          value={data?.totalLotes ?? 0}
-          trend="+4 este mes"
-        />
+        <MetricCard label="Total Lotes" value={data?.totalLotes ?? 0} trend="+4 este mes" />
         <MetricCard label="Disponibles" value={data?.disponibles ?? 0} barPercent={66} />
         <MetricCard label="Reservados" value={data?.reservados ?? 0} subtitle="Pendiente firma" />
         <MetricCard label="Vendidos" value={data?.vendidos ?? 0} subtitle="Acumulado anual" />
-        <MetricCard label="Transacciones" value={data?.totalTransacciones ?? 0} trend="12% conversión" />
+        <MetricCard
+          label="Transacciones"
+          value={data?.totalTransacciones ?? 0}
+          trend="12% conversión"
+        />
         <MetricCard
           label="% Avance"
           value={data?.avancePorcentaje ?? 0}

@@ -15,8 +15,7 @@ export function useTransacciones(loteId?: string) {
 export function useCrearTransaccion() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: CrearTransaccionData) =>
-      transaccionesRepository.crear(data),
+    mutationFn: (data: CrearTransaccionData) => transaccionesRepository.crear(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["transacciones"] });
       qc.invalidateQueries({ queryKey: ["lotes"] });
