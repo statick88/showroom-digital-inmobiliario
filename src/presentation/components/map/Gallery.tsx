@@ -11,19 +11,19 @@ export function Gallery({ propiedad }: GalleryProps) {
   if (!propiedad || propiedad.imagenes.length <= 1) return null;
 
   return (
-    <div className="space-y-4">
-      <h4 className="text-sm font-medium mb-2">
-        <ImageIcon className="mr-1 h-4 w-4" /> Galería
-      </h4>
-      <div className="flex gap-2 overflow-x-auto pb-2">
+    <div className="space-y-2">
+      <div className="flex items-center gap-1.5">
+        <ImageIcon className="size-4 text-muted-foreground" />
+        <span className="text-sm font-medium text-foreground">Galería</span>
+      </div>
+      <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4">
         {propiedad.imagenes.slice(1).map((url, i) => (
-          <div key={i} className="relative h-20 w-28 shrink-0 rounded-lg overflow-hidden">
-            <img
-              src={url!}
-              alt={`${propiedad.titulo} - ${i + 2}`}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <img
+            key={i}
+            src={url!}
+            alt={`${propiedad.titulo} - ${i + 2}`}
+            className="w-[112px] h-20 object-cover rounded-lg shrink-0"
+          />
         ))}
       </div>
     </div>

@@ -84,7 +84,49 @@ All Lucide icons MUST use a consistent stroke width: the Lucide default (1.5px) 
 - WHEN checking the `strokeWidth` prop
 - THEN all icons MUST use the same value (either omitting for default 1.5 or explicitly `2`)
 
-### R8: Semantic Status Icons
+### R8-A: Material-to-Lucide Mapping
+
+The system SHALL provide a mapping table of Material Symbols (from Stitch) to Lucide React icons for consistent icon references across the codebase.
+
+#### Scenario: Icon map returns correct Lucide component
+- GIVEN a Material symbol name (e.g., "location_on")
+- WHEN `iconMap.get("location_on")` is called
+- THEN it MUST return the `<MapPin />` Lucide icon
+- AND ALL 26 Stitch icons MUST have equivalents
+
+| Material | Lucide | Size |
+|----------|--------|------|
+| lock | Lock | sm |
+| location_on | MapPin | md |
+| square_foot | Ruler | md |
+| bed | Bed | md |
+| bathtub | Bath | md |
+| chat_bubble | MessageCircle | md |
+| dashboard | LayoutDashboard | md |
+| domain | Building2 | md |
+| trending_up | TrendingUp | md |
+| search | Search | sm |
+| filter_list | Filter | sm |
+| edit | Pencil | sm |
+| check_circle | CheckCircle2 | sm |
+| chevron_left | ChevronLeft | sm |
+| chevron_right | ChevronRight | sm |
+| calendar_today | Calendar | md |
+| login | LogIn | md |
+| visibility | Eye | md |
+| visibility_off | EyeOff | md |
+| my_location | Crosshair | md |
+| layers | Layers | md |
+| add | Plus | sm |
+| remove | Minus | sm |
+| pool | Waves | md |
+| local_parking | Car | md |
+| security | Shield | md |
+| verified_user | ShieldCheck | md |
+| arrow_back | ArrowLeft | sm |
+| logout | LogOut | sm |
+
+### R8-B: Semantic Status Icons
 
 Property status indicators (disponible, separado, vendido) SHOULD use semantic Lucide icons with status-appropriate colors mapped to brand tokens.
 

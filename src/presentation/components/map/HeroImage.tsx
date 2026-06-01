@@ -3,6 +3,7 @@
 import type { Propiedad } from "@/domain/entities/propiedad";
 import { Building } from "lucide-react";
 import { formatPrice } from "@/presentation/lib/formatters";
+import { StatusChip } from "@/components/ui/status-chip";
 
 interface HeroImageProps {
   propiedad: Propiedad | null;
@@ -26,14 +27,19 @@ export function HeroImage({ propiedad }: HeroImageProps) {
           <Building size={40} className="text-zinc-700" aria-label="Sin imagen" />
         </div>
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      {/* Black gradient bottom 60% */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+      {/* Price + Code over overlay */}
       <div className="absolute bottom-3 left-3 right-3 text-white">
         <p className="font-bold text-xl drop-shadow-sm">
           {formatPrice(propiedad.precio, propiedad.moneda)}
         </p>
         <p className="text-white/80 text-xs">{propiedad.codigo}</p>
       </div>
-      <div className="absolute top-3 left-3">{/* Badge will be injected by parent */}</div>
+      {/* Status badge top-left */}
+      <div className="absolute top-3 left-3" data-testid="hero-badge-area">
+        <StatusChip status={propiedad.estado} size="sm" />
+      </div>
     </div>
   );
 }

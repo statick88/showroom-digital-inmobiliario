@@ -36,12 +36,37 @@ Spacing tokens MUST follow the 4/8dp grid: 4, 8, 12, 16, 24, 32, 48, 64 px — a
 
 ### R4: Elevation Shadow System
 
-`DESIGN.md` MUST define distinct `box-shadow` values for **card**, **modal**, **popover**, and **tooltip**.
+`DESIGN.md` MUST define distinct `box-shadow` values for **card**, **modal**, **popover**, and **tooltip**. Shadows MUST use softer, warmer values matching the Stitch design system.
 
 #### Scenario: Each elevation has a unique shadow
 - GIVEN the DESIGN.md elevation section
 - WHEN checking shadow tokens
 - THEN card, modal, popover, and tooltip MUST each have unique `box-shadow`
+
+#### Scenario: Card shadow uses Stitch values
+- GIVEN the card component renders
+- THEN it MUST use the new shadow: `0px 4px 20px rgba(160,152,144,0.08)`
+- AND hover states MAY use: `0px 8px 30px rgba(160,152,144,0.12)`
+
+### R4-A: Glassmorphism Utilities
+
+The system SHALL provide CSS utility classes for glass-style surfaces using backdrop-filter blur and semi-transparent backgrounds.
+
+#### Scenario: Glass card renders with blur
+- GIVEN a glass utility class is applied
+- THEN the element MUST have `backdrop-filter: blur(12px)`
+- AND a semi-transparent background (light: `rgba(255,255,255,0.8)`, dark: `rgba(24,24,27,0.8)`)
+- AND a subtle border (1px solid `rgba(228,220,211,0.3)`)
+
+### R4-B: Peruvian Number Format
+
+All monetary amounts MUST use `Intl.NumberFormat('es-PE')` with 0 decimal places and the appropriate currency symbol (`S/` or `$`) based on the property's `moneda` field.
+
+#### Scenario: Price formats correctly
+- GIVEN a property has moneda = "PEN" and precio = 450000
+- WHEN the price is displayed
+- THEN it MUST render as "S/ 450,000" (using es-PE locale)
+- AND moneda = "USD" with precio = 120000 MUST render as "$ 120,000"
 
 ### R5: Semantic Tokens → shadcn/ui CSS Vars
 

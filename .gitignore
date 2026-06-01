@@ -12,6 +12,12 @@
 
 # testing
 /coverage
+/test-results/
+
+# debug
+__debug_prod__.mjs
+__test_prod__.ts
+debug-prod.ts
 
 # next.js
 /.next/

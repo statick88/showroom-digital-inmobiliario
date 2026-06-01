@@ -96,9 +96,11 @@ The primitive tokens above ARE the semantic mapping — each `--` variable maps 
 
 | Use       | Font                                        | Fallback                               |
 | --------- | ------------------------------------------- | -------------------------------------- |
-| UI / Body | **Inter**                                   | `ui-sans-serif, system-ui, sans-serif` |
+| UI / Body | **Plus Jakarta Sans**                       | `ui-sans-serif, system-ui, sans-serif` |
 | Code      | **JetBrains Mono**                          | `ui-monospace, monospace`              |
-| Headings  | **Inter** (same as body, different weights) | —                                      |
+| Headings  | **Plus Jakarta Sans** (same as body, different weights) | —                                      |
+
+> **Note:** Body text currently uses **Hanken Grotesk** in the CSS (`globals.css`). The DESIGN.md is updated to reflect the intended semantic font family; actual rendering is driven by the CSS, which takes precedence.
 
 ### Heading Scale
 
@@ -122,9 +124,9 @@ The primitive tokens above ARE the semantic mapping — each `--` variable maps 
 ### Token Aliases
 
 ```
---font-sans: Inter
+--font-sans: Plus Jakarta Sans
 --font-mono: JetBrains Mono
---font-heading: Inter
+--font-heading: Plus Jakarta Sans
 ```
 
 ## Spacing (4/8dp Scale)

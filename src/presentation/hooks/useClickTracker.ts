@@ -3,6 +3,7 @@
 import { useCallback, useRef, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { metricasRepository } from "@/data/repositories";
+import type { TipoEvento } from "@/domain/entities/propiedad";
 
 const SESSION_KEY = "showroom-session-id";
 
@@ -27,10 +28,10 @@ export function useClickTracker() {
   }, []);
 
   const trackMutation = useMutation({
-    mutationFn: (propiedadId: string) =>
+    mutationFn: ({ propiedadId, tipoEvento }: { propiedadId: string; tipoEvento: TipoEvento }) =>
       metricasRepository.registrarClick({
         propiedadId,
-        tipoEvento: "click",
+        tipoEvento,
         sesionId: sessionId.current,
         paginaOrigen: typeof window !== "undefined" ? window.location.pathname : "/",
       }),
@@ -41,8 +42,8 @@ export function useClickTracker() {
   });
 
   const trackClick = useCallback(
-    (propiedadId: string) => {
-      trackMutation.mutate(propiedadId);
+    (propiedadId: string, tipoEvento: TipoEvento = "click") => {
+      trackMutation.mutate({ propiedadId, tipoEvento });
     },
     [trackMutation],
   );

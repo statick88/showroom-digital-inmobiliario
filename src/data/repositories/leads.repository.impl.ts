@@ -42,6 +42,9 @@ export const leadsRepository: LeadsRepository = {
         email: data.email,
         telefono: data.telefono,
         perfil_id: data.perfilId,
+        consent_timestamp: data.consent_timestamp,
+        consent_ip: data.consent_ip,
+        user_agent: data.user_agent,
       })
       .select("*")
       .single();

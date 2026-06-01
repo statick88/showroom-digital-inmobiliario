@@ -67,4 +67,10 @@ export interface CrearLeadData {
   email: string;
   telefono?: string;
   perfilId?: string;
+  /** ISO 8601 timestamp of when the user consented to the LPDP privacy policy */
+  consent_timestamp?: string;
+  /** Anonymized IP (last octet replaced with .0) */
+  consent_ip?: string;
+  /** User agent string from the browser */
+  user_agent?: string;
 }

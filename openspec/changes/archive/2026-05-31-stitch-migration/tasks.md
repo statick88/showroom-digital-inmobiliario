@@ -34,31 +34,31 @@ Chain strategy: pending
 - [x] 1.5 Create `src/config/markers.ts` with marker config (16px, white border, status colors)
 - [x] 1.6 Update `src/presentation/components/map/PropertyCard.tsx` hover+shadow+border styles
 
-## Phase 2: Showroom Layouts (PR 2)
+## Phase 2: Showroom Layouts (PR 2) ✅
 
-- [ ] 2.1 Refactor `MapView.tsx`: CSS Grid layout desktop (sidebar 380px + map), stack mobile
-- [ ] 2.2 Add `HeaderNav` inside MapView with logo + Admin button (Lock icon)
-- [ ] 2.3 Create `PropertyFilters.tsx`: Tipo, Estado, Distrito, Precio Min/Max, Moneda, Limpiar
-- [ ] 2.4 Create marker layer in MapView (Leaflet circleMarkers, 16px, white border, status color)
-- [ ] 2.5 Create `MarkerPopup.tsx`: thumbnail 80x80, title, price, district, badge, "Ver detalle"
-- [ ] 2.6 Create `GlassControls.tsx`: zoom group, geolocation, Map/Satélite toggle
-- [ ] 2.7 Refactor `PropertyDetailPanel.tsx`: mobile slide-right (framer-motion) + desktop modal (Radix Dialog)
-- [ ] 2.8 Create `HeroImage.tsx`: 192px height, gradient overlay 60%, price+code+badge
-- [ ] 2.9 Create `SpecsGrid.tsx`: 3-column grid with Ruler/Bed/Bath Lucide icons
-- [ ] 2.10 Create `Gallery.tsx`: horizontal scroll thumbnails 112x80
+- [x] 2.1 Refactor `MapView.tsx`: CSS Grid layout desktop (sidebar 380px + map), stack mobile
+- [x] 2.2 Add `HeaderNav` inside MapView with logo + Admin button (Lock icon)
+- [x] 2.3 Create `PropertyFilters.tsx`: Tipo, Estado, Distrito, Precio Min/Max, Moneda, Limpiar
+- [x] 2.4 Create marker layer in MapView (Leaflet circleMarkers, 16px, white border, status color)
+- [x] 2.5 Create `MarkerPopup.tsx`: thumbnail 80x80, title, price, district, badge, "Ver detalle"
+- [x] 2.6 Create `GlassControls.tsx`: zoom group, geolocation, Map/Satélite toggle
+- [x] 2.7 Refactor `PropertyDetailPanel.tsx`: mobile slide-right (framer-motion) + desktop modal (Radix Dialog)
+- [x] 2.8 Create `HeroImage.tsx`: 192px height, gradient overlay 60%, price+code+badge
+- [x] 2.9 Create `SpecsGrid.tsx`: 3-column grid with Ruler/Bed/Bath Lucide icons
+- [x] 2.10 Create `Gallery.tsx`: horizontal scroll thumbnails 112x80
 
 ## Phase 3: Admin Enhancements (PR 3)
 
-- [ ] 3.1 Create `DonutChart.tsx` using recharts PieChart with --status-* colors
-- [ ] 3.2 Create `ProgressBar.tsx` with gradient fill (cumplimiento de ventas)
-- [ ] 3.3 Create `TopClickedTable.tsx`: ranked table (#, thumbnail, code, title, clicks)
-- [ ] 3.4 Add inline status dropdown to PropertyTable (Disponible → Separado → Vendido)
-- [ ] 3.5 Add confirm dialog on status change (CCI + payment method inputs)
-- [ ] 3.6 Create `useStatusMutation.ts` hook (TanStack Query + Supabase PATCH)
-- [ ] 3.7 Add search input + status filter to PropertyTable
-- [ ] 3.8 Create `LeadsTable.tsx`: Nombre, Email, Teléfono, Propiedad, Fecha, "Ver"
-- [ ] 3.9 Add user profile section to admin sidebar
-- [ ] 3.10 Add mobile bottom tab bar (collapses sidebar on < 768px)
+- [x] 3.1 Create `DonutChart.tsx` using recharts PieChart with --status-* colors
+- [x] 3.2 Create `ProgressBar.tsx` with gradient fill (cumplimiento de ventas)
+- [x] 3.3 Create `TopClickedTable.tsx`: ranked table (#, thumbnail, code, title, clicks)
+- [x] 3.4 Add inline status dropdown to PropertyTable (Disponible → Separado → Vendido)
+- [x] 3.5 Add confirm dialog on status change (CCI + payment method inputs)
+- [x] 3.6 Create `useStatusMutation.ts` hook (TanStack Query + Supabase PATCH)
+- [x] 3.7 Add search input + status filter to PropertyTable
+- [x] 3.8 Create `LeadsTable.tsx`: Nombre, Email, Teléfono, Propiedad, Fecha, "Ver"
+- [x] 3.9 Add user profile section to admin sidebar
+- [x] 3.10 Add mobile bottom tab bar (collapses sidebar on < 768px)
 
 ## Phase 4: Auth & Compliance (PR 4)
 

@@ -1,6 +1,9 @@
+"use client";
+
 import type { Propiedad } from "@/domain/entities/propiedad";
 import { formatPrice } from "@/presentation/lib/formatters";
 import { StatusChip } from "@/components/ui/status-chip";
+import { Button } from "@/components/ui/button";
 
 interface MarkerPopupProps {
   propiedad: Propiedad;
@@ -10,16 +13,14 @@ export function MarkerPopup({ propiedad }: MarkerPopupProps) {
   return (
     <div className="font-sans text-sm leading-snug min-w-[200px]">
       <div className="flex items-start gap-3">
-        <div className="relative h-24 w-28 shrink-0 rounded-lg overflow-hidden">
-          <img
-            src={propiedad.imagenes[0]!}
-            alt={propiedad.titulo}
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div>
-          <p className="text-base font-semibold mb-1">{propiedad.titulo}</p>
-          <p className="text-zinc-600 mb-1">
+        <img
+          src={propiedad.imagenes[0] ?? "/placeholder.svg"}
+          alt={propiedad.titulo}
+          className="w-20 h-20 object-cover rounded-lg shrink-0"
+        />
+        <div className="min-w-0">
+          <p className="text-base font-semibold mb-1 truncate">{propiedad.titulo}</p>
+          <p className="text-zinc-600 dark:text-zinc-400 mb-1 text-xs">
             {propiedad.distrito && `${propiedad.distrito}, `}
             {propiedad.ciudad}
           </p>
@@ -27,8 +28,12 @@ export function MarkerPopup({ propiedad }: MarkerPopupProps) {
             {formatPrice(propiedad.precio, propiedad.moneda)}
           </p>
           <StatusChip status={propiedad.estado} size="sm" />
-          <p className="text-zinc-500 mt-1 text-xs">Código: {propiedad.codigo}</p>
         </div>
+      </div>
+      <div className="mt-2">
+        <Button size="sm" className="w-full text-xs">
+          Ver detalle
+        </Button>
       </div>
     </div>
   );
