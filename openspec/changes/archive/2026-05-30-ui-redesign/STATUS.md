@@ -1,0 +1,3 @@
+> **STATUS**: SUPERSEDED by `refactor-lotizacion` (commit `7e79abb`, 2026-05-30)
+>
+> This change shipped the UI primitives (MapView split-screen, MetricasPanel, AdminLogin, AdminDashboard) that the lotización refactor built on top of. The archive-report's "Next Actions" list was adopted as the scope of Fase 1+2 of `refactor-lotizacion`. This change is preserved for design rationale, not for active work.

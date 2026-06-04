@@ -141,8 +141,7 @@ export function LeadForm({ onClose, propiedad }: LeadFormProps) {
         }, 2000);
       } catch (err) {
         toast.error("Error al enviar", {
-          description:
-            err instanceof Error ? err.message : "Intenta de nuevo más tarde.",
+          description: err instanceof Error ? err.message : "Intenta de nuevo más tarde.",
         });
       } finally {
         setSubmitting(false);

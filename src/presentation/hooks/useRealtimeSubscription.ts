@@ -54,7 +54,9 @@ export function useRealtimeSubscription({
           ...(filter ? { filter } : {}),
         },
         (payload) => {
-          onPayloadRef.current(payload as unknown as RealtimePostgresChangesPayload<Record<string, unknown>>);
+          onPayloadRef.current(
+            payload as unknown as RealtimePostgresChangesPayload<Record<string, unknown>>,
+          );
         },
       )
       .subscribe((status) => {
@@ -76,7 +78,6 @@ export function useRealtimeSubscription({
       channelInstance.unsubscribe();
     };
     // Stable deps only — callback via ref, no re-subscription on re-renders
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channel, table, filter, event]);
 
   return { isSubscribed, error };

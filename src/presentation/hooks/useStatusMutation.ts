@@ -5,6 +5,18 @@ import { supabase } from "@/lib/supabase/client";
 import { rethrowIfPresent } from "@/lib/supabase/errors";
 import { toast } from "sonner";
 
+/**
+ * @deprecated since PR-1 (T-1.5) of `refactor-lotizacion-fase-3`.
+ *
+ * This hook writes to the legacy `propiedades` table. The lot-based flow
+ * should use `useLoteStatusMutation` (which writes to `lotes`).
+ *
+ * The body is preserved for back-compat with the Propiedades tab in
+ * `AdminDashboard.tsx` (which still uses `usePropiedades.legacy`).
+ * PR-5 (Propiedades migration) will swap the import there.
+ *
+ * @see useLoteStatusMutation
+ */
 interface StatusChangeData {
   propiedadId: string;
   estado: string;

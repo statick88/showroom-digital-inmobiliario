@@ -24,8 +24,8 @@ test("debug SPA rendering", async ({ page }) => {
       rootHtmlLen: root?.innerHTML?.length ?? 0,
       scriptCount: document.querySelectorAll("script").length,
       moduleScripts: Array.from(document.querySelectorAll("script[type=module]")).map((s) => ({
-        src: s.src,
-        crossOrigin: s.crossOrigin,
+        src: (s as HTMLScriptElement).src,
+        crossOrigin: (s as HTMLScriptElement).crossOrigin,
       })),
     };
   });
