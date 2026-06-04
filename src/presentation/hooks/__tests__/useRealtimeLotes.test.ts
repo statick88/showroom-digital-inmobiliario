@@ -6,22 +6,23 @@ import type { ReactNode } from "react";
 
 import { useRealtimeLotes } from "@/presentation/hooks/useRealtimeLotes";
 
-// ── Mock supabase client with a controllable channel ─────────────
-// Real supabase chain: `channel()` → `.on()` → `.subscribe()` →
-// `.unsubscribe()`. All return the same channel object so it can chain.
-const channelInstance = {
-  on: vi.fn(),
-  subscribe: vi.fn(),
-  unsubscribe: vi.fn(),
-};
-// Make `.on()` return the same instance for chaining
-channelInstance.on.mockImplementation(() => channelInstance);
-// `.subscribe(cb)` returns the same instance too
-channelInstance.subscribe.mockImplementation((cb: (status: string) => void) => {
-  cb("SUBSCRIBED");
-  return channelInstance;
+// ── Hoisted mock state (must be defined via vi.hoisted because the
+//    vi.mock factory is hoisted to the top of the file and would
+//    otherwise reference variables that aren't initialized yet) ──
+const {
+  channelInstance,
+  channelMock,
+} = vi.hoisted(() => {
+  const inst = {
+    on: vi.fn(),
+    subscribe: vi.fn(),
+    unsubscribe: vi.fn(),
+  };
+  return {
+    channelInstance: inst,
+    channelMock: vi.fn(() => inst),
+  };
 });
-const channelMock = vi.fn(() => channelInstance);
 
 vi.mock("@/lib/supabase/client", () => ({
   supabase: {
