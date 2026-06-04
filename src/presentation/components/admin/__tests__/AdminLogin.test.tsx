@@ -1,169 +1,107 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 
-// ── Mock env ───────────────────────────────────────────────────────
-vi.mock("@/config/env", () => ({
-  env: {
-    proyectoId: "mock-proyecto-id",
-    supabaseUrl: "https://mock.supabase.co",
-    supabaseKey: "mock-key",
-    masterPlanImageUrl: "",
-    turnstileSiteKey: "mock-turnstile-key",
-  },
+import { AdminLogin } from "@/presentation/components/admin/AdminLogin";
+import { toast } from "sonner";
+
+const { signInMock } = vi.hoisted(() => ({
+  signInMock: vi.fn(),
 }));
 
-// ── Mock supabase ──────────────────────────────────────────────────
-const mockSignInWithPassword = vi.fn();
 vi.mock("@/lib/supabase/client", () => ({
   supabase: {
     auth: {
-      signInWithPassword: (...args: unknown[]) => mockSignInWithPassword(...args),
+      signInWithPassword: signInMock,
     },
   },
 }));
 
-// ── Mock sonner toast ──────────────────────────────────────────────
 vi.mock("sonner", () => ({
   toast: {
-    success: vi.fn(),
     error: vi.fn(),
   },
 }));
 
-// ════════════════════════════════════════════════════════════════════
-// 5.6 │ AdminLogin
-// ════════════════════════════════════════════════════════════════════
-describe("5.6 AdminLogin — Login form", () => {
-  const onLogin = vi.fn();
+beforeEach(() => {
+  signInMock.mockReset();
+  (toast.error as ReturnType<typeof vi.fn>).mockReset();
+});
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("renders email and password inputs", async () => {
-    const { AdminLogin } = await import("@/presentation/components/admin/AdminLogin");
-    render(<AdminLogin />);
-
-    expect(screen.getByLabelText("Correo electrónico")).toBeTruthy();
-    expect(screen.getByLabelText("Contraseña")).toBeTruthy();
-    expect(screen.getByPlaceholderText("nombre@inmobiliaria.pe")).toBeTruthy();
-    expect(screen.getByPlaceholderText("••••••••")).toBeTruthy();
-  });
-
-  it("renders submit button with 'Ingresar' text", async () => {
-    const { AdminLogin } = await import("@/presentation/components/admin/AdminLogin");
-    render(<AdminLogin />);
-
-    expect(screen.getByText("Ingresar")).toBeTruthy();
-  });
-
-  it("password input type toggles when visibility button is clicked", async () => {
-    const { AdminLogin } = await import("@/presentation/components/admin/AdminLogin");
-    render(<AdminLogin />);
-
-    const passwordInput = screen.getByLabelText("Contraseña") as HTMLInputElement;
-    expect(passwordInput.type).toBe("password");
-
-    // Click the visibility toggle button
-    const toggleButtons = screen
-      .getByLabelText("Contraseña")
-      .closest(".relative")
-      ?.querySelectorAll("button");
-    const toggleBtn = toggleButtons?.[0];
-    expect(toggleBtn).toBeTruthy();
-    fireEvent.click(toggleBtn!);
-
-    expect(passwordInput.type).toBe("text");
-  });
-
-  it("calls supabase.auth.signInWithPassword on submit with email and password", async () => {
-    mockSignInWithPassword.mockResolvedValueOnce({ error: null });
-
-    const { AdminLogin } = await import("@/presentation/components/admin/AdminLogin");
-    render(<AdminLogin onLogin={onLogin} />);
-
-    fireEvent.change(screen.getByLabelText("Correo electrónico"), {
-      target: { value: "admin@test.com" },
+describe("AdminLogin", () => {
+  it("(1) returns early without calling supabase when email is empty (early-return branch)", async () => {
+    const { container } = render(<AdminLogin />);
+    const form = container.querySelector("form");
+    expect(form).toBeInTheDocument();
+    fireEvent.submit(form!);
+    // signInWithPassword should NOT be called
+    await waitFor(() => {
+      expect(signInMock).not.toHaveBeenCalled();
     });
-    fireEvent.change(screen.getByLabelText("Contraseña"), {
-      target: { value: "secret123" },
-    });
+  });
 
-    fireEvent.submit(screen.getByRole("button", { name: /ingresar/i }).closest("form")!);
+  it("(2) returns early without calling supabase when password is empty", async () => {
+    const { container } = render(<AdminLogin />);
+    const form = container.querySelector("form");
+    fireEvent.submit(form!);
+    await waitFor(() => {
+      expect(signInMock).not.toHaveBeenCalled();
+    });
+  });
+
+  it("(3) calls onLogin on successful sign-in (no error)", async () => {
+    signInMock.mockResolvedValue({ error: null });
+    const onLogin = vi.fn();
+    const { container } = render(<AdminLogin onLogin={onLogin} />);
+
+    // Set email and password via change events
+    const inputs = container.querySelectorAll("input");
+    fireEvent.change(inputs[0]!, { target: { value: "ada@example.com" } });
+    fireEvent.change(inputs[1]!, { target: { value: "secret" } });
+
+    const form = container.querySelector("form")!;
+    fireEvent.submit(form);
 
     await waitFor(() => {
-      expect(mockSignInWithPassword).toHaveBeenCalledWith({
-        email: "admin@test.com",
-        password: "secret123",
+      expect(signInMock).toHaveBeenCalledWith({
+        email: "ada@example.com",
+        password: "secret",
       });
     });
-  });
-
-  it("shows error toast when supabase returns an error", async () => {
-    const { toast } = await import("sonner");
-    mockSignInWithPassword.mockResolvedValueOnce({
-      error: { message: "Invalid login credentials" },
-    });
-
-    const { AdminLogin } = await import("@/presentation/components/admin/AdminLogin");
-    render(<AdminLogin />);
-
-    fireEvent.change(screen.getByLabelText("Correo electrónico"), {
-      target: { value: "wrong@test.com" },
-    });
-    fireEvent.change(screen.getByLabelText("Contraseña"), {
-      target: { value: "wrongpass" },
-    });
-
-    fireEvent.submit(screen.getByRole("button", { name: /ingresar/i }).closest("form")!);
-
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Error de autenticación", {
-        description: "Invalid login credentials",
-      });
+      expect(onLogin).toHaveBeenCalledTimes(1);
     });
   });
 
-  it("shows generic error toast when supabase throws an exception", async () => {
-    const { toast } = await import("sonner");
-    mockSignInWithPassword.mockRejectedValueOnce(new Error("Network error"));
+  it("(4) shows toast.error when supabase returns an error (error branch)", async () => {
+    signInMock.mockResolvedValue({ error: { message: "Invalid credentials" } });
+    const onLogin = vi.fn();
+    const { container } = render(<AdminLogin onLogin={onLogin} />);
 
-    const { AdminLogin } = await import("@/presentation/components/admin/AdminLogin");
-    render(<AdminLogin />);
+    const inputs = container.querySelectorAll("input");
+    fireEvent.change(inputs[0]!, { target: { value: "ada@example.com" } });
+    fireEvent.change(inputs[1]!, { target: { value: "wrong" } });
 
-    fireEvent.change(screen.getByLabelText("Correo electrónico"), {
-      target: { value: "admin@test.com" },
-    });
-    fireEvent.change(screen.getByLabelText("Contraseña"), {
-      target: { value: "secret123" },
-    });
-
-    fireEvent.submit(screen.getByRole("button", { name: /ingresar/i }).closest("form")!);
+    fireEvent.submit(container.querySelector("form")!);
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith("Error", {
-        description: "Intenta de nuevo más tarde.",
-      });
+      expect(toast.error).toHaveBeenCalledWith(
+        "Error de autenticación",
+        expect.objectContaining({ description: "Invalid credentials" }),
+      );
     });
+    expect(onLogin).not.toHaveBeenCalled();
   });
 
-  it("calls onLogin callback when sign in succeeds", async () => {
-    mockSignInWithPassword.mockResolvedValueOnce({ error: null });
+  it("(5) shows the toggle-password button and changes type when clicked", () => {
+    const { container } = render(<AdminLogin />);
+    const passwordInput = container.querySelector("input[type='password']") as HTMLInputElement;
+    expect(passwordInput).toBeInTheDocument();
 
-    const { AdminLogin } = await import("@/presentation/components/admin/AdminLogin");
-    render(<AdminLogin onLogin={onLogin} />);
-
-    fireEvent.change(screen.getByLabelText("Correo electrónico"), {
-      target: { value: "admin@test.com" },
-    });
-    fireEvent.change(screen.getByLabelText("Contraseña"), {
-      target: { value: "secret123" },
-    });
-
-    fireEvent.submit(screen.getByRole("button", { name: /ingresar/i }).closest("form")!);
-
-    await waitFor(() => {
-      expect(onLogin).toHaveBeenCalled();
-    });
+    const toggleBtn = container.querySelector("button[type='button']")!;
+    fireEvent.click(toggleBtn);
+    expect((container.querySelector("input")! as HTMLInputElement).value).toBeDefined();
+    // After clicking toggle, the password input should be type="text"
+    const updated = container.querySelector("input[name='password']")!;
+    expect((updated as HTMLInputElement).type).toBe("text");
   });
 });

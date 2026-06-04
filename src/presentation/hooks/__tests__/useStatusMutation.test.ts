@@ -78,7 +78,6 @@ describe("useStatusMutation — retro tests (T-1.4, PR-1 baseline; deprecated in
   });
 
   it("(2) error path: marks isError and triggers toast.error", async () => {
-    // Override: single() returns an error (Supabase error)
     const errorObj = { message: "Row not found", code: "PGRST116" };
     singleMock.mockResolvedValue({ data: null, error: errorObj });
 
@@ -90,5 +89,94 @@ describe("useStatusMutation — retro tests (T-1.4, PR-1 baseline; deprecated in
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(toastError).toHaveBeenCalled();
+  });
+
+  it("(3) forwards cci to the update payload when provided", async () => {
+    const { result } = renderHook(() => useStatusMutation(), { wrapper: makeWrapper() });
+
+    await act(async () => {
+      result.current.mutate({ propiedadId: "prop-1", estado: "vendido", cci: "002-123456" });
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(updateMock).toHaveBeenCalledWith({ estado: "vendido", cci: "002-123456" });
+  });
+
+  it("(4) forwards metodoPago to the update payload as 'metodo_pago' (snake_case) when provided", async () => {
+    const { result } = renderHook(() => useStatusMutation(), { wrapper: makeWrapper() });
+
+    await act(async () => {
+      result.current.mutate({
+        propiedadId: "prop-1",
+        estado: "vendido",
+        metodoPago: "transferencia",
+      });
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(updateMock).toHaveBeenCalledWith({
+      estado: "vendido",
+      metodo_pago: "transferencia",
+    });
+  });
+
+  it("(5) forwards both cci and metodoPago when both are provided", async () => {
+    const { result } = renderHook(() => useStatusMutation(), { wrapper: makeWrapper() });
+
+    await act(async () => {
+      result.current.mutate({
+        propiedadId: "prop-1",
+        estado: "vendido",
+        cci: "002-999",
+        metodoPago: "yape",
+      });
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(updateMock).toHaveBeenCalledWith({
+      estado: "vendido",
+      cci: "002-999",
+      metodo_pago: "yape",
+    });
+  });
+
+  it("(6) on success: calls toast.success and invalidates ['propiedades'] and ['metricas'] cache keys", async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false, gcTime: 0 } },
+    });
+    const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
+
+    function Wrapper({ children }: { children: ReactNode }) {
+      return React.createElement(QueryClientProvider, { client: queryClient }, children);
+    }
+
+    const { result } = renderHook(() => useStatusMutation(), { wrapper: Wrapper });
+
+    await act(async () => {
+      result.current.mutate({ propiedadId: "prop-1", estado: "vendido" });
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(toastSuccess).toHaveBeenCalled();
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["propiedades"] });
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["metricas"] });
+  });
+
+  it("(7) on error: forwards the error message to toast.error as a description", async () => {
+    const errorObj = { message: "RLS policy violation" };
+    singleMock.mockResolvedValue({ data: null, error: errorObj });
+
+    const { result } = renderHook(() => useStatusMutation(), { wrapper: makeWrapper() });
+
+    await act(async () => {
+      result.current.mutate({ propiedadId: "prop-1", estado: "vendido" });
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(toastError).toHaveBeenCalledWith(
+      "Error al actualizar",
+      expect.objectContaining({ description: expect.stringContaining("RLS") }),
+    );
   });
 });

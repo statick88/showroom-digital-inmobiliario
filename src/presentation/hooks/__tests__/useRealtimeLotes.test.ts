@@ -1,23 +1,30 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
+import { act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as React from "react";
 import type { ReactNode } from "react";
 
 import { useRealtimeLotes } from "@/presentation/hooks/useRealtimeLotes";
 
-// ── Hoisted mock state (must be defined via vi.hoisted because the
-//    vi.mock factory is hoisted to the top of the file and would
-//    otherwise reference variables that aren't initialized yet) ──
-const { channelInstance, channelMock } = vi.hoisted(() => {
+// ── Hoisted mock state ────────────────────────────────────────────
+const { channelInstance, channelMock, onHandlerRef } = vi.hoisted(() => {
+  const onHandlerRef: { current: ((payload: unknown) => void) | null } = { current: null };
   const inst = {
-    on: vi.fn(),
-    subscribe: vi.fn(),
+    on: vi.fn((_event: string, _config: unknown, handler: (payload: unknown) => void) => {
+      onHandlerRef.current = handler;
+      return inst;
+    }),
+    subscribe: vi.fn((cb?: (status: string) => void) => {
+      cb?.("SUBSCRIBED");
+      return inst;
+    }),
     unsubscribe: vi.fn(),
   };
   return {
     channelInstance: inst,
     channelMock: vi.fn(() => inst),
+    onHandlerRef,
   };
 });
 
@@ -41,10 +48,16 @@ beforeEach(() => {
   channelInstance.subscribe.mockClear();
   channelInstance.unsubscribe.mockClear();
   channelMock.mockClear();
-  // Re-attach the chain semantics (clear() above doesn't reset implementations)
-  channelInstance.on.mockImplementation(() => channelInstance);
-  channelInstance.subscribe.mockImplementation((cb: (status: string) => void) => {
-    cb("SUBSCRIBED");
+  onHandlerRef.current = null;
+  // Re-attach chain semantics
+  channelInstance.on.mockImplementation(
+    (_event: string, _config: unknown, handler: (payload: unknown) => void) => {
+      onHandlerRef.current = handler;
+      return channelInstance;
+    },
+  );
+  channelInstance.subscribe.mockImplementation((cb?: (status: string) => void) => {
+    cb?.("SUBSCRIBED");
     return channelInstance;
   });
 });
@@ -54,7 +67,6 @@ describe("useRealtimeLotes — retro tests (T-1.4, PR-1 foundations baseline)", 
     renderHook(() => useRealtimeLotes(), { wrapper: makeWrapper() });
 
     await waitFor(() => expect(channelMock).toHaveBeenCalledWith("lotes-realtime"));
-    // The .on() call must target the 'lotes' table with event='*'
     expect(channelInstance.on).toHaveBeenCalledWith(
       "postgres_changes",
       expect.objectContaining({ event: "*", table: "lotes" }),
@@ -75,5 +87,33 @@ describe("useRealtimeLotes — retro tests (T-1.4, PR-1 foundations baseline)", 
     await waitFor(() => expect(channelMock).toHaveBeenCalled());
     unmount();
     expect(channelInstance.unsubscribe).toHaveBeenCalled();
+  });
+
+  it("(4) on postgres_changes payload, invalidates the ['lotes'] query key", async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false, gcTime: 0 } },
+    });
+    const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");
+
+    function Wrapper({ children }: { children: ReactNode }) {
+      return React.createElement(QueryClientProvider, { client: queryClient }, children);
+    }
+
+    renderHook(() => useRealtimeLotes(), { wrapper: Wrapper });
+
+    await waitFor(() => expect(onHandlerRef.current).toBeTypeOf("function"));
+
+    act(() => {
+      // Simulate a Supabase INSERT/UPDATE/DELETE on the 'lotes' table
+      onHandlerRef.current?.({
+        eventType: "INSERT",
+        new: { id: "lote-new" },
+        old: {},
+        schema: "public",
+        table: "lotes",
+      });
+    });
+
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["lotes"] });
   });
 });
