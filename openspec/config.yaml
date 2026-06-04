@@ -39,7 +39,7 @@ testing:
   quality:
     linter:
       available: true
-      command: npx next lint
+      command: pnpm lint
     type_checker:
       available: true
       command: npx tsc --noEmit
@@ -70,7 +70,7 @@ rules:
     test_command: npx vitest run --reporter=verbose
   verify:
     test_command: npx vitest run
-    build_command: npx next build
+    build_command: pnpm build
     coverage_threshold: 80
     e2e_command: npx playwright test
   archive:
