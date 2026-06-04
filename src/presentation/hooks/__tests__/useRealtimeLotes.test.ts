@@ -25,7 +25,7 @@ const channelMock = vi.fn(() => channelInstance);
 
 vi.mock("@/lib/supabase/client", () => ({
   supabase: {
-    channel: (...args: unknown[]) => channelMock(...args),
+    channel: channelMock,
   },
 }));
 

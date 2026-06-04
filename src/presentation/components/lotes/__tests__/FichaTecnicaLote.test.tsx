@@ -86,7 +86,6 @@ describe("FichaTecnicaLote — retro tests (T-1.1, PR-1 foundations)", () => {
     render(<FichaTecnicaLote lote={baseLote} onClose={onClose} />);
 
     // The close button contains the "close" icon — find the SVG with that data-icon
-    const closeIcon = screen.getByTestId ? null : null; // placeholder
     const closeIconSvg = document.querySelector('[data-icon="close"]');
     expect(closeIconSvg).toBeTruthy();
     const closeButton = closeIconSvg?.closest("button");
