@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase/client";
 const ERROR_MESSAGES: Record<string, string> = {
   "Invalid login credentials": "Credenciales inválidas. Verifica tu email y contraseña.",
   "Email not confirmed": "Email no confirmado. Revisa tu bandeja de entrada.",
-  "invalid_grant": "Credenciales inválidas. Verifica tu email y contraseña.",
+  invalid_grant: "Credenciales inválidas. Verifica tu email y contraseña.",
   "User already registered": "El usuario ya está registrado.",
   "Password should be at least 6 characters": "La contraseña debe tener al menos 6 caracteres.",
 };

@@ -103,8 +103,6 @@ describe("useLoteStatusMutation — T-1.5: NEW hook, writes to 'lotes' table via
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(toastSuccess).toHaveBeenCalled();
-    expect(invalidateSpy).toHaveBeenCalledWith(
-      expect.objectContaining({ queryKey: ["lotes"] }),
-    );
+    expect(invalidateSpy).toHaveBeenCalledWith(expect.objectContaining({ queryKey: ["lotes"] }));
   });
 });

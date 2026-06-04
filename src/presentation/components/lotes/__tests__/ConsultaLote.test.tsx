@@ -76,9 +76,7 @@ describe("ConsultaLote — [TODO] future scenarios (land in PR-3 GAP-2 / T-3.1)"
   // Spec T-1.3 acceptance scenario (4): valid CCI submits and calls
   // trackClick(lote.id, 'consulta'). Click-tracking call site + 'consulta'
   // TipoEvento extension lands in PR-3 (T-3.2).
-  it.todo(
-    "valid CCI submits and calls trackClick(lote.id, 'consulta') (PR-3 T-3.2)",
-  );
+  it.todo("valid CCI submits and calls trackClick(lote.id, 'consulta') (PR-3 T-3.2)");
 
   // Spec T-1.3 acceptance scenario (5): throttled submit (Turnstile token
   // reused) shows rate-limit error. Turnstile is added in PR-3 alongside

@@ -117,9 +117,7 @@ describe("FichaTecnicaLote — [TODO] future scenarios (land in PR-3 / PR-4)", (
   // and disables when modoVendedor=false. Current implementation has the
   // modoVendedor buttons but no `onReservar` prop and no disabled state.
   // Implementation lands in PR-4 (HU-008).
-  it.todo(
-    "reservation button invokes onReservar and disables when modoVendedor=false (PR-4)",
-  );
+  it.todo("reservation button invokes onReservar and disables when modoVendedor=false (PR-4)");
 
   // Spec T-1.1 acceptance scenario (4): useEffect calls
   // trackClick(lote.id, 'vista_detalle') on mount. This is GAP-3 click-tracking

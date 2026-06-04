@@ -38,7 +38,8 @@ export function App() {
 
   const getRouteFromHash = (): Route => {
     const hash = window.location.hash.replace("#", "");
-    if (hash === "admin" || hash === "app" || hash === "showroom" || hash === "privacidad") return hash;
+    if (hash === "admin" || hash === "app" || hash === "showroom" || hash === "privacidad")
+      return hash;
     return "showroom";
   };
 
@@ -99,7 +100,11 @@ export function App() {
   if (effectiveRoute === "privacidad") {
     return (
       <QueryClientProvider client={queryClient}>
-        <PrivacidadPage onBack={() => { window.location.hash = "#showroom"; }} />
+        <PrivacidadPage
+          onBack={() => {
+            window.location.hash = "#showroom";
+          }}
+        />
         <Toaster />
       </QueryClientProvider>
     );
@@ -124,25 +129,25 @@ function PrivacidadPage({ onBack }: { onBack: () => void }) {
           ← Volver al showroom
         </button>
 
-        <h1 className="text-3xl font-bold text-foreground mb-8">
-          Política de Privacidad
-        </h1>
-        <p className="text-sm text-muted-foreground mb-8">
-          Última actualización: Mayo 2026
-        </p>
+        <h1 className="text-3xl font-bold text-foreground mb-8">Política de Privacidad</h1>
+        <p className="text-sm text-muted-foreground mb-8">Última actualización: Mayo 2026</p>
 
         <div className="space-y-6 text-sm text-foreground leading-relaxed">
           <section>
             <h2 className="text-lg font-semibold mb-2">1. Datos del Responsable</h2>
             <p>
-              El responsable del tratamiento de datos personales es el titular del Showroom Digital Inmobiliario,
-              con domicilio en Lima, Perú. Puedes contactarnos a través del formulario de contacto en la plataforma.
+              El responsable del tratamiento de datos personales es el titular del Showroom Digital
+              Inmobiliario, con domicilio en Lima, Perú. Puedes contactarnos a través del formulario
+              de contacto en la plataforma.
             </p>
           </section>
 
           <section>
             <h2 className="text-lg font-semibold mb-2">2. Datos Recopilados</h2>
-            <p>Recopilamos los siguientes datos personales a través de nuestro formulario de contacto:</p>
+            <p>
+              Recopilamos los siguientes datos personales a través de nuestro formulario de
+              contacto:
+            </p>
             <ul className="list-disc pl-6 mt-2 space-y-1">
               <li>Nombre completo</li>
               <li>Dirección de correo electrónico</li>
@@ -163,10 +168,10 @@ function PrivacidadPage({ onBack }: { onBack: () => void }) {
           <section>
             <h2 className="text-lg font-semibold mb-2">4. Base Legal</h2>
             <p>
-              El tratamiento de datos se basa en el consentimiento explícito del usuario,
-              otorgado mediante la casilla de verificación en el formulario de contacto,
-              conforme a la Ley N° 29733 — Ley de Protección de Datos Personales del Perú
-              y su reglamento DS 016-2024-JUS.
+              El tratamiento de datos se basa en el consentimiento explícito del usuario, otorgado
+              mediante la casilla de verificación en el formulario de contacto, conforme a la Ley N°
+              29733 — Ley de Protección de Datos Personales del Perú y su reglamento DS
+              016-2024-JUS.
             </p>
           </section>
 
@@ -188,9 +193,9 @@ function PrivacidadPage({ onBack }: { onBack: () => void }) {
           <section>
             <h2 className="text-lg font-semibold mb-2">6. Plazo de Conservación</h2>
             <p>
-              Los datos personales se conservarán durante el tiempo necesario para cumplir
-              con la finalidad del tratamiento, y posteriormente por 2 años para fines estadísticos
-              o hasta que el titular solicite su cancelación.
+              Los datos personales se conservarán durante el tiempo necesario para cumplir con la
+              finalidad del tratamiento, y posteriormente por 2 años para fines estadísticos o hasta
+              que el titular solicite su cancelación.
             </p>
           </section>
 
@@ -198,8 +203,8 @@ function PrivacidadPage({ onBack }: { onBack: () => void }) {
             <h2 className="text-lg font-semibold mb-2">7. Seguridad</h2>
             <p>
               Implementamos medidas técnicas y organizativas para proteger los datos personales
-              contra acceso no autorizado, pérdida o destrucción, incluyendo cifrado en tránsito (HTTPS)
-              y almacenamiento seguro en infraestructura cloud.
+              contra acceso no autorizado, pérdida o destrucción, incluyendo cifrado en tránsito
+              (HTTPS) y almacenamiento seguro en infraestructura cloud.
             </p>
           </section>
 

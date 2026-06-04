@@ -18,32 +18,21 @@ type MetricUnit = "count" | "ms" | "bytes" | "ratio";
 
 const isBrowser = typeof window !== "undefined";
 
-export function logEvent(
-  name: string,
-  props?: Record<string, unknown>,
-): void {
+export function logEvent(name: string, props?: Record<string, unknown>): void {
   if (!isBrowser) return;
-  // eslint-disable-next-line no-console
+
   console.info(`[event] ${name}`, props ?? {});
 }
 
-export function logError(
-  scope: string,
-  err: unknown,
-  context?: Record<string, unknown>,
-): void {
+export function logError(scope: string, err: unknown, context?: Record<string, unknown>): void {
   if (!isBrowser) return;
-  // eslint-disable-next-line no-console
+
   console.error(`[error:${scope}]`, err, context ?? {});
 }
 
-export function logMetric(
-  name: string,
-  value: number,
-  unit: MetricUnit = "count",
-): void {
+export function logMetric(name: string, value: number, unit: MetricUnit = "count"): void {
   if (!isBrowser) return;
-  // eslint-disable-next-line no-console
+
   console.info(`[metric] ${name}=${value}${unit}`);
 }
 

@@ -94,10 +94,10 @@ The primitive tokens above ARE the semantic mapping — each `--` variable maps 
 
 ### Font Stack
 
-| Use       | Font                                        | Fallback                               |
-| --------- | ------------------------------------------- | -------------------------------------- |
-| UI / Body | **Plus Jakarta Sans**                       | `ui-sans-serif, system-ui, sans-serif` |
-| Code      | **JetBrains Mono**                          | `ui-monospace, monospace`              |
+| Use       | Font                                                    | Fallback                               |
+| --------- | ------------------------------------------------------- | -------------------------------------- |
+| UI / Body | **Plus Jakarta Sans**                                   | `ui-sans-serif, system-ui, sans-serif` |
+| Code      | **JetBrains Mono**                                      | `ui-monospace, monospace`              |
 | Headings  | **Plus Jakarta Sans** (same as body, different weights) | —                                      |
 
 > **Note:** Body text currently uses **Hanken Grotesk** in the CSS (`globals.css`). The DESIGN.md is updated to reflect the intended semantic font family; actual rendering is driven by the CSS, which takes precedence.

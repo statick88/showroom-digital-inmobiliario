@@ -31,9 +31,7 @@ beforeEach(() => {
 
 describe("useLotes — retro tests (T-1.4, PR-1 foundations baseline)", () => {
   it("(1) fetches lotes on mount via lotesRepository.listar(proyectoId)", async () => {
-    listarMock.mockResolvedValue([
-      { id: "l1", codigo: "LT-001", estado: "disponible" },
-    ]);
+    listarMock.mockResolvedValue([{ id: "l1", codigo: "LT-001", estado: "disponible" }]);
 
     const { result } = renderHook(() => useLotes("proy-1"), { wrapper: makeWrapper() });
 

@@ -42,11 +42,7 @@ describe("observability (T-1.6) — logEvent / logError / logMetric", () => {
       logError("lotes.listar", err, { proyectoId: "p1" });
 
       expect(errorSpy).toHaveBeenCalledTimes(1);
-      const [tag, errArg, ctx] = errorSpy.mock.calls[0] as [
-        string,
-        Error,
-        Record<string, unknown>,
-      ];
+      const [tag, errArg, ctx] = errorSpy.mock.calls[0] as [string, Error, Record<string, unknown>];
       expect(tag).toBe("[error:lotes.listar]");
       expect(errArg).toBe(err);
       expect(ctx).toEqual({ proyectoId: "p1" });

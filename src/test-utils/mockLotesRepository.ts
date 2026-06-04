@@ -38,9 +38,16 @@ export function makeLoteFixture(overrides: LoteFixtureOverrides = {}): Lote {
   };
 }
 
-export function makeLoteListFixture(count: number, baseOverrides: LoteFixtureOverrides = {}): Lote[] {
+export function makeLoteListFixture(
+  count: number,
+  baseOverrides: LoteFixtureOverrides = {},
+): Lote[] {
   return Array.from({ length: count }, (_, i) =>
-    makeLoteFixture({ ...baseOverrides, id: `lote-${i + 1}`, codigo: `LT-${String(i + 1).padStart(3, "0")}` }),
+    makeLoteFixture({
+      ...baseOverrides,
+      id: `lote-${i + 1}`,
+      codigo: `LT-${String(i + 1).padStart(3, "0")}`,
+    }),
   );
 }
 

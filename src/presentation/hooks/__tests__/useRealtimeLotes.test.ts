@@ -9,10 +9,7 @@ import { useRealtimeLotes } from "@/presentation/hooks/useRealtimeLotes";
 // ── Hoisted mock state (must be defined via vi.hoisted because the
 //    vi.mock factory is hoisted to the top of the file and would
 //    otherwise reference variables that aren't initialized yet) ──
-const {
-  channelInstance,
-  channelMock,
-} = vi.hoisted(() => {
+const { channelInstance, channelMock } = vi.hoisted(() => {
   const inst = {
     on: vi.fn(),
     subscribe: vi.fn(),
