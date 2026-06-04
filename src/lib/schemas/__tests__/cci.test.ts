@@ -23,7 +23,7 @@ describe("cciSchema — CCI format (spec #2668 + design #2669)", () => {
     if (!result.success) {
       // The error message must be the Spanish spec message.
       const issue = result.error.issues[0];
-      expect(issue.message).toBe(cciMensajeError);
+      expect(issue?.message).toBe(cciMensajeError);
     }
   });
 

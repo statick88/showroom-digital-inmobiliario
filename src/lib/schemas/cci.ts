@@ -18,11 +18,8 @@
 
 import { z } from "zod";
 
-export const cciMensajeError =
-  "CCI debe tener formato 002-XXXXXXXXXXXXXXXX-XX (002- + 18 dígitos)";
+export const cciMensajeError = "CCI debe tener formato 002-XXXXXXXXXXXXXXXX-XX (002- + 18 dígitos)";
 
-export const cciSchema = z
-  .string()
-  .regex(/^002-\d{18}$/, cciMensajeError);
+export const cciSchema = z.string().regex(/^002-\d{18}$/, cciMensajeError);
 
 export type Cci = z.infer<typeof cciSchema>;

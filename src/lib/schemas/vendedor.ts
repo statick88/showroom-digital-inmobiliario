@@ -23,9 +23,7 @@ import { z } from "zod";
 
 const uuidV4 = z.string().uuid("proyectoId debe ser un UUID v4 válido");
 
-const dniSchema = z
-  .string()
-  .regex(/^\d{8}$/, "DNI debe tener exactamente 8 dígitos");
+const dniSchema = z.string().regex(/^\d{8}$/, "DNI debe tener exactamente 8 dígitos");
 
 const telefonoSchema = z
   .string()

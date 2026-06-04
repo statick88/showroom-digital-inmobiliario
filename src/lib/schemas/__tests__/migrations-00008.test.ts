@@ -1,6 +1,4 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 
 /**
  * File-content tests for `supabase/migrations/00008_purga_lpd_function.sql`.
@@ -28,20 +26,17 @@ import { resolve } from "node:path";
  * 7. The function NULLs out PII fields (telefono, email, dni, cci,
  *    consent_ip, user_agent, mensaje) — does not DELETE the row, to
  *    preserve referential integrity with transactions.
+ *
+ * The SQL file is loaded as a raw string via vite's `?raw` query — this
+ * avoids `node:fs` imports so the test stays compatible with the
+ * project's vite-only tsconfig types.
  */
 
-const MIGRATION_PATH = resolve(
-  process.cwd(),
-  "supabase/migrations/00008_purga_lpd_function.sql",
-);
-
-function readMigration(): string {
-  return readFileSync(MIGRATION_PATH, "utf8");
-}
+import migrationSql from "../../../../supabase/migrations/00008_purga_lpd_function.sql?raw";
 
 describe("migration 00008_purga_lpd_function.sql", () => {
   it("(1) declares the purga_lpd function with CREATE OR REPLACE (idempotent)", () => {
-    const sql = readMigration();
+    const sql = migrationSql;
 
     expect(sql).toMatch(/CREATE\s+OR\s+REPLACE\s+FUNCTION\s+(public\.)?purga_lpd\b/i);
 
@@ -50,7 +45,7 @@ describe("migration 00008_purga_lpd_function.sql", () => {
   });
 
   it("(2) returns TABLE with purged_id and purged_at for auditability", () => {
-    const sql = readMigration();
+    const sql = migrationSql;
 
     // RETURNS TABLE clause
     expect(sql).toMatch(/RETURNS\s+TABLE\s*\(/i);
@@ -61,7 +56,7 @@ describe("migration 00008_purga_lpd_function.sql", () => {
   });
 
   it("(3) guards the pg_cron block with IF EXISTS pg_extension (handles missing extension)", () => {
-    const sql = readMigration();
+    const sql = migrationSql;
 
     // The pg_cron schedule must be inside a guard so it does not throw
     // if the extension is not enabled on this Supabase project.
@@ -75,13 +70,13 @@ describe("migration 00008_purga_lpd_function.sql", () => {
   });
 
   it("(4) defaults retention_years to 5 (LPDP Peru — Ley 29733 art. 13)", () => {
-    const sql = readMigration();
+    const sql = migrationSql;
 
     expect(sql).toMatch(/retention_years\s+INTEGER\s+DEFAULT\s+5/i);
   });
 
   it("(5) only purges leads with consent_timestamp IS NOT NULL (skip unconsented rows)", () => {
-    const sql = readMigration();
+    const sql = migrationSql;
 
     // The retention filter must include the consent gate so that leads
     // that never consented are NOT purged (they have no lawful basis to
@@ -90,13 +85,13 @@ describe("migration 00008_purga_lpd_function.sql", () => {
   });
 
   it("(6) declares the function SECURITY DEFINER so it can run from pg_cron without an auth session", () => {
-    const sql = readMigration();
+    const sql = migrationSql;
 
     expect(sql).toMatch(/SECURITY\s+DEFINER/i);
   });
 
   it("(7) NULLs out PII fields (telefono, email, dni, cci, consent_ip, user_agent, mensaje) instead of DELETE", () => {
-    const sql = readMigration();
+    const sql = migrationSql;
 
     // Each PII field must be set to NULL.
     expect(sql).toMatch(/telefono\s*=\s*NULL/i);

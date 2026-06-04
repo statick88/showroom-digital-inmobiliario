@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  registrarTransaccionSchema,
-  type RegistrarTransaccion,
-} from "@/lib/schemas/transaccion";
+import { registrarTransaccionSchema, type RegistrarTransaccion } from "@/lib/schemas/transaccion";
 
 const VALID_LOTE_ID = "550e8400-e29b-41d4-a716-446655440000";
 const VALID_VENDEDOR_ID = "660e8400-e29b-41d4-a716-446655440000";

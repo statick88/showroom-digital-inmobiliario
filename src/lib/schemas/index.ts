@@ -7,17 +7,11 @@
  */
 
 export { cciSchema, cciMensajeError, type Cci } from "@/lib/schemas/cci";
-export {
-  metodoPagoSchema,
-  type MetodoPago,
-} from "@/lib/schemas/metodo-pago";
+export { metodoPagoSchema, type MetodoPago } from "@/lib/schemas/metodo-pago";
 export {
   crearVendedorSchema,
   actualizarVendedorSchema,
   type CrearVendedor,
   type ActualizarVendedor,
 } from "@/lib/schemas/vendedor";
-export {
-  registrarTransaccionSchema,
-  type RegistrarTransaccion,
-} from "@/lib/schemas/transaccion";
+export { registrarTransaccionSchema, type RegistrarTransaccion } from "@/lib/schemas/transaccion";

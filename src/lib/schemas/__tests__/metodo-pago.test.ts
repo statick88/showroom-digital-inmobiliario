@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  metodoPagoSchema,
-  type MetodoPago,
-} from "@/lib/schemas/metodo-pago";
+import { metodoPagoSchema, type MetodoPago } from "@/lib/schemas/metodo-pago";
 
 describe("metodoPagoSchema — payment method enum (decision #2664)", () => {
   it("(1) accepts every defined payment method (happy path — exhaustive)", () => {
