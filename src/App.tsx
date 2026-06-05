@@ -10,6 +10,10 @@ import { useProyecto } from "@/presentation/hooks/useProyectos";
 import { AdminDashboard } from "@/presentation/components/admin/AdminDashboard";
 import { CookieBanner } from "@/presentation/components/shared/CookieBanner";
 import { MapView } from "@/presentation/components/map/MapView";
+import { RoleGuard } from "@/presentation/components/auth/RoleGuard";
+import { VendedorPanel } from "@/presentation/components/vendedor/VendedorPanel";
+import { useAuthStore } from "@/presentation/hooks/useAuthStore";
+import { usuariosRepository } from "@/data/repositories";
 
 const MapaLotes = lazy(() =>
   import("@/presentation/components/lotes/MapaLotes").then((m) => ({ default: m.MapaLotes })),
@@ -21,7 +25,7 @@ const FichaTecnicaLote = lazy(() =>
   })),
 );
 
-type Route = "showroom" | "app" | "admin" | "privacidad";
+type Route = "showroom" | "app" | "admin" | "vendedor" | "privacidad";
 
 export function App() {
   const [queryClient] = useState(
@@ -38,7 +42,13 @@ export function App() {
 
   const getRouteFromHash = (): Route => {
     const hash = window.location.hash.replace("#", "");
-    if (hash === "admin" || hash === "app" || hash === "showroom" || hash === "privacidad")
+    if (
+      hash === "admin" ||
+      hash === "app" ||
+      hash === "showroom" ||
+      hash === "privacidad" ||
+      hash === "vendedor"
+    )
       return hash;
     return "showroom";
   };
@@ -46,11 +56,23 @@ export function App() {
   const [route, setRoute] = useState<Route>(getRouteFromHash);
   const redirected = useRef(false);
   const adminToastShown = useRef(false);
+  const vendedorToastShown = useRef(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       setAuthenticated(!!data.session);
       setSessionChecked(true);
+      // Hydrate the auth store from the session so RoleGuard can decide
+      // on the very first render (avoids the redirect-toast flash).
+      if (data.session?.user?.id) {
+        const row = await usuariosRepository.getByAuthUserId(data.session.user.id);
+        if (row) {
+          useAuthStore.getState().setFromUsuariosRol(row, { sessionChecked: true });
+        } else {
+          // Session exists but no `usuarios_rol` row — treat as anon.
+          useAuthStore.getState().reset();
+        }
+      }
     });
   }, []);
 
@@ -76,6 +98,16 @@ export function App() {
     }
   }, [sessionChecked, route, authenticated]);
 
+  useEffect(() => {
+    if (sessionChecked && route === "vendedor" && !authenticated && !vendedorToastShown.current) {
+      vendedorToastShown.current = true;
+      window.location.hash = "#showroom";
+      toast.error("Acceso restringido", {
+        description: "Debes iniciar sesión para acceder al panel de vendedor.",
+      });
+    }
+  }, [sessionChecked, route, authenticated]);
+
   const effectiveRoute: Route =
     sessionChecked && route === "admin" && !authenticated ? "showroom" : route;
 
@@ -83,6 +115,17 @@ export function App() {
     return (
       <QueryClientProvider client={queryClient}>
         <AdminDashboard />
+        <Toaster />
+      </QueryClientProvider>
+    );
+  }
+
+  if (effectiveRoute === "vendedor") {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <RoleGuard rol="vendedor">
+          <VendedorPanel />
+        </RoleGuard>
         <Toaster />
       </QueryClientProvider>
     );
