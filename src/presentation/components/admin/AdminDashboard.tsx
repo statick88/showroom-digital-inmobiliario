@@ -10,6 +10,7 @@ import { DonutChart } from "@/presentation/components/admin/DonutChart";
 import { ProgressBar } from "@/presentation/components/admin/ProgressBar";
 import { TopClickedTable } from "@/presentation/components/admin/TopClickedTable";
 import { LeadsTable } from "@/presentation/components/admin/LeadsTable";
+import { UsuariosPanel } from "@/presentation/components/admin/UsuariosPanel";
 import { Icon } from "@/components/ui/icon";
 import {
   Dialog,
@@ -22,10 +23,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Building2, MessageCircle, LogOut, Search, Filter } from "lucide-react";
+import {
+  LayoutDashboard,
+  Building2,
+  MessageCircle,
+  Users,
+  LogOut,
+  Search,
+  Filter,
+} from "lucide-react";
 import type { EstadoPropiedad } from "@/domain/entities/propiedad";
 
-type Tab = "dashboard" | "propiedades" | "leads";
+type Tab = "dashboard" | "propiedades" | "leads" | "usuarios";
 
 // ── Confirm dialog state ───────────────────────────────────────────
 interface ConfirmState {
@@ -73,6 +82,9 @@ export function AdminDashboard() {
             <NavButton tab="leads" current={tab} icon="chat_bubble" onClick={setTab}>
               Leads
             </NavButton>
+            <NavButton tab="usuarios" current={tab} icon="group" onClick={setTab}>
+              Usuarios
+            </NavButton>
           </nav>
 
           {/* User Profile (3.9) */}
@@ -101,6 +113,7 @@ export function AdminDashboard() {
         {tab === "dashboard" && <DashboardTab />}
         {tab === "propiedades" && <PropiedadesTab />}
         {tab === "leads" && <LeadsTab />}
+        {tab === "usuarios" && <UsuariosTab />}
       </main>
 
       {/* ── Mobile bottom tab bar (3.10) ──────────────────────── */}
@@ -126,6 +139,12 @@ export function AdminDashboard() {
             icon={<MessageCircle size={20} />}
             label="Leads"
             onClick={() => setTab("leads")}
+          />
+          <MobileTabButton
+            active={tab === "usuarios"}
+            icon={<Users size={20} />}
+            label="Usuarios"
+            onClick={() => setTab("usuarios")}
           />
         </div>
       )}
@@ -576,6 +595,17 @@ function LeadsTab() {
         <p className="text-sm text-muted-foreground">Gestiona contactos e intereses</p>
       </header>
       <LeadsTable />
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  USUARIOS TAB  (T-5.1, HU-009)
+// ════════════════════════════════════════════════════════════════════
+function UsuariosTab() {
+  return (
+    <div className="p-4 md:p-8 space-y-6">
+      <UsuariosPanel />
     </div>
   );
 }
