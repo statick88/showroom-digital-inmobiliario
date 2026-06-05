@@ -4,3 +4,4 @@ export { leadsRepository } from "./leads.repository.impl";
 export { lotesRepository } from "./supabase-lotes.repository.impl";
 export { proyectosRepository } from "./supabase-proyectos.repository.impl";
 export { transaccionesRepository } from "./supabase-transacciones.repository.impl";
+export { usuariosRepository } from "./supabase-usuarios.repository.impl";
