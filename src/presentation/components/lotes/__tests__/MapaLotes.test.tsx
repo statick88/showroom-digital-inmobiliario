@@ -38,8 +38,10 @@ vi.mock("react-leaflet", () => ({
 
 // ── Mock useLotes and useProyecto ──────────────────────────────────
 const useLotesMock = vi.fn();
+const useLotesPorVendedorMock = vi.fn();
 vi.mock("@/presentation/hooks/useLotes", () => ({
   useLotes: (...args: unknown[]) => useLotesMock(...args),
+  useLotesPorVendedor: (...args: unknown[]) => useLotesPorVendedorMock(...args),
 }));
 
 const useProyectoMock = vi.fn();
@@ -76,6 +78,7 @@ beforeEach(() => {
   tracker.trackClick.mockClear();
   geoJsonClickHandlers = [];
   useLotesMock.mockReset();
+  useLotesPorVendedorMock.mockReset();
   useProyectoMock.mockReset();
   // Default: useProyecto returns the project center
   useProyectoMock.mockReturnValue({
@@ -89,6 +92,9 @@ beforeEach(() => {
       updatedAt: "",
     },
   });
+  // T-4.3: useLotesPorVendedor is also called (always, by MapaLotes).
+  // Default to a no-op result so the destructuring does not crash.
+  useLotesPorVendedorMock.mockReturnValue({ data: [], isLoading: false, error: null });
 });
 
 describe("MapaLotes — retro tests (T-1.2, PR-1 foundations)", () => {

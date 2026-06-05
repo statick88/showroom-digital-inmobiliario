@@ -25,7 +25,6 @@
 
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/presentation/hooks/useAuthStore";
-import { useLotes } from "@/presentation/hooks/useLotes";
 import { useProyecto } from "@/presentation/hooks/useProyectos";
 import { env } from "@/config/env";
 import { MapaLotes } from "@/presentation/components/lotes/MapaLotes";
@@ -39,9 +38,6 @@ export function VendedorPanel() {
 
   const proyectoId = env.proyectoId;
   const { data: proyecto } = useProyecto(proyectoId);
-  // T-4.2: shell uses default useLotes. T-4.3 will swap to
-  // useLotesPorVendedor(vendedorId) once the project column lands.
-  useLotes(proyectoId);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -79,7 +75,7 @@ export function VendedorPanel() {
         aria-label="Mapa de lotes"
         className="h-[420px] md:h-[480px] border-b border-border overflow-hidden"
       >
-        <MapaLotes onLoteClick={setSelectedLote} />
+        <MapaLotes onLoteClick={setSelectedLote} modoVendedor={true} />
       </section>
 
       {/* ── Metrics ──────────────────────────────────────────── */}
