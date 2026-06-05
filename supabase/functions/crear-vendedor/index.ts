@@ -48,8 +48,7 @@ interface CrearVendedorPayload {
 
 const PHONE_RE = /^\+\d{7,15}$/;
 const DNI_RE = /^\d{8}$/;
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -112,9 +111,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
   const email = typeof payload.email === "string" ? payload.email.trim() : "";
   const password = typeof payload.password === "string" ? payload.password : "";
   const nombre = typeof payload.nombre === "string" ? payload.nombre.trim() : "";
-  const rol = typeof payload.rol === "string" && (ROLES as readonly string[]).includes(payload.rol)
-    ? (payload.rol as Rol)
-    : "vendedor";
+  const rol =
+    typeof payload.rol === "string" && (ROLES as readonly string[]).includes(payload.rol)
+      ? (payload.rol as Rol)
+      : "vendedor";
   const telefono = typeof payload.telefono === "string" ? payload.telefono.trim() : null;
   const proyectoId = typeof payload.proyectoId === "string" ? payload.proyectoId.trim() : null;
   const dni = typeof payload.dni === "string" ? payload.dni.trim() : null;

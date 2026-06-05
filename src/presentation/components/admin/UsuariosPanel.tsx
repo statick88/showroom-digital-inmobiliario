@@ -238,8 +238,18 @@ export function UsuariosPanel() {
         </div>
       )}
 
-      <CrearVendedorDialog open={crearOpen} onOpenChange={setCrearOpen} />
+      {/* `key` forces a remount when the dialog opens (or the row
+          changes), so the inner form state is reset cleanly. This is
+          the React 19 / Next.js 15 pattern that replaces
+          `useEffect(() => setForm(EMPTY), [open])` — see
+          CrearVendedorDialog / EditarVendedorDialog. */}
+      <CrearVendedorDialog
+        key={crearOpen ? "open" : "closed"}
+        open={crearOpen}
+        onOpenChange={setCrearOpen}
+      />
       <EditarVendedorDialog
+        key={selectedVendedor?.id ?? "none"}
         open={editarOpen}
         onOpenChange={(next) => {
           setEditarOpen(next);

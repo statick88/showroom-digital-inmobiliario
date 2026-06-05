@@ -32,7 +32,7 @@
  *     and the parent component never sees it.
  */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { useCrearVendedor } from "@/presentation/hooks/useUsuarios";
 import { crearVendedorSchema } from "@/lib/schemas/vendedor";
@@ -85,13 +85,10 @@ export function CrearVendedorDialog({ open, onOpenChange }: CrearVendedorDialogP
   const [form, setForm] = useState<FormState>(EMPTY);
   const [errors, setErrors] = useState<FieldErrors>({});
 
-  // Reset form whenever the dialog opens fresh
-  useEffect(() => {
-    if (open) {
-      setForm(EMPTY);
-      setErrors({});
-    }
-  }, [open]);
+  // The parent passes `key={crearOpen ? "open" : "closed"}` so the
+  // component remounts on every open transition, which resets the
+  // form and error state cleanly. No useEffect needed (and Next.js
+  // 15's React Compiler flags setState in effects).
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -159,8 +156,8 @@ export function CrearVendedorDialog({ open, onOpenChange }: CrearVendedorDialogP
           <DialogHeader>
             <DialogTitle>Crear vendedor</DialogTitle>
             <DialogDescription>
-              El nuevo usuario podrá iniciar sesión con la contraseña temporal y
-              cambiará su clave al primer ingreso.
+              El nuevo usuario podrá iniciar sesión con la contraseña temporal y cambiará su clave
+              al primer ingreso.
             </DialogDescription>
           </DialogHeader>
 
@@ -225,11 +222,7 @@ export function CrearVendedorDialog({ open, onOpenChange }: CrearVendedorDialogP
             />
 
             {errors.root && (
-              <p
-                role="alert"
-                data-testid="form-error-root"
-                className="text-sm text-destructive"
-              >
+              <p role="alert" data-testid="form-error-root" className="text-sm text-destructive">
                 {errors.root}
               </p>
             )}
@@ -294,11 +287,7 @@ function Field({
         data-testid={`input-${name}`}
       />
       {error ? (
-        <p
-          data-testid={errorTestId}
-          className="text-xs text-destructive"
-          role="alert"
-        >
+        <p data-testid={errorTestId} className="text-xs text-destructive" role="alert">
           {error}
         </p>
       ) : helperText ? (
