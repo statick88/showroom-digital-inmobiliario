@@ -280,6 +280,10 @@ function AppContent() {
     null,
   );
   const { data: proyecto } = useProyecto(env.proyectoId);
+  // T-4.4: when the signed-in user is a vendedor or admin, the ficha
+  // opens in vendor mode so the Reservar / Vender buttons are visible.
+  const rol = useAuthStore((s) => s.rol);
+  const modoVendedor = rol === "vendedor" || rol === "admin";
 
   return (
     <div className="min-h-screen bg-background">
@@ -326,7 +330,11 @@ function AppContent() {
 
       {selectedLote && (
         <Suspense fallback={null}>
-          <FichaTecnicaLote lote={selectedLote} onClose={() => setSelectedLote(null)} />
+          <FichaTecnicaLote
+            lote={selectedLote}
+            onClose={() => setSelectedLote(null)}
+            modoVendedor={modoVendedor}
+          />
         </Suspense>
       )}
 

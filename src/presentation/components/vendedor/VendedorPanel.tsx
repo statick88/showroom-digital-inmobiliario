@@ -23,13 +23,19 @@
  * us ship the route + shell without changing the map.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { useAuthStore } from "@/presentation/hooks/useAuthStore";
 import { useProyecto } from "@/presentation/hooks/useProyectos";
 import { env } from "@/config/env";
 import { MapaLotes } from "@/presentation/components/lotes/MapaLotes";
 import { MetricasPanel } from "@/presentation/components/map/MetricasPanel";
 import type { Lote } from "@/domain/entities/lote";
+
+const FichaTecnicaLote = lazy(() =>
+  import("@/presentation/components/lotes/FichaTecnicaLote").then((m) => ({
+    default: m.FichaTecnicaLote,
+  })),
+);
 
 export function VendedorPanel() {
   const { nombre, rol, id } = useAuthStore();
@@ -104,6 +110,17 @@ export function VendedorPanel() {
 
       {/* Mobile bottom safe area (unused at the moment; mirrors AdminDashboard pattern) */}
       {isMobile && <div className="h-20 md:hidden" />}
+
+      {/* T-4.4: ficha opens in vendor mode (Reservar / Vender / Marcar Disponible). */}
+      {selectedLote && (
+        <Suspense fallback={null}>
+          <FichaTecnicaLote
+            lote={selectedLote}
+            onClose={() => setSelectedLote(null)}
+            modoVendedor={true}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

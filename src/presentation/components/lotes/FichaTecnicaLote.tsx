@@ -3,6 +3,7 @@ import type { Lote } from "@/domain/entities/lote";
 import { StatusChip } from "@/components/ui/status-chip";
 import { Icon } from "@/components/ui/icon";
 import { ConsultaLote } from "./ConsultaLote";
+import { useLoteStatusMutation } from "@/presentation/hooks/useLoteStatusMutation";
 
 interface FichaTecnicaLoteProps {
   lote: Lote;
@@ -17,6 +18,9 @@ function formatPrice(price: number, currency: "PEN" | "USD"): string {
 
 export function FichaTecnicaLote({ lote, onClose, modoVendedor }: FichaTecnicaLoteProps) {
   const [showConsulta, setShowConsulta] = useState(false);
+  // T-4.4: Reservar button delegates to useLoteStatusMutation so the
+  // mutation hook owns the toast + cache invalidation.
+  const { mutate: cambiarEstado, isPending } = useLoteStatusMutation();
 
   return (
     <div
@@ -99,7 +103,11 @@ export function FichaTecnicaLote({ lote, onClose, modoVendedor }: FichaTecnicaLo
                 <button className="flex-1 bg-status-success/20 text-status-success py-3 rounded-xl font-bold typo-label-md">
                   Marcar Disponible
                 </button>
-                <button className="flex-1 bg-status-warning/20 text-status-warning py-3 rounded-xl font-bold typo-label-md">
+                <button
+                  onClick={() => cambiarEstado({ loteId: lote.id, estado: "reservado" })}
+                  disabled={isPending}
+                  className="flex-1 bg-status-warning/20 text-status-warning py-3 rounded-xl font-bold typo-label-md disabled:opacity-50"
+                >
                   Reservar
                 </button>
                 <button className="flex-1 bg-status-destructive/20 text-status-destructive py-3 rounded-xl font-bold typo-label-md">

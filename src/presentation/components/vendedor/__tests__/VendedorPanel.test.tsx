@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import * as React from "react";
 import type { ReactNode } from "react";
 
@@ -32,9 +32,24 @@ vi.mock("@/config/env", () => ({
   },
 }));
 
-// Mock MapaLotes (lazy-loaded)
+// Mock MapaLotes (lazy-loaded). Includes a "click polygon" trigger so
+// the T-4.4 ficha-rendering test can simulate a polygon click.
+let mapaOnLoteClick: ((lote: unknown) => void) | null = null;
 vi.mock("@/presentation/components/lotes/MapaLotes", () => ({
-  MapaLotes: () => <div data-testid="mapa-lotes">Mapa (mocked)</div>,
+  MapaLotes: ({
+    onLoteClick,
+    modoVendedor,
+  }: {
+    onLoteClick: (lote: unknown) => void;
+    modoVendedor?: boolean;
+  }) => {
+    mapaOnLoteClick = onLoteClick;
+    return (
+      <div data-testid="mapa-lotes" data-modo-vendedor={modoVendedor ? "true" : "false"}>
+        Mapa (mocked)
+      </div>
+    );
+  },
 }));
 
 // Mock MetricasPanel
@@ -53,6 +68,19 @@ vi.mock("@/presentation/hooks/useProyectos", () => ({
     data: { id: "proj-1", nombre: "Las Lomas de Ayacucho", coordenadasCentro: undefined },
     isLoading: false,
   }),
+}));
+
+// Mock FichaTecnicaLote (T-4.4) — render the vendor buttons as plain
+// text so the test can assert on the click flow without pulling in the
+// full modal.
+vi.mock("@/presentation/components/lotes/FichaTecnicaLote", () => ({
+  FichaTecnicaLote: ({ modoVendedor }: { modoVendedor?: boolean }) => (
+    <div data-testid="ficha-tecnica" data-modo-vendedor={modoVendedor ? "true" : "false"}>
+      <button>Reservar</button>
+      <button>Vender</button>
+      <button>Marcar Disponible</button>
+    </div>
+  ),
 }));
 
 function makeVendedor(overrides: Partial<VendedorProfile> = {}): VendedorProfile {
@@ -164,5 +192,31 @@ describe("<VendedorPanel> (T-4.2) — shell", () => {
     render(<VendedorPanel />);
     const header = screen.getByTestId("vendedor-header");
     expect(within(header).getByText(/María García/)).toBeInTheDocument();
+  });
+});
+
+describe("<VendedorPanel> (T-4.4) — FichaTecnicaLote with modoVendedor", () => {
+  it("(T-4.4.1) clicking a polygon opens FichaTecnicaLote with modoVendedor=true (vendor buttons rendered)", async () => {
+    useAuthStore.getState().setFromUsuariosRol(makeVendedor({ nombre: "María García" }));
+
+    render(<VendedorPanel />);
+    // Before click: no ficha.
+    expect(screen.queryByRole("button", { name: /Reservar/i })).not.toBeInTheDocument();
+
+    // Simulate polygon click.
+    mapaOnLoteClick?.({ id: "lote-1", codigo: "LT-001", estado: "disponible" });
+    // The ficha is lazy-loaded; wait for it to mount.
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /Reservar/i })).toBeInTheDocument(),
+    );
+    expect(screen.getByRole("button", { name: /Vender/i })).toBeInTheDocument();
+  });
+
+  it("(T-4.4.2) the MapaLotes in the panel is rendered with modoVendedor=true", () => {
+    useAuthStore.getState().setFromUsuariosRol(makeVendedor());
+
+    render(<VendedorPanel />);
+    const mapa = screen.getByTestId("mapa-lotes");
+    expect(mapa.getAttribute("data-modo-vendedor")).toBe("true");
   });
 });
