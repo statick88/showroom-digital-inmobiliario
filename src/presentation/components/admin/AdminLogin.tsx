@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { useAuthStore } from "@/presentation/hooks/useAuthStore";
+import { usuariosRepository } from "@/data/repositories";
 
 export function AdminLogin({ onLogin }: { onLogin?: () => void }) {
   const [email, setEmail] = useState("");
@@ -16,7 +18,7 @@ export function AdminLogin({ onLogin }: { onLogin?: () => void }) {
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
@@ -25,9 +27,29 @@ export function AdminLogin({ onLogin }: { onLogin?: () => void }) {
         toast.error("Error de autenticación", {
           description: error.message,
         });
-      } else {
-        onLogin?.();
+        return;
       }
+
+      // Hydrate the auth store from `usuarios_rol` so RoleGuard can
+      // decide on the next render. Without this, the store is
+      // sessionChecked:true but rol:null and the vendedor route
+      // would fire the "Debes iniciar sesion" toast.
+      const authUserId = data?.user?.id;
+      if (authUserId) {
+        const row = await usuariosRepository.getByAuthUserId(authUserId);
+        if (row) {
+          useAuthStore.getState().setFromUsuariosRol(row, { sessionChecked: true });
+        } else {
+          // No role row — treat as authenticated-but-no-role.
+          useAuthStore.getState().reset();
+          toast.error("Sin rol asignado", {
+            description: "Tu cuenta no tiene un rol asignado. Contacta al administrador.",
+          });
+          return;
+        }
+      }
+
+      onLogin?.();
     } catch {
       toast.error("Error", {
         description: "Intenta de nuevo más tarde.",

@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
-import { useLotes } from "@/presentation/hooks/useLotes";
+import { useLotes, useLotesPorVendedor } from "@/presentation/hooks/useLotes";
+import { useAuthStore } from "@/presentation/hooks/useAuthStore";
 import { useProyecto } from "@/presentation/hooks/useProyectos";
 import { env } from "@/config/env";
 import { getPolygonStyle } from "@/config/polygon-styles";
@@ -25,15 +26,27 @@ function MapController({ centro }: { centro: [number, number] }) {
 interface MapaLotesProps {
   onLoteClick: (lote: Lote) => void;
   filtroEstado?: EstadoLote;
+  /**
+   * T-4.3: when true, the map calls `useLotesPorVendedor` (scoped to
+   * the signed-in seller's project) instead of the default `useLotes`.
+   */
   modoVendedor?: boolean;
 }
 
-export function MapaLotes({ onLoteClick, filtroEstado }: MapaLotesProps) {
+export function MapaLotes({ onLoteClick, filtroEstado, modoVendedor }: MapaLotesProps) {
   const proyectoId = env.proyectoId;
-  const { data: lotes, isLoading } = useLotes(
-    proyectoId,
+  const authUserId = useAuthStore((s) => s.id);
+
+  // T-4.3: pick the right hook based on `modoVendedor`. Both hooks
+  // are unconditional (React's rules of hooks require the same
+  // number of hooks on every render), so we always call BOTH and
+  // pick the result.
+  const defaultQuery = useLotes(proyectoId, filtroEstado ? { estado: filtroEstado } : undefined);
+  const vendedorQuery = useLotesPorVendedor(
+    authUserId ?? "",
     filtroEstado ? { estado: filtroEstado } : undefined,
   );
+  const { data: lotes, isLoading } = modoVendedor ? vendedorQuery : defaultQuery;
   const { data: proyecto } = useProyecto(proyectoId);
 
   const center: [number, number] = proyecto?.coordenadasCentro

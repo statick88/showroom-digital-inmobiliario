@@ -11,6 +11,15 @@ vi.mock("@/presentation/hooks/useClickTracker", () => ({
   useClickTracker: () => tracker,
 }));
 
+// ── Mock useLoteStatusMutation (T-4.4) ─────────────────────────────
+const mutateMock = vi.fn();
+vi.mock("@/presentation/hooks/useLoteStatusMutation", () => ({
+  useLoteStatusMutation: () => ({
+    mutate: mutateMock,
+    isPending: false,
+  }),
+}));
+
 // ── Mock ConsultaLote child ────────────────────────────────────────
 vi.mock("@/presentation/components/lotes/ConsultaLote", () => ({
   ConsultaLote: ({ onClose }: { onClose: () => void }) => (
@@ -65,6 +74,7 @@ const baseLote: Lote = {
 
 beforeEach(() => {
   tracker.trackClick.mockClear();
+  mutateMock.mockClear();
 });
 
 describe("FichaTecnicaLote — retro tests (T-1.1, PR-1 foundations)", () => {
@@ -112,13 +122,38 @@ describe("FichaTecnicaLote — retro tests (T-1.1, PR-1 foundations)", () => {
   });
 });
 
-describe("FichaTecnicaLote — [TODO] future scenarios (land in PR-3 / PR-4)", () => {
-  // Spec T-1.1 acceptance scenario (3): reservation button invokes onReservar
-  // and disables when modoVendedor=false. Current implementation has the
-  // modoVendedor buttons but no `onReservar` prop and no disabled state.
-  // Implementation lands in PR-4 (HU-008).
-  it.todo("reservation button invokes onReservar and disables when modoVendedor=false (PR-4)");
+describe("FichaTecnicaLote — T-4.4: vendor mode (HU-008)", () => {
+  it("(T-4.4.1) when modoVendedor=true, renders the three status buttons", () => {
+    render(<FichaTecnicaLote lote={baseLote} onClose={vi.fn()} modoVendedor={true} />);
 
+    expect(screen.getByRole("button", { name: /Marcar Disponible/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Reservar/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Vender/i })).toBeInTheDocument();
+  });
+
+  it("(T-4.4.2) clicking 'Reservar' calls useLoteStatusMutation().mutate with {loteId, estado: 'reservado'}", () => {
+    render(<FichaTecnicaLote lote={baseLote} onClose={vi.fn()} modoVendedor={true} />);
+
+    const reservarBtn = screen.getByRole("button", { name: /Reservar/i });
+    fireEvent.click(reservarBtn);
+
+    expect(mutateMock).toHaveBeenCalledTimes(1);
+    expect(mutateMock).toHaveBeenCalledWith({
+      loteId: baseLote.id,
+      estado: "reservado",
+    });
+  });
+
+  it("(T-4.4.3) when modoVendedor is NOT set, the three status buttons are NOT rendered", () => {
+    render(<FichaTecnicaLote lote={baseLote} onClose={vi.fn()} />);
+
+    expect(screen.queryByRole("button", { name: /Reservar/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Vender/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Marcar Disponible/i })).not.toBeInTheDocument();
+  });
+});
+
+describe("FichaTecnicaLote — [TODO] future scenarios (land in PR-3 / PR-4)", () => {
   // Spec T-1.1 acceptance scenario (4): useEffect calls
   // trackClick(lote.id, 'vista_detalle') on mount. This is GAP-3 click-tracking
   // call-site coverage on FichaTecnicaLote. Implementation lands in PR-3 (T-3.2).

@@ -32,6 +32,13 @@ vi.mock("@/data/repositories", () => ({
   },
 }));
 
+// T-4.3 added `import { env } from "@/config/env"` to useLotes.ts (for
+// useLotesPorVendedor). Mock it here so this test does not need a
+// real VITE_PROYECTO_ID.
+vi.mock("@/config/env", () => ({
+  env: { proyectoId: "env-proj-1" },
+}));
+
 function makeWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: {
