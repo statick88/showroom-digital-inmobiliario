@@ -83,6 +83,17 @@ vi.mock("@/presentation/components/lotes/FichaTecnicaLote", () => ({
   ),
 }));
 
+// Mock TransaccionesList (T-4.5) so the panel test does not need
+// the real list. We expose the vendedorId it received so the test
+// can assert wiring.
+let transListVendedorId: string | null | undefined = undefined;
+vi.mock("@/presentation/components/vendedor/TransaccionesList", () => ({
+  TransaccionesList: ({ vendedorId }: { vendedorId: string | null }) => {
+    transListVendedorId = vendedorId;
+    return <div data-testid="transacciones-list-stub">Transacciones (mocked)</div>;
+  },
+}));
+
 function makeVendedor(overrides: Partial<VendedorProfile> = {}): VendedorProfile {
   return {
     id: "user-1",
@@ -131,6 +142,7 @@ beforeEach(() => {
     get: () => memoryStorage,
   });
   memoryStorage.clear();
+  transListVendedorId = undefined;
   useAuthStore.setState({
     id: null,
     authUserId: null,
@@ -168,14 +180,12 @@ describe("<VendedorPanel> (T-4.2) — shell", () => {
     expect(screen.getByTestId("metricas-panel")).toBeInTheDocument();
   });
 
-  it("(4) renders the TransaccionesList placeholder (T-4.5 will replace it)", () => {
-    useAuthStore.getState().setFromUsuariosRol(makeVendedor());
+  it("(4) renders the TransaccionesList and forwards the vendedor id from the auth store", () => {
+    useAuthStore.getState().setFromUsuariosRol(makeVendedor({ id: "user-1" }));
 
     render(<VendedorPanel />);
-    // The placeholder copy or a data-testid is acceptable; we use
-    // a data-testid so the next commit can replace it without breaking
-    // the test.
-    expect(screen.getByTestId("transacciones-placeholder")).toBeInTheDocument();
+    expect(screen.getByTestId("transacciones-list-stub")).toBeInTheDocument();
+    expect(transListVendedorId).toBe("user-1");
   });
 
   it("(5) the panel works for admin role too (RoleGuard passes admin through)", () => {

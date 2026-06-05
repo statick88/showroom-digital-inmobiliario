@@ -11,16 +11,11 @@
  *   ├────────────────────────────────────────┤
  *   │  MetricasPanel                         │
  *   ├────────────────────────────────────────┤
- *   │  [placeholder for TransaccionesList]   │  ← T-4.5 fills this
+ *   │  TransaccionesList (50/page, es-PE)    │  ← T-4.5 fills this
  *   └────────────────────────────────────────┘
  *
  * The panel does NOT do its own role-checking. The route handler
  * wraps it in `<RoleGuard rol="vendedor">`.
- *
- * T-4.3 will swap the default `useLotes` call inside MapaLotes for
- * `useLotesPorVendedor(vendedorId)`. For now, the shell uses whatever
- * MapaLotes does (default = all lots in env.proyectoId), which lets
- * us ship the route + shell without changing the map.
  */
 
 import { useState, useEffect, Suspense, lazy } from "react";
@@ -29,6 +24,7 @@ import { useProyecto } from "@/presentation/hooks/useProyectos";
 import { env } from "@/config/env";
 import { MapaLotes } from "@/presentation/components/lotes/MapaLotes";
 import { MetricasPanel } from "@/presentation/components/map/MetricasPanel";
+import { TransaccionesList } from "@/presentation/components/vendedor/TransaccionesList";
 import type { Lote } from "@/domain/entities/lote";
 
 const FichaTecnicaLote = lazy(() =>
@@ -90,22 +86,10 @@ export function VendedorPanel() {
         <MetricasPanel />
       </section>
 
-      {/* ── Transacciones placeholder (T-4.5) ───────────────── */}
+      {/* ── Transacciones (T-4.5) ────────────────────────────── */}
       <section className="px-4 md:px-8 py-6 flex-grow">
         <h2 className="typo-headline-sm font-semibold text-foreground mb-4">Mis transacciones</h2>
-        <div
-          data-testid="transacciones-placeholder"
-          className="rounded-xl border border-dashed border-border bg-muted/30 p-8 text-center"
-        >
-          <p className="typo-body-md text-muted-foreground">
-            {id
-              ? "Tus transacciones registradas apareceran aqui pronto."
-              : "Inicia sesion para ver tus transacciones."}
-          </p>
-          <p className="typo-label-md text-muted-foreground mt-2">
-            HU-008 — T-4.5 entregara la tabla con paginacion de 50 filas.
-          </p>
-        </div>
+        <TransaccionesList vendedorId={id} />
       </section>
 
       {/* Mobile bottom safe area (unused at the moment; mirrors AdminDashboard pattern) */}

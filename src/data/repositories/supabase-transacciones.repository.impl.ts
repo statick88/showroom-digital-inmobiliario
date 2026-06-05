@@ -36,6 +36,19 @@ export const transaccionesRepository: ITransaccionesRepository = {
     return (data ?? []).map(mapTransaccion);
   },
 
+  async listarPorVendedor(vendedorId) {
+    // T-4.5: scope to a single seller's transactions. RLS in the
+    // `transacciones` table should also restrict access; the explicit
+    // `eq` makes the intent obvious in the query plan.
+    const { data, error } = await supabase
+      .from("transacciones")
+      .select("*")
+      .eq("id_vendedor", vendedorId)
+      .order("created_at", { ascending: false });
+    rethrowIfPresent(error, "Error al listar transacciones del vendedor");
+    return (data ?? []).map(mapTransaccion);
+  },
+
   async crear(data) {
     const { data: transaccion, error } = await supabase
       .from("transacciones")
