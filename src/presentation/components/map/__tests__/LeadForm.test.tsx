@@ -224,6 +224,39 @@ describe("5.8 LeadForm — Information request form", () => {
       });
     });
   });
+
+  it("shows 'Aceptación requerida' toast when submitting without the privacy checkbox", async () => {
+    const { toast } = await import("sonner");
+    mockCrear.mockResolvedValueOnce({});
+
+    const { LeadForm } = await import("@/presentation/components/map/LeadForm");
+    render(<LeadForm onClose={onClose} propiedad={MOCK_PROPERTY} />);
+
+    fireEvent.change(screen.getByLabelText(/nombre/i), {
+      target: { value: "Juan Pérez" },
+    });
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "juan@example.com" },
+    });
+
+    // Wait for Turnstile to auto-set the token
+    await waitFor(() => {
+      expect(screen.getByTestId("turnstile-widget")).toBeTruthy();
+    });
+
+    // NOTE: privacy checkbox NOT clicked.
+    // The submit button is disabled, but we can submit the form directly.
+    const submitBtn = screen.getByRole("button", { name: /enviar solicitud/i });
+    const form = submitBtn.closest("form")!;
+    fireEvent.submit(form);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Aceptación requerida", {
+        description: "Debes aceptar la Política de Privacidad.",
+      });
+    });
+    expect(mockCrear).not.toHaveBeenCalled();
+  });
 });
 
 // ════════════════════════════════════════════════════════════════════

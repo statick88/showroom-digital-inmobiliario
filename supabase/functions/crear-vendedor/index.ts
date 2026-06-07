@@ -1,5 +1,5 @@
 // ============================================================
-//  Edge Function: crear-vendedor (T-5.2, HU-009)
+//  Edge Function: crear-vendedor (T-5.2, HU-009) — Updated for PR-5
 // ============================================================
 //
 // Purpose:
@@ -11,9 +11,15 @@
 //     1. Validates the caller's JWT.
 //     2. Verifies the caller has `rol = 'admin'` in `usuarios_rol`.
 //     3. Uses the service-role key to create the matching `auth.users` row.
-//     4. Inserts the corresponding `usuarios_rol` row.
+//     4. Inserts the corresponding `usuarios_rol` row with proyecto_id and dni.
 //     5. Returns the new row (mapped to the same shape as the rest of
 //        the API) or a structured error.
+//
+//   New in PR-5:
+//     - Accepts and validates `proyecto_id` (must exist in proyectos)
+//     - Accepts and validates `dni` (unique per proyecto_id)
+//     - Returns 409 Conflict if DNI already used in same project
+//     - Returns 400 Bad Request if proyecto_id doesn't exist
 //
 // Fallback:
 //   If Edge Functions are not enabled on the Supabase project, the
@@ -28,7 +34,7 @@
 //   - SUPABASE_ANON_KEY         — set automatically by Supabase
 //   - SUPABASE_SERVICE_ROLE_KEY — set automatically by Supabase
 //
-// Reference: design #2669, T-5.2 acceptance criteria.
+// Reference: design #2669, T-5.2 acceptance criteria, PR-5 audit + vendedor mgmt.
 // ============================================================
 
 import { createClient } from "npm:@supabase/supabase-js@2.45.0";
@@ -138,7 +144,43 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return fail("proyectoId debe ser un UUID", "invalid_proyecto", 422);
   }
 
-  // 4. Use service-role client to create the auth.users row.
+  // 4. Validate proyecto_id exists (if provided)
+  if (proyectoId) {
+    const { data: proyecto, error: proyectoErr } = await callerClient
+      .from("proyectos")
+      .select("id")
+      .eq("id", proyectoId)
+      .eq("activo", true)
+      .single();
+
+    if (proyectoErr || !proyecto) {
+      return fail("Proyecto no encontrado", "proyecto_not_found", 400);
+    }
+  }
+
+  // 5. Validate DNI uniqueness per proyecto (if both provided)
+  if (dni && proyectoId) {
+    const { data: existing, error: existingErr } = await callerClient
+      .from("usuarios_rol")
+      .select("id")
+      .eq("dni", dni)
+      .eq("proyecto_id", proyectoId)
+      .maybeSingle();
+
+    if (existingErr) {
+      return fail("Error validando DNI", "dni_check_failed", 500);
+    }
+    if (existing) {
+      return fail("DNI ya registrado en este proyecto", "dni_conflict", 409);
+    }
+  }
+
+  // 6. Application-level: DNI required for rol = vendedor
+  if (rol === "vendedor" && !dni) {
+    return fail("DNI requerido para rol vendedor", "dni_required", 422);
+  }
+
+  // 7. Use service-role client to create the auth.users row.
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!serviceKey) {
     return fail("Falta SUPABASE_SERVICE_ROLE_KEY", "misconfigured", 500);
@@ -163,7 +205,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
   const authUserId = created.user.id;
 
-  // 5. Insert the usuarios_rol row.
+  // 8. Insert the usuarios_rol row with new columns.
   const { data: row, error: insertErr } = await adminClient
     .from("usuarios_rol")
     .insert({
@@ -172,6 +214,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
       nombre,
       rol,
       telefono,
+      proyecto_id: proyectoId,
+      dni,
       activo: true,
     })
     .select("*")
@@ -180,6 +224,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
   if (insertErr || !row) {
     // Best-effort cleanup: delete the auth.users row so the email is freed.
     await adminClient.auth.admin.deleteUser(authUserId).catch(() => {});
+    // Check for unique violation on (proyecto_id, dni)
+    if (
+      insertErr?.code === "23505" &&
+      insertErr?.message?.includes("uq_usuarios_rol_proyecto_dni")
+    ) {
+      return fail("DNI ya registrado en este proyecto", "dni_conflict", 409);
+    }
     return fail(
       insertErr?.message ?? "No se pudo crear la fila en usuarios_rol",
       "db_insert_failed",

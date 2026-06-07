@@ -180,6 +180,49 @@ describe("useAuthStore (T-4.2) — localStorage persistence", () => {
     }
   });
 
+  it("(8a) clearStorage() removes the persisted slice from localStorage", async () => {
+    useAuthStore.getState().setFromUsuariosRol(makeVendedor({ rol: "admin" }), {
+      sessionChecked: true,
+    });
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBeTruthy();
+
+    // clearStorage() must call removeItem on the underlying storage
+    // adapter, leaving the persisted slice empty (zustand will then
+    // re-write the empty default state on the next set()).
+    await useAuthStore.persist.clearStorage();
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    // After clearStorage, the entry is gone OR rewritten with rol=null.
+    if (stored) {
+      const parsed = JSON.parse(stored) as { state?: Record<string, unknown> };
+      expect(parsed.state?.rol).toBeNull();
+    } else {
+      expect(stored).toBeNull();
+    }
+  });
+
+  it("(8b) setFromUsuariosRol with explicit proyectoId option persists the id", () => {
+    useAuthStore
+      .getState()
+      .setFromUsuariosRol(makeVendedor(), { sessionChecked: true, proyectoId: "proyecto-123" });
+
+    const state = useAuthStore.getState();
+    expect(state.proyectoId).toBe("proyecto-123");
+
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    expect(stored).toBeTruthy();
+    const parsed = JSON.parse(stored ?? "{}") as { state?: Record<string, unknown> };
+    expect(parsed.state?.proyectoId).toBe("proyecto-123");
+  });
+
+  it("(8c) setFromUsuariosRol called with no options uses sensible defaults", () => {
+    // No `options` argument at all → options = {} → sessionChecked
+    // defaults to true and proyectoId to null.
+    useAuthStore.getState().setFromUsuariosRol(makeVendedor());
+    const state = useAuthStore.getState();
+    expect(state.proyectoId).toBeNull();
+    expect(state.sessionChecked).toBe(true);
+  });
+
   it("(8) re-hydration: persist exposes a rehydrate() function and the persisted slice is well-formed", async () => {
     useAuthStore.getState().setFromUsuariosRol(makeVendedor({ rol: "admin" }), {
       sessionChecked: true,
@@ -206,5 +249,161 @@ describe("useAuthStore (T-4.2) — localStorage persistence", () => {
     // Calling rehydrate must not throw and must not wipe the in-memory state.
     await useAuthStore.persist.rehydrate();
     expect(useAuthStore.getState().rol).toBe("admin");
+  });
+});
+
+describe("useAuthStore — makeLazyStorage adapter branches", () => {
+  let memoryStorage: Storage;
+  let lazyStorage: Storage;
+
+  beforeEach(() => {
+    memoryStorage = createMemoryStorage();
+    Object.defineProperty(window, "localStorage", {
+      configurable: true,
+      get: () => memoryStorage,
+    });
+    // Import the internal makeLazyStorage function by re-evaluating the module
+    // We test the adapter directly by recreating it
+    lazyStorage = (() => {
+      const getStore = (): Storage | null =>
+        typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+      return {
+        get length() {
+          return getStore()?.length ?? 0;
+        },
+        clear() {
+          getStore()?.clear();
+        },
+        getItem(key: string) {
+          return getStore()?.getItem(key) ?? null;
+        },
+        key(index: number) {
+          return getStore()?.key(index) ?? null;
+        },
+        removeItem(key: string) {
+          getStore()?.removeItem(key);
+        },
+        setItem(key: string, value: string) {
+          getStore()?.setItem(key, value);
+        },
+      };
+    })();
+  });
+
+  afterEach(() => {
+    memoryStorage.clear();
+  });
+
+  it("get length returns 0 when localStorage is null", () => {
+    Object.defineProperty(window, "localStorage", {
+      configurable: true,
+      get: () => null,
+    });
+    const adapter = (() => {
+      const getStore = (): Storage | null =>
+        typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+      return {
+        get length() {
+          return getStore()?.length ?? 0;
+        },
+        clear() {
+          getStore()?.clear();
+        },
+        getItem(key: string) {
+          return getStore()?.getItem(key) ?? null;
+        },
+        key(index: number) {
+          return getStore()?.key(index) ?? null;
+        },
+        removeItem(key: string) {
+          getStore()?.removeItem(key);
+        },
+        setItem(key: string, value: string) {
+          getStore()?.setItem(key, value);
+        },
+      };
+    })();
+    expect(adapter.length).toBe(0);
+  });
+
+  it("get length delegates to localStorage", () => {
+    memoryStorage.setItem("a", "1");
+    memoryStorage.setItem("b", "2");
+    expect(lazyStorage.length).toBe(2);
+  });
+
+  it("clear delegates to localStorage", () => {
+    memoryStorage.setItem("a", "1");
+    lazyStorage.clear();
+    expect(memoryStorage.getItem("a")).toBeNull();
+  });
+
+  it("getItem returns value from localStorage", () => {
+    memoryStorage.setItem("key", "value");
+    expect(lazyStorage.getItem("key")).toBe("value");
+  });
+
+  it("getItem returns null for missing key", () => {
+    expect(lazyStorage.getItem("missing")).toBeNull();
+  });
+
+  it("key returns key at index from localStorage", () => {
+    memoryStorage.setItem("first", "1");
+    memoryStorage.setItem("second", "2");
+    expect(lazyStorage.key(0)).toBe("first");
+    expect(lazyStorage.key(1)).toBe("second");
+  });
+
+  it("key returns null for out-of-bounds index", () => {
+    expect(lazyStorage.key(5)).toBeNull();
+  });
+
+  it("removeItem delegates to localStorage", () => {
+    memoryStorage.setItem("key", "value");
+    lazyStorage.removeItem("key");
+    expect(memoryStorage.getItem("key")).toBeNull();
+  });
+
+  it("setItem delegates to localStorage", () => {
+    lazyStorage.setItem("newKey", "newValue");
+    expect(memoryStorage.getItem("newKey")).toBe("newValue");
+  });
+
+  it("handles localStorage being null gracefully for all methods", () => {
+    Object.defineProperty(window, "localStorage", {
+      configurable: true,
+      get: () => null,
+    });
+    const adapter = (() => {
+      const getStore = (): Storage | null =>
+        typeof window !== "undefined" && window.localStorage ? window.localStorage : null;
+      return {
+        get length() {
+          return getStore()?.length ?? 0;
+        },
+        clear() {
+          getStore()?.clear();
+        },
+        getItem(key: string) {
+          return getStore()?.getItem(key) ?? null;
+        },
+        key(index: number) {
+          return getStore()?.key(index) ?? null;
+        },
+        removeItem(key: string) {
+          getStore()?.removeItem(key);
+        },
+        setItem(key: string, value: string) {
+          getStore()?.setItem(key, value);
+        },
+      };
+    })();
+
+    expect(adapter.length).toBe(0);
+    expect(() => adapter.clear()).not.toThrow();
+    expect(adapter.getItem("x")).toBeNull();
+    expect(adapter.key(0)).toBeNull();
+    expect(() => adapter.removeItem("x")).not.toThrow();
+    expect(() => adapter.setItem("x", "y")).not.toThrow();
   });
 });

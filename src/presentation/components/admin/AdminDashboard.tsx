@@ -11,6 +11,7 @@ import { ProgressBar } from "@/presentation/components/admin/ProgressBar";
 import { TopClickedTable } from "@/presentation/components/admin/TopClickedTable";
 import { LeadsTable } from "@/presentation/components/admin/LeadsTable";
 import { UsuariosPanel } from "@/presentation/components/admin/UsuariosPanel";
+import { AuditLogPanel } from "@/presentation/components/admin/AuditLogPanel";
 import { Icon } from "@/components/ui/icon";
 import {
   Dialog,
@@ -31,10 +32,11 @@ import {
   LogOut,
   Search,
   Filter,
+  FileText,
 } from "lucide-react";
 import type { EstadoPropiedad } from "@/domain/entities/propiedad";
 
-type Tab = "dashboard" | "propiedades" | "leads" | "usuarios";
+type Tab = "dashboard" | "propiedades" | "leads" | "usuarios" | "audit-log";
 
 // ── Confirm dialog state ───────────────────────────────────────────
 interface ConfirmState {
@@ -85,6 +87,9 @@ export function AdminDashboard() {
             <NavButton tab="usuarios" current={tab} icon="group" onClick={setTab}>
               Usuarios
             </NavButton>
+            <NavButton tab="audit-log" current={tab} icon="file_text" onClick={setTab}>
+              Registro Auditoría
+            </NavButton>
           </nav>
 
           {/* User Profile (3.9) */}
@@ -114,6 +119,7 @@ export function AdminDashboard() {
         {tab === "propiedades" && <PropiedadesTab />}
         {tab === "leads" && <LeadsTab />}
         {tab === "usuarios" && <UsuariosTab />}
+        {tab === "audit-log" && <AuditLogTab />}
       </main>
 
       {/* ── Mobile bottom tab bar (3.10) ──────────────────────── */}
@@ -145,6 +151,12 @@ export function AdminDashboard() {
             icon={<Users size={20} />}
             label="Usuarios"
             onClick={() => setTab("usuarios")}
+          />
+          <MobileTabButton
+            active={tab === "audit-log"}
+            icon={<FileText size={20} />}
+            label="Auditoría"
+            onClick={() => setTab("audit-log")}
           />
         </div>
       )}
@@ -606,6 +618,17 @@ function UsuariosTab() {
   return (
     <div className="p-4 md:p-8 space-y-6">
       <UsuariosPanel />
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  AUDIT LOG TAB  (T-5.5, PR-5)
+// ════════════════════════════════════════════════════════════════════
+function AuditLogTab() {
+  return (
+    <div className="p-4 md:p-8 space-y-6">
+      <AuditLogPanel />
     </div>
   );
 }

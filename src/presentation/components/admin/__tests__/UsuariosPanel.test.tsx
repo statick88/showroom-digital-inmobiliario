@@ -191,7 +191,30 @@ describe("<UsuariosPanel> (T-5.1) — admin user management table", () => {
     expect(screen.getByTestId("usuarios-skeleton")).toBeInTheDocument();
   });
 
-  it("(5) shows an empty state when there are no usuarios_rol rows", () => {
+  it("(5) shows pagination controls when there are >25 usuarios_rol rows; Anterior/Siguiente buttons advance pages", () => {
+    // 30 users → 2 pages
+    const manyVendedores = Array.from({ length: 30 }, (_, i) =>
+      makeVendedor({ id: `user-${i + 1}`, nombre: `User ${i + 1}` }),
+    );
+    mockUseUsuarios.mockReturnValue({ data: manyVendedores, isLoading: false });
+
+    render(<UsuariosPanel />, { wrapper: makeWrapper() });
+
+    // Pagination is rendered because totalPages > 1
+    const pagination = screen.getByTestId("usuarios-pagination");
+    expect(pagination).toBeInTheDocument();
+    expect(pagination).toHaveTextContent(/Pagina 1 de 2/i);
+
+    // Click "Siguiente" to go to page 2
+    fireEvent.click(screen.getByRole("button", { name: /siguiente/i }));
+    expect(pagination).toHaveTextContent(/Pagina 2 de 2/i);
+
+    // Click "Anterior" to go back
+    fireEvent.click(screen.getByRole("button", { name: /anterior/i }));
+    expect(pagination).toHaveTextContent(/Pagina 1 de 2/i);
+  });
+
+  it("(5b) shows an empty state when there are no usuarios_rol rows", () => {
     mockUseUsuarios.mockReturnValue({
       data: [],
       isLoading: false,

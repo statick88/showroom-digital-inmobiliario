@@ -189,4 +189,22 @@ describe("AdminLogin", () => {
     // The store is reset, so the next render treats the user as anon.
     expect(useAuthStore.getState().rol).toBeNull();
   });
+
+  it("(8) when signIn throws (network error), the catch block fires 'Error' toast", async () => {
+    signInMock.mockRejectedValueOnce(new Error("Network down"));
+
+    const { container } = render(<AdminLogin onLogin={vi.fn()} />);
+
+    const inputs = container.querySelectorAll("input");
+    fireEvent.change(inputs[0]!, { target: { value: "ada@example.com" } });
+    fireEvent.change(inputs[1]!, { target: { value: "secret" } });
+    fireEvent.submit(container.querySelector("form")!);
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith(
+        "Error",
+        expect.objectContaining({ description: "Intenta de nuevo más tarde." }),
+      );
+    });
+  });
 });

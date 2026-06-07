@@ -201,4 +201,108 @@ describe("<CrearVendedorDialog> (T-5.2) — admin create vendedor form", () => {
       expect(onOpenChange).toHaveBeenCalledWith(false);
     });
   });
+
+  it("(6) shows a Spanish password error when the temporary password is too short", async () => {
+    useCrearVendedorMock.mockReturnValue({
+      mutate: useCrearVendedorMutate,
+      isPending: false,
+    });
+
+    render(<CrearVendedorDialog open={true} onOpenChange={vi.fn()} />, {
+      wrapper: makeWrapper(),
+    });
+
+    // Fill everything VALID except the password (which is too short).
+    fireEvent.change(screen.getByLabelText(/nombre/i), {
+      target: { value: "Ada Lovelace" },
+    });
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "ada@showroom.pe" },
+    });
+    fireEvent.change(screen.getByLabelText(/dni/i), {
+      target: { value: "12345678" },
+    });
+    fireEvent.change(screen.getByLabelText(/tel[eé]fono/i), {
+      target: { value: "+51987654321" },
+    });
+    fireEvent.change(screen.getByLabelText(/contrase/i), {
+      target: { value: "abc" }, // < min(8)
+    });
+    fireEvent.change(screen.getByLabelText(/proyecto/i), {
+      target: { value: "550e8400-e29b-41d4-a716-446655440000" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /crear/i }));
+
+    // The password error must be shown via the form-error-password
+    // testid, in Spanish, and the mutation must NOT be called.
+    expect(await screen.findByTestId("form-error-password")).toBeInTheDocument();
+    expect(useCrearVendedorMutate).not.toHaveBeenCalled();
+  });
+
+  it("(7) the Cancelar button calls onOpenChange(false) and does not submit", async () => {
+    useCrearVendedorMock.mockReturnValue({
+      mutate: useCrearVendedorMutate,
+      isPending: false,
+    });
+
+    const onOpenChange = vi.fn();
+    render(<CrearVendedorDialog open={true} onOpenChange={onOpenChange} />, {
+      wrapper: makeWrapper(),
+    });
+
+    const cancelBtn = screen.getByRole("button", { name: /cancelar/i });
+    fireEvent.click(cancelBtn);
+
+    await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+    expect(useCrearVendedorMutate).not.toHaveBeenCalled();
+  });
+
+  it("(8) shows 'Creando...' on the submit button when isPending=true (line 240 isPending branch)", () => {
+    useCrearVendedorMock.mockReturnValue({
+      mutate: useCrearVendedorMutate,
+      isPending: true,
+    });
+
+    render(<CrearVendedorDialog open={true} onOpenChange={vi.fn()} />, {
+      wrapper: makeWrapper(),
+    });
+
+    const submit = screen.getByTestId("submit-crear-vendedor");
+    expect(submit.textContent).toMatch(/creando/i);
+    expect(submit).toBeDisabled();
+  });
+
+  it("(9) on mutation onError, sets root error and toasts the message (line 143 branch)", async () => {
+    useCrearVendedorMock.mockReturnValue({
+      mutate: useCrearVendedorMutate,
+      isPending: false,
+    });
+
+    render(<CrearVendedorDialog open={true} onOpenChange={vi.fn()} />, {
+      wrapper: makeWrapper(),
+    });
+
+    // Fill the form with valid data
+    fireEvent.change(screen.getByLabelText(/nombre/i), { target: { value: "Ada" } });
+    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: "ada@x.com" } });
+    fireEvent.change(screen.getByLabelText(/dni/i), { target: { value: "12345678" } });
+    fireEvent.change(screen.getByLabelText(/tel[eé]fono/i), { target: { value: "+51987654321" } });
+    fireEvent.change(screen.getByLabelText(/contrase/i), { target: { value: "temporal123" } });
+    fireEvent.change(screen.getByLabelText(/proyecto/i), {
+      target: { value: "550e8400-e29b-41d4-a716-446655440000" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /crear/i }));
+
+    await waitFor(() => expect(useCrearVendedorMutate).toHaveBeenCalled());
+    // Simulate mutation error
+    const onError = useCrearVendedorMutate.mock.calls[0]![1].onError;
+    onError(new Error("Email already exists"));
+
+    // The root error should be displayed
+    await waitFor(() => {
+      expect(screen.getByText(/email already exists/i)).toBeInTheDocument();
+    });
+  });
 });
