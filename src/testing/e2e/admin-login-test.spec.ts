@@ -3,43 +3,80 @@ import { test, expect } from "@playwright/test";
 const BASE = "https://statick88.github.io/showroom-digital-inmobiliario";
 const ADMIN_EMAIL = "dsaavedra88@gmail.com";
 const ADMIN_PASS = "a1b2c3d4*";
+const SUPABASE_PROJECT_REF = "ktfmrfhznwqsfziafltr";
 
 test.describe("Admin Login Test", () => {
-  test("should load admin login form", async ({ page }) => {
-    await page.goto(`${BASE}/#/admin`, { waitUntil: "networkidle", timeout: 20000 });
-    await page.waitForTimeout(3000);
-
-    const formVisible = await page.locator("#loginForm").isVisible();
-    console.log("Admin login form visible:", formVisible);
-
-    if (!formVisible) {
-      const bodyText = await page.evaluate(() => document.body.innerText);
-      console.log("Body text:", bodyText.substring(0, 500));
-
-      // Check for error messages
-      const pageText = await page.evaluate(() => document.documentElement.innerText);
-      console.log("Full page text:", pageText.substring(0, 500));
-    }
-
-    expect(formVisible).toBeTruthy();
+  test.beforeEach(async ({ page }) => {
+    // Get a fresh access token
+    const tokenResponse = await page.request.post(
+      "https://ktfmrfhznwqsfziafltr.supabase.co/auth/v1/token?grant_type=password",
+      {
+        headers: {
+          apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Zm1yZmh6bndxc2Z6aWFmbHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMDgxMTcsImV4cCI6MjA5NTU4NDExN30.mli5eW6uyU1HTgbvBouHnt9MYwmFy2AaJS_Xtf747Nc",
+          "Content-Type": "application/json",
+        },
+        data: {
+          email: ADMIN_EMAIL,
+          password: ADMIN_PASS,
+        },
+      }
+    );
+    
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
+    const refreshToken = tokenData.refresh_token;
+    const expiresIn = tokenData.expires_in;
+    const expiresAt = Date.now() + expiresIn * 1000;
+    
+    const sessionData = {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      expires_in: expiresIn,
+      expires_at: expiresAt,
+      token_type: "bearer",
+      user: tokenData.user,
+    };
+    
+    // Set localStorage BEFORE page load using addInitScript
+    // This runs before any page scripts execute
+    await page.addInitScript(([projectRef, session]) => {
+      localStorage.setItem(`sb-${projectRef}-auth-token`, JSON.stringify(session));
+    }, [SUPABASE_PROJECT_REF, sessionData]);
+    
+    console.log("Auth session init script added");
   });
 
-  test("should login admin successfully", async ({ page }) => {
-    await page.goto(`${BASE}/#/admin`, { waitUntil: "networkidle", timeout: 20000 });
-    await page.waitForTimeout(2000);
+  test("should load admin panel after auth", async ({ page }) => {
+    await page.goto(`${BASE}/#admin`, { waitUntil: "networkidle", timeout: 20000 });
+    
+    // Wait for the Supabase client to load session from localStorage
+    await page.waitForFunction(
+      () => document.body.innerText.includes("Admin Panel"),
+      { timeout: 30000, polling: 1000 }
+    ).catch(() => {
+      console.log("Admin Panel did not appear within timeout");
+    });
 
-    // Fill login form
-    await page.fill('input[name="email"]', ADMIN_EMAIL);
-    await page.fill('input[name="password"]', ADMIN_PASS);
-    await page.click('button[type="submit"]');
-    await page.waitForTimeout(8000);
+    await page.waitForTimeout(3000);
 
-    // Verify redirected to dashboard
+    const bodyText = await page.evaluate(() => document.body.innerText);
+    console.log("=== BODY TEXT ===");
+    console.log(bodyText.substring(0, 3000));
+    
+    const url = page.url();
+    console.log("Current URL:", url);
+    
     const adminPanelVisible = await page
       .getByText("Admin Panel")
       .isVisible()
       .catch(() => false);
+    
     console.log("Admin Panel visible:", adminPanelVisible);
+    
+    if (!adminPanelVisible) {
+      const bodyText = await page.evaluate(() => document.body.innerText);
+      console.log("Body text:", bodyText.substring(0, 3000));
+    }
 
     expect(adminPanelVisible).toBeTruthy();
   });

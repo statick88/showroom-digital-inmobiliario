@@ -33,6 +33,34 @@ interface MapaLotesProps {
   modoVendedor?: boolean;
 }
 
+/**
+ * Converts GeoJSON coordinates from [lng, lat] (database) to [lat, lng] (Leaflet)
+ * and validates the coordinate structure.
+ */
+function convertCoordinatesToLatLng(coords: unknown): number[][][] | null {
+  if (!coords || !Array.isArray(coords)) return null;
+  
+  try {
+    // GeoJSON Polygon coordinates: [[[lng, lat], [lng, lat], ...]]
+    // Leaflet expects: [[[lat, lng], [lat, lng], ...]]
+    const rings = coords as number[][][];
+    
+    return rings.map((ring) => 
+      ring.map((coord) => {
+        if (!Array.isArray(coord) || coord.length < 2) return null;
+        // Database stores [lng, lat], Leaflet expects [lat, lng]
+        const [lng, lat] = coord;
+        if (typeof lat !== 'number' || typeof lng !== 'number' || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+          return null;
+        }
+        return [lat, lng];
+      }).filter((c): c is [number, number] => c !== null)
+    ).filter((ring) => ring.length >= 4); // Valid polygon needs at least 4 points (closed)
+  } catch {
+    return null;
+  }
+}
+
 export function MapaLotes({ onLoteClick, filtroEstado, modoVendedor }: MapaLotesProps) {
   const proyectoId = env.proyectoId;
   const authUserId = useAuthStore((s) => s.id);
@@ -61,6 +89,12 @@ export function MapaLotes({ onLoteClick, filtroEstado, modoVendedor }: MapaLotes
     );
   }
 
+  // Filter out lotes with invalid coordinates and convert to Leaflet format
+  const validLotes = (lotes ?? []).map((lote) => {
+    const convertedCoords = convertCoordinatesToLatLng(lote.poligonoCoords);
+    return convertedCoords ? { ...lote, poligonoCoords: convertedCoords } : null;
+  }).filter((l): l is Lote & { poligonoCoords: number[][][] } => l !== null);
+
   return (
     <div className="relative h-full w-full">
       <MapContainer center={center} zoom={17} className="h-full w-full z-0" zoomControl={true}>
@@ -70,7 +104,7 @@ export function MapaLotes({ onLoteClick, filtroEstado, modoVendedor }: MapaLotes
         />
         <MapController centro={center} />
         <MasterPlanOverlay />
-        {lotes?.map((lote) => (
+        {validLotes.map((lote) => (
           <GeoJSON
             key={lote.id}
             data={
@@ -93,3 +127,5 @@ export function MapaLotes({ onLoteClick, filtroEstado, modoVendedor }: MapaLotes
     </div>
   );
 }
+
+

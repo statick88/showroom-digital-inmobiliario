@@ -3,8 +3,8 @@ import { test, expect } from "@playwright/test";
 const BASE = "https://statick88.github.io/showroom-digital-inmobiliario";
 
 test.describe("Debug Admin Route", () => {
-  test("should show what's rendered at /#/admin", async ({ page }) => {
-    await page.goto(`${BASE}/#/admin`, { waitUntil: "networkidle", timeout: 20000 });
+  test("should show what's rendered at /#admin", async ({ page }) => {
+    await page.goto(`${BASE}/#admin`, { waitUntil: "networkidle", timeout: 20000 });
     await page.waitForTimeout(3000);
 
     // Get full HTML content
