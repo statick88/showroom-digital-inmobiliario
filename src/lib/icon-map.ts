@@ -28,6 +28,8 @@ import {
   ShieldCheck,
   ArrowLeft,
   LogOut,
+  FileText,
+  ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 
@@ -61,6 +63,8 @@ const iconMap = new Map<string, LucideIcon>([
   ["verified_user", ShieldCheck],
   ["arrow_back", ArrowLeft],
   ["logout", LogOut],
+  ["description", FileText],
+  ["expand_more", ChevronDown],
 ]);
 
 export function getIcon(name: string): LucideIcon | undefined {

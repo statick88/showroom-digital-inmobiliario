@@ -20,4 +20,10 @@ create policy "leads_insert_all" on public.leads
 
 -- rls_auto_enable is a Supabase internal event trigger function
 -- Revoke EXECUTE from PUBLIC (which includes anon + authenticated)
-revoke execute on function public.rls_auto_enable() from public;
+-- NOTE: Function may not exist in all Supabase versions - using DO block for safety
+do $$
+begin
+  if exists (select 1 from pg_proc where proname = 'rls_auto_enable' and pronamespace = 'public'::regnamespace) then
+    revoke execute on function public.rls_auto_enable() from public;
+  end if;
+end $$;

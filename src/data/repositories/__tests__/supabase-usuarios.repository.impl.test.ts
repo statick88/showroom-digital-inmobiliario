@@ -19,6 +19,7 @@ import type { VendedorProfile } from "@/domain/entities/vendedor";
 const fromMock = vi.fn();
 const singleMock = vi.fn();
 const functionsInvokeMock = vi.fn();
+const rpcMock = vi.fn();
 const builderMethods: Record<string, ReturnType<typeof vi.fn>> = {};
 const chain: Record<string, ReturnType<typeof vi.fn>> = {};
 
@@ -57,6 +58,7 @@ vi.mock("@/lib/supabase/client", () => ({
     functions: {
       invoke: (...args: unknown[]) => functionsInvokeMock(...args),
     },
+    rpc: (...args: unknown[]) => rpcMock(...args),
   },
 }));
 
@@ -70,6 +72,7 @@ beforeEach(() => {
   fromMock.mockReset();
   singleMock.mockReset();
   functionsInvokeMock.mockReset();
+  rpcMock.mockReset();
   for (const k of Object.keys(builderMethods)) delete builderMethods[k];
   for (const k of Object.keys(chain)) delete chain[k];
   for (const name of ["select", "eq", "order", "update", "insert", "delete"]) {
@@ -177,10 +180,75 @@ describe("supabase-usuarios.repository.impl — crear (via Edge Function)", () =
     expect(result.email).toBe("nuevo@inmobiliaria.pe");
   });
 
-  it("(9) crear: throws when the Edge Function returns an error envelope", async () => {
+  it("(9) crear: when the Edge Function returns an error envelope, the call falls back to the RPC", async () => {
+    // The contract is: try Edge Function first, fall back to RPC on
+    // any Edge Function error. The "throws when both fail" case is
+    // covered by (9c) below.
     functionsInvokeMock.mockResolvedValue({
       data: null,
       error: { message: "FORBIDDEN — admin only" },
+    });
+    rpcMock.mockResolvedValue({
+      data: makeRow({ email: "rpc-fallback@inmobiliaria.pe" }),
+      error: null,
+    });
+
+    const result = await usuariosRepository.crear({
+      email: "rpc-fallback@inmobiliaria.pe",
+      password: "12345678",
+      nombre: "X",
+      rol: "vendedor",
+    });
+
+    expect(functionsInvokeMock).toHaveBeenCalled();
+    expect(rpcMock).toHaveBeenCalled();
+    expect(result.email).toBe("rpc-fallback@inmobiliaria.pe");
+  });
+
+  it("(9b) crear: falls back to the 'crear_vendedor' RPC when the Edge Function errors (T-5.2 fallback)", async () => {
+    // Edge Function not deployed (typical Supabase project without
+    // Edge Functions enabled). The functions.invoke call resolves
+    // with an error envelope — the repo MUST then try the RPC.
+    functionsInvokeMock.mockResolvedValue({
+      data: null,
+      error: { message: "Function not found" },
+    });
+    rpcMock.mockResolvedValue({
+      data: makeRow({ email: "fallback@inmobiliaria.pe" }),
+      error: null,
+    });
+
+    const result = await usuariosRepository.crear({
+      email: "fallback@inmobiliaria.pe",
+      password: "temporal123",
+      nombre: "Vendedor Fallback",
+      rol: "vendedor",
+    });
+
+    expect(functionsInvokeMock).toHaveBeenCalledWith(
+      "crear-vendedor",
+      expect.objectContaining({ body: expect.any(Object) }),
+    );
+    expect(rpcMock).toHaveBeenCalledWith(
+      "crear_vendedor",
+      expect.objectContaining({
+        p_email: "fallback@inmobiliaria.pe",
+        p_password: "temporal123",
+        p_nombre: "Vendedor Fallback",
+        p_rol: "vendedor",
+      }),
+    );
+    expect(result.email).toBe("fallback@inmobiliaria.pe");
+  });
+
+  it("(9c) crear: rethrows the original Edge Function error if BOTH Edge Function and RPC fail (defense in depth)", async () => {
+    functionsInvokeMock.mockResolvedValue({
+      data: null,
+      error: { message: "FunctionsInvokeError [404]" },
+    });
+    rpcMock.mockResolvedValue({
+      data: null,
+      error: { message: "function crear_vendedor does not exist" },
     });
 
     await expect(
@@ -190,7 +258,7 @@ describe("supabase-usuarios.repository.impl — crear (via Edge Function)", () =
         nombre: "X",
         rol: "vendedor",
       }),
-    ).rejects.toThrow("FORBIDDEN — admin only");
+    ).rejects.toThrow("FunctionsInvokeError [404]");
   });
 });
 

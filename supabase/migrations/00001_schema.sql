@@ -4,6 +4,7 @@
 
 -- 1. EXTENSIONES
 create extension if not exists "pgcrypto";
+create extension if not exists "postgis";
 
 -- 2. ENUMS
 create type public.rol_usuario as enum ('admin', 'agente', 'comprador');

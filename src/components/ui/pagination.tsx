@@ -28,6 +28,7 @@ export function Pagination({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage <= 1}
+          aria-label="Página anterior"
           className="p-2 border border-border rounded-lg text-muted-foreground hover:bg-card disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <Icon name="chevron_left" size={20} />
@@ -49,6 +50,7 @@ export function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
+          aria-label="Página siguiente"
           className="p-2 border border-border rounded-lg text-muted-foreground hover:bg-card disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <Icon name="chevron_right" size={20} />

@@ -75,11 +75,9 @@ create table public.transacciones (
 );
 
 -- 6. MIGRACIÓN DE DATOS EXISTENTES
--- Crear proyecto default con datos de agencia actual
+-- Crear proyecto default (no depende de seed data)
 insert into public.proyectos (nombre, descripcion, activo)
-select nombre, 'Proyecto migrado', true
-from public.agencias
-limit 1;
+values ('Proyecto Demo', 'Proyecto migrado desde agencia legacy', true);
 
 -- Migrar lotes existentes (tipo = 'lote' o 'terreno')
 insert into public.lotes (proyecto_id, codigo, area_total, precio, moneda, estado, poligono_coords, created_at, updated_at)
@@ -97,11 +95,11 @@ select
   -- Convertir point a GeoJSON polygon (aproximación de 4 puntos alrededor del point)
   jsonb_build_array(
     jsonb_build_array(
-      jsonb_build_array(ST_X(ubicacion::geometry) - 0.0001, ST_Y(ubicacion::geometry) - 0.0001),
-      jsonb_build_array(ST_X(ubicacion::geometry) + 0.0001, ST_Y(ubicacion::geometry) - 0.0001),
-      jsonb_build_array(ST_X(ubicacion::geometry) + 0.0001, ST_Y(ubicacion::geometry) + 0.0001),
-      jsonb_build_array(ST_X(ubicacion::geometry) - 0.0001, ST_Y(ubicacion::geometry) + 0.0001),
-      jsonb_build_array(ST_X(ubicacion::geometry) - 0.0001, ST_Y(ubicacion::geometry) - 0.0001)
+      jsonb_build_array(ST_X(ubicacion::public.geometry) - 0.0001, ST_Y(ubicacion::public.geometry) - 0.0001),
+      jsonb_build_array(ST_X(ubicacion::public.geometry) + 0.0001, ST_Y(ubicacion::public.geometry) - 0.0001),
+      jsonb_build_array(ST_X(ubicacion::public.geometry) + 0.0001, ST_Y(ubicacion::public.geometry) + 0.0001),
+      jsonb_build_array(ST_X(ubicacion::public.geometry) - 0.0001, ST_Y(ubicacion::public.geometry) + 0.0001),
+      jsonb_build_array(ST_X(ubicacion::public.geometry) - 0.0001, ST_Y(ubicacion::public.geometry) - 0.0001)
     )
   ),
   created_at,
