@@ -36,6 +36,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { useCrearVendedor } from "@/presentation/hooks/useUsuarios";
 import { crearVendedorSchema } from "@/lib/schemas/vendedor";
+import { normalizeDni, formatDni } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -91,7 +92,8 @@ export function CrearVendedorDialog({ open, onOpenChange }: CrearVendedorDialogP
   // 15's React Compiler flags setState in effects).
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    const next = key === "dni" ? normalizeDni(value as string) : value;
+    setForm((prev) => ({ ...prev, [key]: next }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
   };
 
@@ -99,17 +101,15 @@ export function CrearVendedorDialog({ open, onOpenChange }: CrearVendedorDialogP
     e?.preventDefault();
     const nextErrors: FieldErrors = {};
 
-    // Password is checked separately because the shared schema does not
-    // include it (the password is consumed by the Edge Function, never
-    // persisted on `usuarios_rol`).
     const passwordResult = passwordSchema.safeParse(form.password);
     if (!passwordResult.success) {
       nextErrors.password = passwordResult.error.issues[0]?.message ?? "contraseña inválida";
     }
 
-    // Validate the rest with the shared Zod schema. We strip `password`
-    // out of the payload (it is not part of `crearVendedorSchema`).
-    const { password: _password, ...payloadForZod } = form;
+    // Normalize DNI to digits-only so formatted inputs (12.345.678 / 21-1234567-8)
+    // do not fail 8-digit validation unexpectedly. Keep the rest unchanged.
+    const normalized = { ...form, dni: normalizeDni(form.dni) };
+    const { password: _password, ...payloadForZod } = normalized;
     const result = crearVendedorSchema.safeParse(payloadForZod);
     if (!result.success) {
       for (const issue of result.error.issues) {
