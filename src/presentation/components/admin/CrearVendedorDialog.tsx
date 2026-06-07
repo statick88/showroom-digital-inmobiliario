@@ -187,7 +187,7 @@ export function CrearVendedorDialog({ open, onOpenChange }: CrearVendedorDialogP
             <Field
               label="DNI"
               name="dni"
-              value={form.dni}
+              value={formatDni(form.dni)}
               onChange={(v) => update("dni", v)}
               error={errors.dni}
               testId="field-dni"

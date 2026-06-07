@@ -23,7 +23,7 @@ describe("formatDni", () => {
   it("formats partial input", () => {
     expect(formatDni("12")).toBe("12");
     expect(formatDni("1234")).toBe("12.34");
-    expect(formatDni("123456")).toBe("12.345.6");
+    expect(formatDni("123456")).toBe("12.34.56");
   });
 
   it("normalizes then formats", () => {
