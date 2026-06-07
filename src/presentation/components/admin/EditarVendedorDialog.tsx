@@ -82,6 +82,7 @@ export function EditarVendedorDialog({ open, onOpenChange, vendedor }: EditarVen
     proyectoId: vendedor?.proyectoId ?? "",
   }));
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const update = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -160,10 +161,12 @@ export function EditarVendedorDialog({ open, onOpenChange, vendedor }: EditarVen
         toast.success("Vendedor desactivado", {
           description: `${vendedor.nombre} ya no podrá iniciar sesión.`,
         });
+        setConfirmOpen(false);
         onOpenChange(false);
       },
       onError: (err) => {
         toast.error("Error al desactivar vendedor", { description: err.message });
+        setConfirmOpen(false);
       },
     });
   };
@@ -244,7 +247,7 @@ export function EditarVendedorDialog({ open, onOpenChange, vendedor }: EditarVen
               <Button
                 type="button"
                 variant="destructive"
-                onClick={handleDesactivar}
+                onClick={() => setConfirmOpen(true)}
                 disabled={isPending || isDesactivando}
                 data-testid="desactivar-vendedor"
               >
@@ -271,6 +274,25 @@ export function EditarVendedorDialog({ open, onOpenChange, vendedor }: EditarVen
           </form>
         </DialogContent>
       )}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Desactivar vendedor</DialogTitle>
+            <DialogDescription>
+              Esta acción desactiva a <span className="font-semibold text-foreground">{vendedor?.nombre}</span>.
+              El usuario no podrá iniciar sesión hasta que se reactive.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmOpen(false)} disabled={isDesactivando}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDesactivar} disabled={isDesactivando}>
+              {isDesactivando ? "Desactivando..." : "Confirmar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }

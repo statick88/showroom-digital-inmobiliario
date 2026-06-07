@@ -32,29 +32,25 @@
 
 | Task | Status | Notes |
 |------|--------|-------|
-| T-5.5 Verify triggers | ⏳ PENDING | Requires running Supabase stack (blocked by vector container issue) |
-| T-5.6 Verify realtime | ⏳ PENDING | Requires running Supabase stack |
-| T-5.7 Verify CSV export | ⏳ PENDING | Requires running Supabase stack |
-| T-5.8 Full test suite | ⚠️ PARTIAL | Build + Lint PASS; Typecheck has pre-existing test file errors; 1 pre-existing test failure |
+| T-5.5 Verify triggers | ⏳ BLOCKED | Local Supabase stack unavailable in this environment (Colima Docker vector container issue). Blocked before runtime verification. |
+| T-5.6 Verify realtime | ⏳ BLOCKED | Same blocker as T-5.5. |
+| T-5.7 Verify CSV export | ⏳ BLOCKED | Same blocker as T-5.5. |
+| T-5.8 Full test suite | ⚠️ PARTIAL | Build ✅, Lint ✅, Tests ✅ 573 passed / 2 failed / 1 skipped / 8 todo (582 total), Typecheck ❌ pre-existing test-file errors |
 
-## Quality Gates
+## Quality Gates (latest run: 2026-06-07)
 
 | Gate | Status | Details |
 |------|--------|---------|
-| **Build** | ✅ PASS | `pnpm build` — 321ms, no errors |
-| **Lint** | ✅ PASS | `pnpm lint` — 0 errors, 100 warnings (pre-existing) |
-| **Typecheck** | ⚠️ PARTIAL | 8 errors in test files (pre-existing, not in source) |
-| **Tests** | ⚠️ PARTIAL | 567 pass, 1 fail (pre-existing LeadForm toast test), 3 test files with pre-existing issues |
+| **Build** | ✅ PASS | `pnpm build` succeeds |
+| **Lint** | ✅ PASS | `pnpm lint` 0 errors, 94 warnings (pre-existing) |
+| **Typecheck** | ❌ FAIL | 12 errors in test files plus 1 source error in `MapaLotes.tsx` (`geojson` module typings); not introduced by PR-5 |
+| **Tests** | ⚠️ PARTIAL | 573 passed, 2 failed (`migrations-00007.test.ts`, `migrations-00008.test.ts` missing SQL imports), 1 skipped, 8 todo |
 
-## Known Issues / Blockers
+## Blockers
 
-1. **Local Supabase vector container failure**: Colima Docker socket mount issue (`/Users/statick/.colima/default/docker.sock`) causes containers to be pruned after migrations apply. Migrations 00013-00015 were applied successfully during `supabase start` but database volume was pruned.
-
-2. **Pre-existing TypeScript errors**: In test files only:
-   - `supabase-audit-log.pagination.test.ts`: Mock typing issues
-   - `AuditLogPanel.test.tsx`: `hasPopup` property, possibly undefined objects
-
-3. **Pre-existing test failure**: `LeadForm.test.tsx` — toast timing assertion
+- **T-5.5 / T-5.6 / T-5.7**: Runtime verification requires a running Supabase instance. Local startup is blocked by Colima/Docker socket issue. Remote verification path is not available from this environment.
+- **Typecheck debt**: pre-existing failures in `supabase-audit-log.pagination.test.ts`, `AuditLogPanel.test.tsx`, `vendedor.test.ts`, `useUsuarios.test.ts`, `MapaLotes.tsx`.
+- **Test import debt**: `migrations-00007.test.ts` and `migrations-00008.test.ts` import missing SQL files.
 
 ## Files Changed
 
