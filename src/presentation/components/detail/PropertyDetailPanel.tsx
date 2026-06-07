@@ -25,12 +25,19 @@ export function PropertyDetailPanel({
 }: PropertyDetailPanelProps) {
   const { trackClick } = useClickTracker();
 
-  // Track vista_detalle when panel opens
+  // Track vista_detalle when panel opens.
+  // NOTE: we depend on `propiedad.id` (string), not the full `propiedad`
+  // object, to avoid re-triggering when the parent re-renders with a new
+  // object reference for the same row. That previously caused a feedback
+  // loop: trackClick → query invalidation → parent re-render → new
+  // propiedad ref → useEffect fires again → flood of requests → browser
+  // runs out of resources (ERR_INSUFFICIENT_RESOURCES).
+  const propiedadId = propiedad?.id;
   useEffect(() => {
-    if (isOpen && propiedad) {
-      trackClick(propiedad.id, "vista_detalle");
+    if (isOpen && propiedadId) {
+      trackClick(propiedadId, "vista_detalle");
     }
-  }, [isOpen, propiedad, trackClick]);
+  }, [isOpen, propiedadId, trackClick]);
 
   // Close on Escape key
   useEffect(() => {

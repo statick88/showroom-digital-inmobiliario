@@ -32,14 +32,24 @@ function mapPropiedad(row: Record<string, unknown>): Propiedad {
 
 export const metricasRepository: MetricasRepository = {
   async registrarClick(data: CrearMetricaData) {
-    const { error } = await supabase.from("metricas_clicks").insert({
-      propiedad_id: data.propiedadId,
-      tipo_evento: data.tipoEvento,
-      sesion_id: data.sesionId,
-      perfil_id: data.perfilId,
-      pagina_origen: data.paginaOrigen,
-    });
-    rethrowIfPresent(error, "Error al registrar métrica");
+    // Fire-and-forget analytics: never block the user flow.
+    try {
+      await supabase.from("metricas_clicks").insert({
+        propiedad_id: data.propiedadId,
+        tipo_evento: data.tipoEvento,
+        sesion_id: data.sesionId,
+        perfil_id: data.perfilId,
+        pagina_origen: data.paginaOrigen,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      const reason = message || "unknown";
+      if (typeof console !== "undefined") {
+        console.warn("[metricas] click tracking skipped:", reason);
+      }
+      // Swallow network/abort/resource errors — analytics must not
+      // break the product experience.
+    }
   },
 
   async obtenerTopClicks(agenciaId: string, limite = 10) {
