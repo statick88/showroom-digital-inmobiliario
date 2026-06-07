@@ -4,15 +4,17 @@ const BASE = "https://statick88.github.io/showroom-digital-inmobiliario";
 const ADMIN_EMAIL = "dsaavedra88@gmail.com";
 const ADMIN_PASS = "a1b2c3d4*";
 const SUPABASE_PROJECT_REF = "ktfmrfhznwqsfziafltr";
+const ANON_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Zm1yZmh6bndxc2Z6aWFmbHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMDgxMTcsImV4cCI6MjA5NTU4NDExN30.mli5eW6uyU1HTgbvBouHnt9MYwmFy2AaJS_Xtf747Nc";
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL ?? "https://ktfmrfhznwqsfziafltr.supabase.co";
 
 test.describe("Admin Login Test", () => {
   test.beforeEach(async ({ page }) => {
-    // Get a fresh access token
+    // Get a fresh access token using the anon key from environment
     const tokenResponse = await page.request.post(
-      "https://ktfmrfhznwqsfziafltr.supabase.co/auth/v1/token?grant_type=password",
+      `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
       {
         headers: {
-          apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0Zm1yZmh6bndxc2Z6aWFmbHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMDgxMTcsImV4cCI6MjA5NTU4NDExN30.mli5eW6uyU1HTgbvBouHnt9MYwmFy2AaJS_Xtf747Nc",
+          apikey: ANON_KEY,
           "Content-Type": "application/json",
         },
         data: {

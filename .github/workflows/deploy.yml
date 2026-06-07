@@ -45,6 +45,12 @@ jobs:
           VITE_MASTER_PLAN_IMAGE_URL: ${{ secrets.VITE_MASTER_PLAN_IMAGE_URL }}
           VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
 
+      - name: Run E2E tests
+        run: pnpm test:e2e --project=chromium
+        env:
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
