@@ -91,7 +91,8 @@ test.describe("Producción - Verificación funcional", () => {
     });
 
     await page.waitForTimeout(3000);
-    await expect(page.getByText("Dashboard")).toBeVisible({ timeout: 5000 });
+    // Use getByRole to avoid strict mode violation (multiple "Dashboard" texts)
+    await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible({ timeout: 5000 });
     await expect(page.getByText("Total Lotes")).toBeVisible({ timeout: 5000 });
   });
 
