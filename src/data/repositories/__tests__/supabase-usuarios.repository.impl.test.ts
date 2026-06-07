@@ -30,6 +30,8 @@ function makeRow(overrides: Record<string, unknown> = {}) {
     email: "vendedor@inmobiliaria.pe",
     nombre: "María García",
     rol: "vendedor",
+    proyecto_id: "proj-1",
+    dni: "12345678",
     telefono: "+51999000111",
     activo: true,
     created_at: "2026-01-01T00:00:00Z",
@@ -105,6 +107,8 @@ describe("supabase-usuarios.repository.impl — listar", () => {
 
     const result = await usuariosRepository.listar();
     expect(result[0]?.telefono).toBeUndefined();
+    expect(result[0]?.proyectoId).toBe("proj-1");
+    expect(result[0]?.dni).toBe("12345678");
   });
 
   it("(3) listar: returns [] when data is null (no rows)", async () => {
@@ -164,6 +168,7 @@ describe("supabase-usuarios.repository.impl — crear (via Edge Function)", () =
       password: "temporal123",
       nombre: "Vendedor Nuevo",
       rol: "vendedor",
+      dni: "12345678",
     });
 
     expect(functionsInvokeMock).toHaveBeenCalledWith(
@@ -174,6 +179,7 @@ describe("supabase-usuarios.repository.impl — crear (via Edge Function)", () =
           password: "temporal123",
           nombre: "Vendedor Nuevo",
           rol: "vendedor",
+          dni: "12345678",
         }),
       }),
     );
@@ -198,6 +204,7 @@ describe("supabase-usuarios.repository.impl — crear (via Edge Function)", () =
       password: "12345678",
       nombre: "X",
       rol: "vendedor",
+      dni: "12345678",
     });
 
     expect(functionsInvokeMock).toHaveBeenCalled();
@@ -223,6 +230,7 @@ describe("supabase-usuarios.repository.impl — crear (via Edge Function)", () =
       password: "temporal123",
       nombre: "Vendedor Fallback",
       rol: "vendedor",
+      dni: "12345678",
     });
 
     expect(functionsInvokeMock).toHaveBeenCalledWith(
@@ -236,6 +244,7 @@ describe("supabase-usuarios.repository.impl — crear (via Edge Function)", () =
         p_password: "temporal123",
         p_nombre: "Vendedor Fallback",
         p_rol: "vendedor",
+        p_dni: "12345678",
       }),
     );
     expect(result.email).toBe("fallback@inmobiliaria.pe");
@@ -257,6 +266,7 @@ describe("supabase-usuarios.repository.impl — crear (via Edge Function)", () =
         password: "12345678",
         nombre: "X",
         rol: "vendedor",
+        dni: "12345678",
       }),
     ).rejects.toThrow("FunctionsInvokeError [404]");
   });

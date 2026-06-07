@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import type { Lote } from "@/domain/entities/lote";
 import { Icon } from "@/components/ui/icon";
+import { useCrearTransaccion } from "@/presentation/hooks/useTransacciones";
 
 interface ConsultaLoteProps {
   lote: Lote;
@@ -11,10 +13,31 @@ export function ConsultaLote({ lote, onClose }: ConsultaLoteProps) {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [telefono, setTelefono] = useState("");
+  const { mutateAsync: crearTransaccion, isPending } = useCrearTransaccion();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onClose();
+
+    if (!nombre.trim() || !correo.trim() || !telefono.trim()) return;
+
+    try {
+      await crearTransaccion({
+        loteId: lote.id,
+        tipo: "reserva",
+        compradorNombre: nombre.trim(),
+        compradorEmail: correo.trim(),
+        compradorTelefono: telefono.trim(),
+        monto: lote.precio,
+        moneda: lote.moneda,
+      });
+
+      toast.success("Consulta enviada");
+      onClose();
+    } catch (error) {
+      toast.error("No se pudo enviar la consulta", {
+        description: error instanceof Error ? error.message : "Intenta de nuevo más tarde.",
+      });
+    }
   };
 
   return (
@@ -77,6 +100,7 @@ export function ConsultaLote({ lote, onClose }: ConsultaLoteProps) {
           </div>
           <button
             type="submit"
+            disabled={isPending}
             className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-bold typo-label-md hover:brightness-110 transition-all"
           >
             Enviar consulta

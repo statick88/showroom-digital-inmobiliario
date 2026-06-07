@@ -48,6 +48,7 @@ const VENDEDOR_BASE: VendedorProfile = {
   email: "maria@showroom.pe",
   nombre: "María García",
   rol: "vendedor",
+  dni: "12345678",
   telefono: "+51999000111",
   proyectoId: "550e8400-e29b-41d4-a716-446655440000",
   activo: true,
@@ -79,6 +80,7 @@ describe("<EditarVendedorDialog> (T-5.3) — admin edit vendedor form", () => {
 
     expect(screen.getByDisplayValue("María García")).toBeInTheDocument();
     expect(screen.getByDisplayValue("maria@showroom.pe")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("12345678")).toBeInTheDocument();
     expect(screen.getByDisplayValue("+51999000111")).toBeInTheDocument();
     expect(screen.getByDisplayValue("550e8400-e29b-41d4-a716-446655440000")).toBeInTheDocument();
   });

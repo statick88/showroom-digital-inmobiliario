@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as React from "react";
 import type { ReactNode } from "react";
@@ -353,6 +353,18 @@ describe("MapView — markers (CircleMarker count = properties with ubicacion)",
 
     expect(captured.circleMarkers).toHaveLength(1);
     expect(captured.circleMarkers[0]?.id).toBe("marker-0");
+  });
+
+  it("(13b) filters out propiedades with non-finite coordinates", () => {
+    const props = [
+      makeProp({ id: "p-1", ubicacion: { x: -77, y: -12 } }),
+      makeProp({ id: "p-2", ubicacion: { x: Number.NaN, y: -12 } }),
+    ];
+    usePropiedadesMock.mockReturnValue({ data: props, isLoading: false, error: null });
+
+    render(<MapView />, { wrapper: makeWrapper() });
+
+    expect(captured.circleMarkers).toHaveLength(1);
   });
 
   it("(14) CircleMarker color reflects the propiedad.estado (disponible=success)", () => {

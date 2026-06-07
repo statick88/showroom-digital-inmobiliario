@@ -9,5 +9,6 @@ export function useTopClicks(limite = 10) {
     queryKey: ["top-lotes", limite],
     queryFn: () => metricasRepository.obtenerTopClicks(env.agenciaId, limite),
     staleTime: 5 * 60 * 1000,
+    enabled: Boolean(env.agenciaId),
   });
 }

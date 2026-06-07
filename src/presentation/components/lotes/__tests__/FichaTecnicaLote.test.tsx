@@ -144,6 +144,28 @@ describe("FichaTecnicaLote — T-4.4: vendor mode (HU-008)", () => {
     });
   });
 
+  it("(T-4.4.2b) clicking 'Marcar Disponible' calls useLoteStatusMutation().mutate with estado 'disponible'", () => {
+    render(<FichaTecnicaLote lote={baseLote} onClose={vi.fn()} modoVendedor={true} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Marcar Disponible/i }));
+
+    expect(mutateMock).toHaveBeenCalledWith({
+      loteId: baseLote.id,
+      estado: "disponible",
+    });
+  });
+
+  it("(T-4.4.2c) clicking 'Vender' calls useLoteStatusMutation().mutate with estado 'vendido'", () => {
+    render(<FichaTecnicaLote lote={baseLote} onClose={vi.fn()} modoVendedor={true} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Vender/i }));
+
+    expect(mutateMock).toHaveBeenCalledWith({
+      loteId: baseLote.id,
+      estado: "vendido",
+    });
+  });
+
   it("(T-4.4.3) when modoVendedor is NOT set, the three status buttons are NOT rendered", () => {
     render(<FichaTecnicaLote lote={baseLote} onClose={vi.fn()} />);
 

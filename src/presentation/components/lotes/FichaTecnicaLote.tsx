@@ -22,6 +22,10 @@ export function FichaTecnicaLote({ lote, onClose, modoVendedor }: FichaTecnicaLo
   // mutation hook owns the toast + cache invalidation.
   const { mutate: cambiarEstado, isPending } = useLoteStatusMutation();
 
+  const handleEstadoChange = (estado: "disponible" | "reservado" | "vendido") => {
+    cambiarEstado({ loteId: lote.id, estado });
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -100,17 +104,25 @@ export function FichaTecnicaLote({ lote, onClose, modoVendedor }: FichaTecnicaLo
             )}
             {modoVendedor && (
               <div className="flex gap-2 w-full">
-                <button className="flex-1 bg-status-success/20 text-status-success py-3 rounded-xl font-bold typo-label-md">
+                <button
+                  onClick={() => handleEstadoChange("disponible")}
+                  disabled={isPending}
+                  className="flex-1 bg-status-success/20 text-status-success py-3 rounded-xl font-bold typo-label-md disabled:opacity-50"
+                >
                   Marcar Disponible
                 </button>
                 <button
-                  onClick={() => cambiarEstado({ loteId: lote.id, estado: "reservado" })}
+                  onClick={() => handleEstadoChange("reservado")}
                   disabled={isPending}
                   className="flex-1 bg-status-warning/20 text-status-warning py-3 rounded-xl font-bold typo-label-md disabled:opacity-50"
                 >
                   Reservar
                 </button>
-                <button className="flex-1 bg-status-destructive/20 text-status-destructive py-3 rounded-xl font-bold typo-label-md">
+                <button
+                  onClick={() => handleEstadoChange("vendido")}
+                  disabled={isPending}
+                  className="flex-1 bg-status-destructive/20 text-status-destructive py-3 rounded-xl font-bold typo-label-md disabled:opacity-50"
+                >
                   Vender
                 </button>
               </div>

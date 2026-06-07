@@ -18,5 +18,5 @@ export const env = {
   })(),
   proyectoId: requireEnv("VITE_PROYECTO_ID"),
   turnstileSiteKey: import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "",
-  agenciaId: requireEnv("VITE_AGENCIA_ID"),
+  agenciaId: import.meta.env.VITE_AGENCIA_ID ?? "",
 } as const;

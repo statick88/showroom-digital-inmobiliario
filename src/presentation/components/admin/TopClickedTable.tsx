@@ -2,6 +2,7 @@
 
 import { useTopClicks } from "@/presentation/hooks/useTopClicks";
 import { cn } from "@/lib/utils";
+import { getPublicAssetPath } from "@/presentation/components/map/map-utils";
 
 export function TopClickedTable() {
   const { data: topClicks, isLoading } = useTopClicks(5);
@@ -44,7 +45,7 @@ export function TopClickedTable() {
               <td className="py-3 pr-2">
                 <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-xs overflow-hidden">
                   <img
-                    src={"/placeholder.svg"}
+                    src={getPublicAssetPath("placeholder.svg")}
                     alt={item.propiedad.titulo}
                     className="w-full h-full object-cover"
                     onError={(e) => {

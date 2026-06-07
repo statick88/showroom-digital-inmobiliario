@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, within, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
 import * as React from "react";
-import type { ReactNode } from "react";
 
 /**
  * Tests for the `<VendedorPanel>` shell (T-4.2).
@@ -60,6 +59,10 @@ vi.mock("@/presentation/components/map/MetricasPanel", () => ({
 // Mock useLotes (used inside the shell for the placeholder map)
 vi.mock("@/presentation/hooks/useLotes", () => ({
   useLotes: () => ({ data: [], isLoading: false }),
+}));
+
+vi.mock("@/presentation/hooks/useRealtimeLotes", () => ({
+  useRealtimeLotes: () => undefined,
 }));
 
 // Mock useProyecto
@@ -258,7 +261,9 @@ describe("<VendedorPanel> (T-4.4) — FichaTecnicaLote with modoVendedor", () =>
     expect(screen.queryByRole("button", { name: /Reservar/i })).not.toBeInTheDocument();
 
     // Simulate polygon click.
-    mapaOnLoteClick?.({ id: "lote-1", codigo: "LT-001", estado: "disponible" });
+    await act(async () => {
+      mapaOnLoteClick?.({ id: "lote-1", codigo: "LT-001", estado: "disponible" });
+    });
     // The ficha is lazy-loaded; wait for it to mount.
     await waitFor(() =>
       expect(screen.getByRole("button", { name: /Reservar/i })).toBeInTheDocument(),
@@ -277,7 +282,9 @@ describe("<VendedorPanel> (T-4.4) — FichaTecnicaLote with modoVendedor", () =>
     );
 
     // Click the Cerrar button in the mocked ficha — this fires onClose
-    fireEvent.click(screen.getByRole("button", { name: /cerrar ficha/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /cerrar ficha/i }));
+    });
 
     // The ficha is gone after the onClose clears selectedLote
     await waitFor(() =>

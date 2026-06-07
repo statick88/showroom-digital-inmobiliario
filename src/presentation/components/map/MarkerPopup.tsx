@@ -4,6 +4,7 @@ import type { Propiedad } from "@/domain/entities/propiedad";
 import { formatPrice } from "@/presentation/lib/formatters";
 import { StatusChip } from "@/components/ui/status-chip";
 import { Button } from "@/components/ui/button";
+import { getPublicAssetPath } from "@/presentation/components/map/map-utils";
 
 interface MarkerPopupProps {
   propiedad: Propiedad;
@@ -14,7 +15,7 @@ export function MarkerPopup({ propiedad }: MarkerPopupProps) {
     <div className="font-sans text-sm leading-snug min-w-[200px]">
       <div className="flex items-start gap-3">
         <img
-          src={propiedad.imagenes[0] ?? "/placeholder.svg"}
+          src={propiedad.imagenes[0] ?? getPublicAssetPath("placeholder.svg")}
           alt={propiedad.titulo}
           className="w-20 h-20 object-cover rounded-lg shrink-0"
         />

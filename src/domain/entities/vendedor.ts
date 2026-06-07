@@ -16,14 +16,11 @@
  *      by the `crear-vendedor` Edge Function and NEVER persisted on
  *      `usuarios_rol`. Treat it as write-only and never echo it back.
  *
- * Note about `proyectoId`:
- *   The original spec (#2668) calls for filtering lots by the
- *   vendedor's assigned `usuarios_rol.proyecto_id`. That column is not
- *   yet on the table (it will be added in a future migration); we
- *   therefore model `proyectoId` as an optional field here so the
- *   `useLotesPorVendedor` hook (T-4.3) can already be wired and tested
- *   today. When the column lands, every call site continues to work
- *   without changes.
+ * Note about `proyectoId` / `dni`:
+ *   The lotization refactor now persists both fields on
+ *   `usuarios_rol`, but existing rows may still have NULLs. We keep
+ *   them optional in the read model so older rows and test fixtures
+ *   remain valid, while creation flows require both values.
  */
 
 /** A row in the `public.usuarios_rol` table, mapped to the JS layer. */
@@ -34,8 +31,8 @@ export interface VendedorProfile {
   nombre: string;
   rol: "admin" | "vendedor" | "comprador";
   telefono?: string;
-  /** Optional until the DB column lands; used by HU-007 to scope lots. */
   proyectoId?: string;
+  dni?: string;
   activo: boolean;
   createdAt: string;
   updatedAt: string;
@@ -48,6 +45,7 @@ export interface CrearVendedorData {
   password: string;
   nombre: string;
   rol: "admin" | "vendedor" | "comprador";
+  dni: string;
   telefono?: string;
   proyectoId?: string;
 }

@@ -21,6 +21,7 @@
 import { useState, useEffect, Suspense, lazy } from "react";
 import { useAuthStore } from "@/presentation/hooks/useAuthStore";
 import { useProyecto } from "@/presentation/hooks/useProyectos";
+import { useRealtimeLotes } from "@/presentation/hooks/useRealtimeLotes";
 import { env } from "@/config/env";
 import { MapaLotes } from "@/presentation/components/lotes/MapaLotes";
 import { MetricasPanel } from "@/presentation/components/map/MetricasPanel";
@@ -40,6 +41,7 @@ export function VendedorPanel() {
 
   const proyectoId = env.proyectoId;
   const { data: proyecto } = useProyecto(proyectoId);
+  useRealtimeLotes();
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);

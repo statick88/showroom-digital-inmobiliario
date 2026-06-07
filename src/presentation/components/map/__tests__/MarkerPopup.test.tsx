@@ -33,7 +33,7 @@ describe("MarkerPopup", () => {
   it("(2) falls back to /placeholder.svg when imagenes is empty (?? placeholder branch)", () => {
     const { getByRole } = render(<MarkerPopup propiedad={makeProp({ imagenes: [] })} />);
     const img = getByRole("img");
-    expect(img).toHaveAttribute("src", "/placeholder.svg");
+    expect(img.getAttribute("src")).toContain("placeholder.svg");
   });
 
   it("(3) prefixes distrito with a comma+space when distrito is present (truthy branch)", () => {

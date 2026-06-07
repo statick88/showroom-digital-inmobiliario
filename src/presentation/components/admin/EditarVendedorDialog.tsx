@@ -77,10 +77,7 @@ export function EditarVendedorDialog({ open, onOpenChange, vendedor }: EditarVen
   const [form, setForm] = useState<FormState>(() => ({
     nombre: vendedor?.nombre ?? "",
     email: vendedor?.email ?? "",
-    // The `VendedorProfile` does not include `dni` yet (the column is
-    // not in `usuarios_rol`), so we default to empty. When the domain
-    // entity grows, this is the only line that needs to change.
-    dni: "",
+    dni: vendedor?.dni ?? "",
     telefono: vendedor?.telefono ?? "",
     proyectoId: vendedor?.proyectoId ?? "",
   }));

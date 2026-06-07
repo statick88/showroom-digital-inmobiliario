@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import { ConsultaLote } from "@/presentation/components/lotes/ConsultaLote";
 import type { Lote } from "@/domain/entities/lote";
@@ -17,6 +17,14 @@ vi.mock("@/presentation/hooks/useClickTracker", () => ({
   useClickTracker: () => tracker,
 }));
 
+const crearTransaccionMock = vi.fn();
+vi.mock("@/presentation/hooks/useTransacciones", () => ({
+  useCrearTransaccion: () => ({
+    mutateAsync: crearTransaccionMock,
+    isPending: false,
+  }),
+}));
+
 // ── Mock Turnstile (added in PR-3 GAP-2; today it doesn't exist yet) ──
 // We don't reference @marsidev/react-turnstile in PR-1 because ConsultaLote
 // doesn't use it. The TODO test (5) documents the future ThrottledSubmit
@@ -26,6 +34,7 @@ const lote: Lote = makeLoteFixture({ id: "lote-consulta-1", codigo: "LT-007" });
 
 beforeEach(() => {
   tracker.trackClick.mockClear();
+  crearTransaccionMock.mockResolvedValue(undefined);
 });
 
 describe("ConsultaLote — retro tests (T-1.3, PR-1 foundations)", () => {
@@ -43,9 +52,7 @@ describe("ConsultaLote — retro tests (T-1.3, PR-1 foundations)", () => {
     expect(screen.getByRole("button", { name: "Enviar consulta" })).toBeInTheDocument();
   });
 
-  it("(1b) submit fires onClose (current behavior — no LPDP gate yet)", () => {
-    // Documents today's behavior: any submit closes the modal. PR-3 (T-3.1 +
-    // GAP-2) will gate this on LPDP consent.
+  it("(1b) submit persists a transaccion and closes on success", async () => {
     const onClose = vi.fn();
     render(<ConsultaLote lote={lote} onClose={onClose} />);
 
@@ -58,7 +65,18 @@ describe("ConsultaLote — retro tests (T-1.3, PR-1 foundations)", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Enviar consulta" }));
 
-    expect(onClose).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(crearTransaccionMock).toHaveBeenCalledWith({
+        loteId: lote.id,
+        tipo: "reserva",
+        compradorNombre: "Ana",
+        compradorEmail: "ana@example.com",
+        compradorTelefono: "999111222",
+        monto: lote.precio,
+        moneda: lote.moneda,
+      });
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
   });
 });
 

@@ -33,6 +33,8 @@ function mapRowToVendedor(row: Record<string, unknown>): VendedorProfile {
     nombre: row.nombre as string,
     rol: row.rol as VendedorProfile["rol"],
     telefono: (row.telefono as string | null) ?? undefined,
+    proyectoId: (row.proyecto_id as string | null) ?? undefined,
+    dni: (row.dni as string | null) ?? undefined,
     activo: row.activo as boolean,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
@@ -104,6 +106,7 @@ export const usuariosRepository: IUsuariosRepository = {
       p_password: payload.password,
       p_nombre: payload.nombre,
       p_rol: payload.rol,
+      p_dni: payload.dni,
       p_telefono: payload.telefono ?? null,
       p_proyecto_id: payload.proyectoId ?? null,
     });

@@ -7,9 +7,11 @@ import { useAuthStore } from "@/presentation/hooks/useAuthStore";
 import { useProyecto } from "@/presentation/hooks/useProyectos";
 import { env } from "@/config/env";
 import { getPolygonStyle } from "@/config/polygon-styles";
+import type { Feature, Polygon } from "geojson";
 import type { Lote, EstadoLote } from "@/domain/entities/lote";
 import { GlassControls } from "@/presentation/components/map/GlassControls";
 import { MasterPlanOverlay } from "@/presentation/components/map/MasterPlanOverlay";
+import { isValidLatLng } from "@/presentation/components/map/map-utils";
 
 const DEFAULT_CENTER: [number, number] = [-13.163, -74.224];
 
@@ -39,23 +41,32 @@ interface MapaLotesProps {
  */
 function convertCoordinatesToLatLng(coords: unknown): number[][][] | null {
   if (!coords || !Array.isArray(coords)) return null;
-  
+
   try {
     // GeoJSON Polygon coordinates: [[[lng, lat], [lng, lat], ...]]
     // Leaflet expects: [[[lat, lng], [lat, lng], ...]]
     const rings = coords as number[][][];
-    
-    return rings.map((ring) => 
-      ring.map((coord) => {
-        if (!Array.isArray(coord) || coord.length < 2) return null;
-        // Database stores [lng, lat], Leaflet expects [lat, lng]
-        const [lng, lat] = coord;
-        if (typeof lat !== 'number' || typeof lng !== 'number' || !Number.isFinite(lat) || !Number.isFinite(lng)) {
-          return null;
-        }
-        return [lat, lng];
-      }).filter((c): c is [number, number] => c !== null)
-    ).filter((ring) => ring.length >= 4); // Valid polygon needs at least 4 points (closed)
+
+    return rings
+      .map((ring) =>
+        ring
+          .map((coord) => {
+            if (!Array.isArray(coord) || coord.length < 2) return null;
+            // Database stores [lng, lat], Leaflet expects [lat, lng]
+            const [lng, lat] = coord;
+            if (
+              typeof lat !== "number" ||
+              typeof lng !== "number" ||
+              !Number.isFinite(lat) ||
+              !Number.isFinite(lng)
+            ) {
+              return null;
+            }
+            return [lat, lng];
+          })
+          .filter((c): c is [number, number] => c !== null),
+      )
+      .filter((ring) => ring.length >= 4); // Valid polygon needs at least 4 points (closed)
   } catch {
     return null;
   }
@@ -77,7 +88,7 @@ export function MapaLotes({ onLoteClick, filtroEstado, modoVendedor }: MapaLotes
   const { data: lotes, isLoading } = modoVendedor ? vendedorQuery : defaultQuery;
   const { data: proyecto } = useProyecto(proyectoId);
 
-  const center: [number, number] = proyecto?.coordenadasCentro
+  const center: [number, number] = isValidLatLng(proyecto?.coordenadasCentro)
     ? [proyecto.coordenadasCentro.lat, proyecto.coordenadasCentro.lng]
     : DEFAULT_CENTER;
 
@@ -90,10 +101,12 @@ export function MapaLotes({ onLoteClick, filtroEstado, modoVendedor }: MapaLotes
   }
 
   // Filter out lotes with invalid coordinates and convert to Leaflet format
-  const validLotes = (lotes ?? []).map((lote) => {
-    const convertedCoords = convertCoordinatesToLatLng(lote.poligonoCoords);
-    return convertedCoords ? { ...lote, poligonoCoords: convertedCoords } : null;
-  }).filter((l): l is Lote & { poligonoCoords: number[][][] } => l !== null);
+  const validLotes = (lotes ?? [])
+    .map((lote) => {
+      const convertedCoords = convertCoordinatesToLatLng(lote.poligonoCoords);
+      return convertedCoords ? { lote, poligonoCoords: convertedCoords } : null;
+    })
+    .filter((l): l is { lote: Lote; poligonoCoords: number[][][] } => l !== null);
 
   return (
     <div className="relative h-full w-full">
@@ -104,7 +117,7 @@ export function MapaLotes({ onLoteClick, filtroEstado, modoVendedor }: MapaLotes
         />
         <MapController centro={center} />
         <MasterPlanOverlay />
-        {validLotes.map((lote) => (
+        {validLotes.map(({ lote, poligonoCoords }) => (
           <GeoJSON
             key={lote.id}
             data={
@@ -112,9 +125,10 @@ export function MapaLotes({ onLoteClick, filtroEstado, modoVendedor }: MapaLotes
                 type: "Feature",
                 geometry: {
                   type: "Polygon",
-                  coordinates: lote.poligonoCoords,
+                  coordinates: poligonoCoords,
                 },
-              } as any
+                properties: null,
+              } as Feature<Polygon>
             }
             style={() => getPolygonStyle(lote.estado)}
             eventHandlers={{
@@ -127,5 +141,3 @@ export function MapaLotes({ onLoteClick, filtroEstado, modoVendedor }: MapaLotes
     </div>
   );
 }
-
-

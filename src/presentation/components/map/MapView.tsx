@@ -16,13 +16,14 @@ import {
   MARKER_BORDER_COLOR,
 } from "@/config/markers";
 import { usePropiedades } from "@/presentation/hooks/usePropiedades.legacy";
-import type { Propiedad, EstadoPropiedad } from "@/domain/entities/propiedad";
+import type { Propiedad } from "@/domain/entities/propiedad";
 import type { FiltrosPropiedades } from "@/domain/repositories/propiedades.repository";
 import type { FiltersState } from "./PropertyFilters";
 import { StatusChip } from "@/components/ui/status-chip";
 import { formatPrice } from "@/presentation/lib/formatters";
 import { useClickTracker } from "@/presentation/hooks/useClickTracker";
 import { useRealtimePropiedades } from "@/presentation/hooks/useRealtimePropiedades";
+import { getPublicAssetPath, isValidPoint } from "@/presentation/components/map/map-utils";
 
 function MapFlyTo({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap();
@@ -86,7 +87,7 @@ function PropertyList({ propiedades, isLoading, selectedId, onSelect }: Property
           }`}
         >
           <img
-            src={p.imagenes[0] ?? "/placeholder.svg"}
+            src={p.imagenes[0] ?? getPublicAssetPath("placeholder.svg")}
             alt={p.titulo}
             className="w-20 h-20 object-cover rounded-lg shrink-0"
           />
@@ -145,19 +146,10 @@ export function MapView() {
     leafletMapRef.current = map;
   }, []);
 
-  const handleMarkerClick = useCallback(
-    (p: Propiedad) => {
-      setSelected(p);
-      setDetailOpen(true);
-      trackClick(p.id, "click");
-    },
-    [trackClick],
-  );
-
   const handleCardClick = useCallback(
     (p: Propiedad) => {
       setSelected(p);
-      if (p.ubicacion) {
+      if (isValidPoint(p.ubicacion)) {
         setFlyTo({ lat: p.ubicacion.y, lng: p.ubicacion.x });
       }
       setDetailOpen(true);
@@ -180,7 +172,7 @@ export function MapView() {
 
   const markers = useMemo(() => {
     if (!propiedades) return [];
-    return propiedades.filter((p) => p.ubicacion);
+    return propiedades.filter((p) => isValidPoint(p.ubicacion));
   }, [propiedades]);
 
   const handleZoomIn = useCallback(() => {
@@ -260,7 +252,10 @@ export function MapView() {
                   fillColor: getMarkerColor(p.estado),
                   fillOpacity: 1,
                 }}
-              >
+                  eventHandlers={{
+                    click: () => handleCardClick(p),
+                  }}
+                >
                 <Popup>
                   <MarkerPopup propiedad={p} />
                 </Popup>

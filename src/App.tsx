@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase/client";
 import { HeaderNav } from "@/presentation/components/shared/HeaderNav";
+import { HeroProyecto } from "@/presentation/components/shared/HeroProyecto";
 import type { TabView } from "@/presentation/components/shared/HeaderNav";
 import { env } from "@/config/env";
 import { useProyecto } from "@/presentation/hooks/useProyectos";
@@ -14,6 +15,7 @@ import { RoleGuard } from "@/presentation/components/auth/RoleGuard";
 import { VendedorPanel } from "@/presentation/components/vendedor/VendedorPanel";
 import { useAuthStore } from "@/presentation/hooks/useAuthStore";
 import { usuariosRepository } from "@/data/repositories";
+import { UbicacionMapa } from "@/presentation/components/map/UbicacionMapa";
 
 const MapaLotes = lazy(() =>
   import("@/presentation/components/lotes/MapaLotes").then((m) => ({ default: m.MapaLotes })),
@@ -302,10 +304,12 @@ function AppContent() {
 
         {tab === "inicio" && (
           <div className="space-y-8">
-            <h2 className="typo-headline-lg text-foreground">Bienvenido</h2>
-            <p className="typo-body-lg text-muted-foreground">
-              Explora nuestro proyecto de lotización.
-            </p>
+            <HeroProyecto
+              nombre={proyecto?.nombre}
+              descripcion={proyecto?.descripcion ?? "Explora nuestro proyecto de lotización."}
+              imagenUrl={proyecto?.imagenHero}
+              imagenes360={proyecto?.imagenes360}
+            />
           </div>
         )}
 
@@ -315,6 +319,14 @@ function AppContent() {
             <p className="typo-body-md text-muted-foreground">
               El proyecto está ubicado en Ayacucho, Perú.
             </p>
+            {proyecto?.coordenadasCentro && (
+              <UbicacionMapa
+                lat={proyecto.coordenadasCentro.lat}
+                lng={proyecto.coordenadasCentro.lng}
+                nombre={proyecto.nombre}
+                direccion={proyecto.ubicacion}
+              />
+            )}
           </div>
         )}
 
