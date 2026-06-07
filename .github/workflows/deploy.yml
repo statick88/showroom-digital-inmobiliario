@@ -50,6 +50,10 @@ jobs:
         env:
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_PROYECTO_ID: ${{ secrets.VITE_PROYECTO_ID }}
+          VITE_AGENCIA_ID: ${{ secrets.VITE_AGENCIA_ID }}
+          VITE_MASTER_PLAN_IMAGE_URL: ${{ secrets.VITE_MASTER_PLAN_IMAGE_URL }}
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
 
       - uses: peaceiris/actions-gh-pages@v4
         with:
