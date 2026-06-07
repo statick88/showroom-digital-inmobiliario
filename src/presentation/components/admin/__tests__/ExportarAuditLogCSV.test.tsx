@@ -191,10 +191,9 @@ describe("<ExportarAuditLogCSV> (T-5.7) — CSV export button for audit log", ()
       }),
     ];
 
-    render(
-      <ExportarAuditLogCSV filtros={mockFilters} rows={rowsWithNulls} />,
-      { wrapper: makeWrapper() },
-    );
+    render(<ExportarAuditLogCSV filtros={mockFilters} rows={rowsWithNulls} />, {
+      wrapper: makeWrapper(),
+    });
 
     const button = screen.getByRole("button", { name: /exportar csv/i });
     fireEvent.click(button);
@@ -202,24 +201,24 @@ describe("<ExportarAuditLogCSV> (T-5.7) — CSV export button for audit log", ()
     expect(mockUnparse).toHaveBeenCalledTimes(1);
     const callArgs = mockUnparse.mock.calls[0] as [unknown, unknown];
     const parsedRows = callArgs[0] as Array<Record<string, unknown>>;
-    expect(parsedRows[0]["Valores Anteriores"]).toBe("");
-    expect(parsedRows[0]["Valores Nuevos"]).toBe("");
+    expect(parsedRows.length).toBeGreaterThan(0);
+    const firstRow = parsedRows[0]!;
+    expect(firstRow["Valores Anteriores"]).toBe("");
+    expect(firstRow["Valores Nuevos"]).toBe("");
   });
 
   it("(6) handleExport early returns when rows is empty", () => {
     // This test ensures the early return branch in handleExport is covered
     // by calling handleExport directly with empty rows
-    const { unmount } = render(
-      <ExportarAuditLogCSV filtros={mockFilters} rows={mockRows} />,
-      { wrapper: makeWrapper() },
-    );
+    const { unmount } = render(<ExportarAuditLogCSV filtros={mockFilters} rows={mockRows} />, {
+      wrapper: makeWrapper(),
+    });
 
     // Unmount and remount with empty rows to trigger the early return in handleExport
     unmount();
-    const { container } = render(
-      <ExportarAuditLogCSV filtros={mockFilters} rows={[]} />,
-      { wrapper: makeWrapper() },
-    );
+    const { container } = render(<ExportarAuditLogCSV filtros={mockFilters} rows={[]} />, {
+      wrapper: makeWrapper(),
+    });
 
     expect(container.querySelector("button")).toBeNull();
   });
