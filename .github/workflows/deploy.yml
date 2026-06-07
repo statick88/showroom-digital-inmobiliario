@@ -45,6 +45,9 @@ jobs:
           VITE_MASTER_PLAN_IMAGE_URL: ${{ secrets.VITE_MASTER_PLAN_IMAGE_URL }}
           VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
 
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Run E2E tests
         run: pnpm test:e2e --project=chromium
         env:
