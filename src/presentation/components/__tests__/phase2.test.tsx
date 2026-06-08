@@ -1,6 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, within } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { Propiedad, EstadoPropiedad, TipoPropiedad } from "@/domain/entities/propiedad";
+
+// ── Mock localStorage for useWhatsApp ──────────────────────────────
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => { store[key] = value; },
+    removeItem: (key: string) => { delete store[key]; },
+    clear: () => { store = {}; },
+  };
+})();
+Object.defineProperty(window, "localStorage", { value: localStorageMock });
 
 // ── Mock env to prevent "Missing required env var" ──────────────────
 vi.mock("@/config/env", () => ({
@@ -217,10 +230,15 @@ describe("2.6 GlassControls — Controls", () => {
 
 // ── 2.7 │ PropertyDetailPanel: desktop modal + mobile slide ────────
 describe("2.7 PropertyDetailPanel — Detail panel", () => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+
   it("renders when open with property data", async () => {
     const { PropertyDetailPanel } =
       await import("@/presentation/components/detail/PropertyDetailPanel");
-    render(<PropertyDetailPanel propiedad={mockPropDisponible} isOpen={true} onClose={vi.fn()} />);
+    render(<PropertyDetailPanel propiedad={mockPropDisponible} isOpen={true} onClose={vi.fn()} />, { wrapper });
     // Use getAllByText — both desktop and mobile versions render in jsdom
     const contactBtns = screen.getAllByText("Contactar");
     expect(contactBtns.length).toBeGreaterThanOrEqual(1);
@@ -231,6 +249,7 @@ describe("2.7 PropertyDetailPanel — Detail panel", () => {
       await import("@/presentation/components/detail/PropertyDetailPanel");
     const { container } = render(
       <PropertyDetailPanel propiedad={mockPropDisponible} isOpen={false} onClose={vi.fn()} />,
+      { wrapper },
     );
     expect(container.innerHTML).toBe("");
   });
@@ -238,7 +257,7 @@ describe("2.7 PropertyDetailPanel — Detail panel", () => {
   it("includes HeroImage with gradient overlay", async () => {
     const { PropertyDetailPanel } =
       await import("@/presentation/components/detail/PropertyDetailPanel");
-    render(<PropertyDetailPanel propiedad={mockPropDisponible} isOpen={true} onClose={vi.fn()} />);
+    render(<PropertyDetailPanel propiedad={mockPropDisponible} isOpen={true} onClose={vi.fn()} />, { wrapper });
     const codes = screen.getAllByText("LT-042");
     expect(codes.length).toBeGreaterThanOrEqual(1);
   });
@@ -246,7 +265,7 @@ describe("2.7 PropertyDetailPanel — Detail panel", () => {
   it("includes CTA 'Contactar' button", async () => {
     const { PropertyDetailPanel } =
       await import("@/presentation/components/detail/PropertyDetailPanel");
-    render(<PropertyDetailPanel propiedad={mockPropDisponible} isOpen={true} onClose={vi.fn()} />);
+    render(<PropertyDetailPanel propiedad={mockPropDisponible} isOpen={true} onClose={vi.fn()} />, { wrapper });
     const contactBtns = screen.getAllByText("Contactar");
     expect(contactBtns.length).toBeGreaterThanOrEqual(1);
   });

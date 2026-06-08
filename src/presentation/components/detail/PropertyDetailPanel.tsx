@@ -9,6 +9,7 @@ import { HeroImage } from "@/presentation/components/map/HeroImage";
 import { SpecsGrid } from "@/presentation/components/detail/SpecsGrid";
 import { Gallery } from "@/presentation/components/map/Gallery";
 import { useClickTracker } from "@/presentation/hooks/useClickTracker";
+import { WhatsAppButton } from "@/presentation/components/whatsapp/WhatsAppButton";
 
 interface PropertyDetailPanelProps {
   propiedad: Propiedad | null;
@@ -130,9 +131,18 @@ export function PropertyDetailPanel({
 
                   {/* CTA */}
                   <div className="p-4 border-t border-border">
-                    <Button className="w-full" size="lg" onClick={() => onContact?.(propiedad)}>
-                      Contactar
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button className="flex-1" size="lg" onClick={() => onContact?.(propiedad)}>
+                        Contactar
+                      </Button>
+                      <WhatsAppButton
+                        propertyName={propiedad.titulo}
+                        price={propiedad.precio}
+                        vendedorPhone={propiedad.telefono}
+                        propertyId={propiedad.id}
+                        size="lg"
+                      />
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -206,9 +216,18 @@ export function PropertyDetailPanel({
 
                 {/* CTA fixed at bottom */}
                 <div className="p-4 border-t border-border bg-white dark:bg-zinc-900">
-                  <Button className="w-full" size="lg" onClick={() => onContact?.(propiedad)}>
-                    Contactar
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button className="flex-1" size="lg" onClick={() => onContact?.(propiedad)}>
+                      Contactar
+                    </Button>
+                    <WhatsAppButton
+                      propertyName={propiedad.titulo}
+                      price={propiedad.precio}
+                      vendedorPhone={propiedad.telefono}
+                      propertyId={propiedad.id}
+                      size="lg"
+                    />
+                  </div>
                 </div>
               </motion.div>
             </>
