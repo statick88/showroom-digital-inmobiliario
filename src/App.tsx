@@ -305,6 +305,7 @@ function AppContent() {
   // T-4.4: when the signed-in user is a vendedor or admin, the ficha
   // opens in vendor mode so the Reservar / Vender buttons are visible.
   const rol = useAuthStore((s) => s.rol);
+  const authenticated = useAuthStore((s) => s.sessionChecked && s.authUserId !== null);
   const modoVendedor = rol === "vendedor" || rol === "admin";
 
   return (
