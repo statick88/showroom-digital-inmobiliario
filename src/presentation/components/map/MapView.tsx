@@ -208,7 +208,7 @@ export function MapView() {
         {/* Sidebar — Desktop: fixed width, Mobile: below map */}
         <aside
           data-testid="property-list-sidebar"
-          className="md:w-[380px] md:h-full flex flex-col bg-card border-r border-border overflow-hidden md:order-first order-last"
+          className="md:w-[380px] md:h-full flex flex-col bg-card border-r border-border overflow-hidden md:order-first order-last relative z-20"
         >
           <PropertyFilters filters={filters} onFilterChange={setFilters} />
           <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -222,7 +222,7 @@ export function MapView() {
         </aside>
 
         {/* Map area — Desktop: fills remaining space, Mobile: 50vh top */}
-        <section className="flex-1 relative md:order-last order-first md:h-full h-[50vh]">
+        <section className="flex-1 relative md:order-last order-first md:h-full h-[50vh] z-10">
           <MapContainer
             center={[-12.1354, -76.9967]}
             zoom={14}
