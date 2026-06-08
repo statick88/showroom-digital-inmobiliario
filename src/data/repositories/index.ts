@@ -3,6 +3,7 @@ export { metricasRepository } from "./metricas.repository.impl";
 export { leadsRepository } from "./leads.repository.impl";
 export { leadEventsRepository } from "./lead-events.repository.impl";
 export { leadScoresRepository } from "./lead-scores.repository.impl";
+export { commissionsRepository } from "./commissions.repository.impl";
 export { lotesRepository } from "./supabase-lotes.repository.impl";
 export { proyectosRepository } from "./supabase-proyectos.repository.impl";
 export { transaccionesRepository } from "./supabase-transacciones.repository.impl";
