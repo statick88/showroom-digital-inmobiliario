@@ -276,13 +276,16 @@ describe("<UsuariosPanel> integration (T-5.4) — HU-009 admin flow", () => {
     // Initial badge says "Activo".
     expect(screen.getByText("Activo")).toBeInTheDocument();
 
-    // Open the editor and click Desactivar.
+    // Open the editor and click Desactivar, then Confirmar in the confirmation dialog.
     const row = screen.getByTestId("usuario-row");
     fireEvent.click(within(row).getByTestId("editar-vendedor-button"));
 
     await screen.findByTestId("editar-vendedor-form");
 
     fireEvent.click(screen.getByTestId("desactivar-vendedor"));
+
+    // Click "Confirmar" in the confirmation dialog
+    fireEvent.click(screen.getByRole("button", { name: /confirmar/i }));
 
     await waitFor(() => expect(desactivarMutate).toHaveBeenCalledTimes(1));
 
@@ -478,6 +481,9 @@ describe("<UsuariosPanel> integration (T-5.4) — HU-009 admin flow", () => {
     await screen.findByTestId("editar-vendedor-form");
 
     fireEvent.click(screen.getByTestId("desactivar-vendedor"));
+
+    // Click "Confirmar" in the confirmation dialog
+    fireEvent.click(screen.getByRole("button", { name: /confirmar/i }));
 
     await waitFor(() => expect(desactivarMutate).toHaveBeenCalledTimes(1));
     const [, options] = desactivarMutate.mock.calls[0] as [

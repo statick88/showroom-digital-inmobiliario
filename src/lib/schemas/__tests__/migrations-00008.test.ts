@@ -32,9 +32,9 @@ import { describe, it, expect } from "vitest";
  * project's vite-only tsconfig types.
  */
 
-import migrationSql from "../../../../supabase/migrations/00008_purga_lpd_function.sql?raw";
+import migrationSql from "../../../../supabase/migrations/00011_purga_lpd_function.sql?raw";
 
-describe("migration 00008_purga_lpd_function.sql", () => {
+describe("migration 00011_purga_lpd_function.sql", () => {
   it("(1) declares the purga_lpd function with CREATE OR REPLACE (idempotent)", () => {
     const sql = migrationSql;
 

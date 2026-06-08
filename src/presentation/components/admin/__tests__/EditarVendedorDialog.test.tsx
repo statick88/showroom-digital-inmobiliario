@@ -191,8 +191,13 @@ describe("<EditarVendedorDialog> (T-5.3) — admin edit vendedor form", () => {
       wrapper: makeWrapper(),
     });
 
+    // Click "Desactivar" to open the confirmation dialog
     const desactivarBtn = screen.getByRole("button", { name: /desactivar/i });
     fireEvent.click(desactivarBtn);
+
+    // Click "Confirmar" in the confirmation dialog to fire the mutation
+    const confirmarBtn = screen.getByRole("button", { name: /confirmar/i });
+    fireEvent.click(confirmarBtn);
 
     expect(useDesactivarVendedorMutate).toHaveBeenCalledWith(
       "user-1",

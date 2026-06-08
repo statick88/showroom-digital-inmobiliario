@@ -24,9 +24,9 @@ import { describe, it, expect } from "vitest";
  * project's vite-only tsconfig types.
  */
 
-import migrationSql from "../../../../supabase/migrations/00007_cci_validation.sql?raw";
+import migrationSql from "../../../../supabase/migrations/00010_cci_validation.sql?raw";
 
-describe("migration 00007_cci_validation.sql", () => {
+describe("migration 00010_cci_validation.sql", () => {
   it("(1) raises NOTICE with the count of dirty CCI rows BEFORE the CHECK", () => {
     const sql = migrationSql;
 
