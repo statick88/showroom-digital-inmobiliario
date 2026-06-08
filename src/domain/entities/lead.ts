@@ -8,3 +8,16 @@ export interface LeadEvent {
   metadata: Record<string, unknown>;
   createdAt: string;
 }
+
+export interface LeadScore {
+  id: string;
+  visitorId: string;
+  score: number; // 0-100
+  breakdown: {
+    views: number;
+    clicks: number;
+    time: number;
+    repeats: number;
+  };
+  computedAt: string;
+}
