@@ -1,6 +1,6 @@
 # Showroom Digital Inmobiliario
 
-Showroom inmobiliario interactivo con mapa de propiedades en tiempo real, analytics de clics, dashboard administrativo y cumplimiento LPDP.
+Showroom inmobiliario interactivo con mapa de propiedades en tiempo real, analytics de clics, dashboard administrativo, **panel vendedor con comisiones**, **lead scoring IA**, **PWA offline**, **WhatsApp integration** y cumplimiento LPDP.
 
 ## Stack
 
@@ -10,8 +10,10 @@ Showroom inmobiliario interactivo con mapa de propiedades en tiempo real, analyt
 - **React Query** + **Zustand** (state management)
 - **Leaflet** (mapas interactivos con marcadores circulares 16px)
 - **Supabase** (PostgreSQL, autenticación, Realtime)
-- **Vitest** (unit testing, 152+ tests)
+- **Vitest** (unit testing, **722+ tests**)
 - **Playwright** (E2E testing)
+- **vite-plugin-pwa** (Progressive Web App)
+- **Workbox** (service worker + caching estratégico)
 
 ## Funcionalidades
 
@@ -22,6 +24,37 @@ Showroom inmobiliario interactivo con mapa de propiedades en tiempo real, analyt
 - Galería de imágenes y especificaciones técnicas
 - Formulario de contacto con **Cloudflare Turnstile** + consentimiento LPDP
 - Control de zoom + geolocalización + capas
+
+### 🧭 Navegación Unificada
+- **Navbar responsive** con hamburger menu en móvil
+- Rutas hash-based: `#showroom`, `#app`, `#admin`, `#vendedor`, `#privacidad`
+- HeaderNav secundario en `#app` (Inicio / Ubicación / Lotización / Financiamiento)
+
+### 💬 WhatsApp Integration
+- Botón WhatsApp en tarjetas de propiedad y vista detalle
+- Links `wa.me` con mensaje pre-rellenado (título + precio)
+- Tracking de clics en `lead_events` para lead scoring
+- Funciona en móvil (app) y desktop (WhatsApp Web)
+
+### 📱 PWA Offline
+- **vite-plugin-pwa** + Workbox
+- Service worker con cache `NetworkFirst` para API Supabase
+- `CacheFirst` para assets estáticos
+- Indicador "Modo offline" al perder conexión
+- Manifest configurado para install prompt
+
+### 🎯 AI Lead Scoring
+- Algoritmo ponderado: vistas×10 + clicks×25 + tiempo/3 + repeticiones×15
+- Score 0–100 (baseline 10) con badges: Alto/Medio/Bajo
+- RPC Supabase `compute_lead_score(visitor_id)` para cálculo server-side
+- Panel `LeadScoringPanel` con leads ordenados por score
+
+### 👨‍💼 Vendedor Dashboard
+- **Team leads visibility**: ve leads de todo el equipo
+- **Comisiones variables** por rangos de precio (configurable)
+- **SUNAT RUC validation** con cache 24h (localStorage)
+- Tabla de comisiones: Pendiente / Aprobado / Pagado
+- Resumen stats: leads activos, score promedio, comisiones pendientes
 
 ### 📊 Dashboard Administrativo
 - Tabla de propiedades con búsqueda y filtros
@@ -104,32 +137,59 @@ alter publication supabase_realtime add table lotes;
 ```
 src/
 ├── domain/                    # Entidades, repositorios (interfaces)
-│   ├── entities/             # Propiedad, Lote, MetricaClick, Lead
-│   └── repositories/         # Interfaces de repositorios
+│   ├── entities/             # Propiedad, Lote, MetricaClick, Lead, LeadEvent, LeadScore, Commission, CommissionRule
+│   └── repositories/         # Interfaces: leadEvents, leadScores, commissions
 ├── data/                     # Implementaciones
-│   └── repositories/         # Supabase repos + repositorio de métricas
+│   └── repositories/         # Supabase repos + lead events + lead scores + commissions
 ├── presentation/             # UI
 │   ├── components/
 │   │   ├── map/              # Mapa, marcadores, filtros, LeadForm
 │   │   ├── admin/            # Dashboard, gráficos, tablas
 │   │   ├── detail/           # Panel de detalle de propiedad
-│   │   └── shared/           # CookieBanner, componentes comunes
+│   │   ├── vendedor/         # VendedorDashboard, CommissionTable, TeamLeadsView
+│   │   ├── whatsapp/         # WhatsAppButton
+│   │   ├── pwa/              # OfflineIndicator
+│   │   ├── leads/            # LeadScoreCard, LeadScoringPanel
+│   │   └── shared/           # Navbar, HeaderNav, CookieBanner
 │   ├── hooks/                # Custom hooks
+│   │   ├── useWhatsApp.ts           # wa.me URL + tracking
+│   │   ├── useOnlineStatus.ts       # online/offline detection
+│   │   ├── useLeadScoring.ts        # lead score queries
+│   │   ├── useCommissions.ts        # commissions + rules
 │   │   ├── useRealtimeSubscription.ts   # Genérico Supabase Realtime
 │   │   ├── useRealtimePropiedades.ts    # Realtime propiedades
 │   │   ├── useRealtimeLotes.ts          # Realtime lotes
 │   │   ├── useClickTracker.ts           # Tracking de clics
 │   │   ├── useTopClicks.ts              # Top propiedades clickeadas
 │   │   └── useStatusMutation.ts         # Mutación de estado con confirmación
-│   └── store/                # Zustand stores (MapInstanceStore)
+│   └── store/                # Zustand stores (MapInstanceStore, AuthStore)
 ├── lib/                      # Utilidades
 │   ├── supabase/             # Cliente Supabase
+│   ├── sunat/                # RUC validator + cache
 │   └── auth.ts               # Auth service (signIn, signOut, session)
 └── config/                   # Configuración
     ├── env.ts                # Variables de entorno tipadas
     ├── markers.ts            # Config de marcadores (16px, colores)
     └── glass.css             # Estilos glassmorphism
 ```
+
+### Supabase Realtime
+
+Las suscripciones en tiempo real requieren habilitar Realtime en el dashboard de Supabase para las tablas `propiedades` y `lotes`:
+
+```sql
+-- Habilitar Realtime (desde dashboard o SQL)
+alter publication supabase_realtime add table propiedades;
+alter publication supabase_realtime add table lotes;
+```
+
+## Migraciones de Base de Datos (Nuevas)
+
+| Migración | Tabla(s) | Propósito |
+|-----------|----------|-----------|
+| `00021_lead_events.sql` | `lead_events` | Tracking de engagement (views, whatsapp_clicks, time_spent, repeat_visit) |
+| `00022_lead_scores.sql` | `lead_scores` + RPC `compute_lead_score` | Scores computados + función server-side |
+| `00023_commissions.sql` | `commission_rules`, `vendedor_commissions`, `invoices` | Reglas de comisión, tracking + facturación |
 
 ## Diseño
 
@@ -142,7 +202,7 @@ src/
 ## Tests
 
 ```bash
-# Unit tests (Vitest) — 152+ tests
+# Unit tests (Vitest) — 722+ tests
 pnpm test
 
 # Con coverage
@@ -153,8 +213,17 @@ pnpm test -- --coverage
 ```
 src/presentation/components/__tests__/    # Phase 3: AdminDashboard, login
 src/presentation/components/map/__tests__/  # Phase 5: Map, LeadForm
-src/lib/__tests__/                       # Phase 5: auth, icon-map
-src/testing/e2e/                         # E2E con Playwright
+src/presentation/components/vendedor/__tests__/  # VendedorDashboard, CommissionTable, TeamLeadsView
+src/presentation/components/whatsapp/__tests__/  # WhatsAppButton
+src/presentation/components/pwa/__tests__/  # OfflineIndicator, useOnlineStatus
+src/presentation/components/leads/__tests__/  # LeadScoreCard, LeadScoringPanel
+src/presentation/hooks/__tests__/         # useWhatsApp, useLeadScoring, useCommissions, useOnlineStatus
+src/data/repositories/__tests__/          # lead-events, lead-scores, commissions
+src/domain/entities/__tests__/            # lead, lead-score, commission
+src/domain/repositories/__tests__/        # lead-events, lead-scores, commissions
+src/lib/schemas/__tests__/                # migrations 00021, 00022, 00023
+src/lib/sunat/__tests__/                  # ruc-validator
+src/testing/e2e/                          # E2E con Playwright
 ```
 
 ## Licencia
