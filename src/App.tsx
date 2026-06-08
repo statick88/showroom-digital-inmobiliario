@@ -115,6 +115,10 @@ export function App() {
   const effectiveRoute: Route =
     sessionChecked && route === "admin" && !authenticated ? "showroom" : route;
 
+  const handleNavigate = (target: Route) => {
+    window.location.hash = `#${target}`;
+  };
+
   if (effectiveRoute === "admin") {
     return (
       <QueryClientProvider client={queryClient}>
@@ -141,10 +145,6 @@ export function App() {
       </QueryClientProvider>
     );
   }
-
-  const handleNavigate = (route: Route) => {
-    window.location.hash = `#${route}`;
-  };
 
   if (effectiveRoute === "showroom") {
     return (
