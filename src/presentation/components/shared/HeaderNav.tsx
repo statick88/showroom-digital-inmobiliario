@@ -18,41 +18,33 @@ const TABS: { id: TabView; label: string; icon: string }[] = [
   { id: "financiamiento", label: "Financiamiento", icon: "payments" },
 ];
 
-export function HeaderNav({ currentTab, onTabChange, proyectoNombre }: HeaderNavProps) {
+export function HeaderNav({ currentTab, onTabChange }: HeaderNavProps) {
   return (
-    <header className="bg-card border-b border-border sticky top-0 z-40">
+    <div className="border-b border-border bg-card/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-3">
-            {proyectoNombre && (
-              <h1 className="typo-headline-md text-primary hidden sm:block">{proyectoNombre}</h1>
-            )}
-          </div>
-          <nav className="flex gap-1 sm:gap-2" role="tablist">
-            {TABS.map((tab) => {
-              const active = currentTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => onTabChange(tab.id)}
-                  role="tab"
-                  aria-selected={active}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 typo-label-md",
-                    "min-h-[48px] min-w-[48px]",
-                    active
-                      ? "bg-accent text-primary font-bold"
-                      : "text-muted-foreground hover:bg-muted",
-                  )}
-                >
-                  <Icon name={tab.icon} size={22} filled={active} />
-                  <span className="hidden sm:inline">{tab.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
+        <nav className="flex gap-1 overflow-x-auto py-2 -mx-4 px-4 sm:mx-0 sm:px-0" role="tablist">
+          {TABS.map((tab) => {
+            const active = currentTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => onTabChange(tab.id)}
+                role="tab"
+                aria-selected={active}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all duration-150 typo-label-md whitespace-nowrap",
+                  active
+                    ? "bg-accent text-primary font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
+              >
+                <Icon name={tab.icon} size={18} filled={active} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
       </div>
-    </header>
+    </div>
   );
 }

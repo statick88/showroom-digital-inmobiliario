@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { supabase } from "@/lib/supabase/client";
 import { HeaderNav } from "@/presentation/components/shared/HeaderNav";
 import { HeroProyecto } from "@/presentation/components/shared/HeroProyecto";
+import { Navbar } from "@/presentation/components/shared/Navbar";
+import type { Route } from "@/presentation/components/shared/Navbar";
 import type { TabView } from "@/presentation/components/shared/HeaderNav";
 import { env } from "@/config/env";
 import { useProyecto } from "@/presentation/hooks/useProyectos";
@@ -27,7 +29,7 @@ const FichaTecnicaLote = lazy(() =>
   })),
 );
 
-type Route = "showroom" | "app" | "admin" | "vendedor" | "privacidad";
+// Route type is now imported from Navbar component
 
 export function App() {
   const [queryClient] = useState(
@@ -126,17 +128,35 @@ export function App() {
     return (
       <QueryClientProvider client={queryClient}>
         <RoleGuard rol="vendedor">
-          <VendedorPanel />
+          <div className="min-h-screen bg-background">
+            <Navbar
+              currentRoute="vendedor"
+              onNavigate={handleNavigate}
+              isAuthenticated={authenticated}
+            />
+            <VendedorPanel />
+          </div>
         </RoleGuard>
         <Toaster />
       </QueryClientProvider>
     );
   }
 
+  const handleNavigate = (route: Route) => {
+    window.location.hash = `#${route}`;
+  };
+
   if (effectiveRoute === "showroom") {
     return (
       <QueryClientProvider client={queryClient}>
-        <MapView />
+        <div className="min-h-screen bg-background">
+          <Navbar
+            currentRoute="showroom"
+            onNavigate={handleNavigate}
+            isAuthenticated={authenticated}
+          />
+          <MapView />
+        </div>
         <Toaster />
       </QueryClientProvider>
     );
@@ -289,7 +309,16 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <HeaderNav currentTab={tab} onTabChange={setTab} proyectoNombre={proyecto?.nombre} />
+      <Navbar
+        currentRoute="app"
+        onNavigate={(route) => {
+          window.location.hash = `#${route}`;
+        }}
+        isAuthenticated={authenticated}
+        proyectoNombre={proyecto?.nombre}
+      />
+
+      <HeaderNav currentTab={tab} onTabChange={setTab} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {tab === "lotizacion" && (

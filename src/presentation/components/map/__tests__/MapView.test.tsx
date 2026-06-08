@@ -220,10 +220,9 @@ beforeEach(() => {
 });
 
 describe("MapView — top-level layout", () => {
-  it("(1) renders HeaderNav, PropertyFilters, and the map container", () => {
+  it("(1) renders PropertyFilters and the map container", () => {
     render(<MapView />, { wrapper: makeWrapper() });
 
-    expect(screen.getByTestId("header-nav")).toBeInTheDocument();
     expect(screen.getByTestId("property-filters")).toBeInTheDocument();
     expect(screen.getByTestId("map-container")).toBeInTheDocument();
   });

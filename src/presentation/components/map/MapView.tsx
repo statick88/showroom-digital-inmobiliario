@@ -3,7 +3,6 @@
 import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from "react-leaflet";
 import type L from "leaflet";
-import { HeaderNav } from "@/presentation/components/map/HeaderNav";
 import { PropertyFilters } from "@/presentation/components/map/PropertyFilters";
 import { GlassControls } from "@/presentation/components/map/GlassControls";
 import { MarkerPopup } from "@/presentation/components/map/MarkerPopup";
@@ -201,9 +200,7 @@ export function MapView() {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col bg-background">
-      <HeaderNav />
-
+    <div className="h-[calc(100vh-3.5rem)] flex flex-col bg-background">
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         {/* Sidebar — Desktop: fixed width, Mobile: below map */}
         <aside
