@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 interface WhatsAppButtonProps {
   propertyName: string;
   price: number;
-  vendedorPhone: string;
+  vendedorPhone?: string;
   propertyId: string;
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -26,6 +26,8 @@ export function WhatsAppButton({
   size = "md",
   className,
 }: WhatsAppButtonProps) {
+  if (!vendedorPhone) return null;
+  
   const { openWhatsApp, isTracking } = useWhatsApp(propertyName, price, vendedorPhone, propertyId);
 
   if (!vendedorPhone) return null;

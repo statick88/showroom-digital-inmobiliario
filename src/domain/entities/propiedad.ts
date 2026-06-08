@@ -24,6 +24,7 @@ export interface Propiedad {
   imagenes: string[];
   svgId?: string;
   agenciaId?: string;
+  telefono?: string;
   publicada: boolean;
   destacada: boolean;
   createdAt: string;
