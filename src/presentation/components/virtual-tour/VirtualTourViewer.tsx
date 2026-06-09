@@ -1,0 +1,116 @@
+"use client";
+
+import { Suspense, lazy, useEffect, useState, useCallback } from "react";
+import { useVirtualTour } from "@/presentation/hooks/use-virtual-tour";
+import { VirtualTourSkeleton } from "./VirtualTourSkeleton";
+import { VirtualTourErrorBoundary } from "./VirtualTourErrorBoundary";
+import { VirtualTourCompass } from "./VirtualTourCompass";
+import type { VirtualTour, VirtualTourScene } from "@/domain/entities/virtual-tour";
+
+// Lazy load the heavy R3F canvas component
+const VirtualTourCanvas = lazy(() =>
+  import("./VirtualTourCanvas").then((module) => ({
+    default: module.VirtualTourCanvas,
+  }))
+);
+
+interface VirtualTourViewerProps {
+  tourId: string;
+  className?: string;
+  onLoad?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export function VirtualTourViewer({
+  tourId,
+  className = "",
+  onLoad,
+  onError,
+}: VirtualTourViewerProps) {
+  const { data: tour, isLoading, isError, refetch } = useVirtualTour(tourId);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [currentScene, setCurrentScene] = useState<VirtualTourScene | null>(null);
+
+  // Find initial scene when tour loads
+  /* eslint-disable */
+  useEffect(() => {
+    if (tour && tour.escenas.length > 0) {
+      setCurrentScene((prev) => {
+        const scene = tour.escenas.find((s) => s.id === tour.escenaInicialId) || tour.escenas[0];
+        return prev === scene ? prev : scene ?? null;
+      });
+    }
+  }, [tour]);
+  /* eslint-enable */
+
+  const handleFullscreenChange = useCallback((fs: boolean) => {
+    setIsFullscreen(fs);
+  }, []);
+
+  const handleCanvasLoad = useCallback(() => {
+    onLoad?.();
+  }, [onLoad]);
+
+  const handleCanvasError = useCallback((err: Error) => {
+    onError?.(err);
+  }, [onError]);
+
+  const handleRetry = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  if (isLoading) {
+    return <VirtualTourSkeleton className={className} />;
+  }
+
+  if (isError || !tour || !currentScene) {
+    return (
+      <VirtualTourErrorBoundary
+        fallbackScene={tour?.escenas[0]?.thumbnailUrl}
+        onRetry={handleRetry}
+        tourId={tourId}
+      >
+        <div className={`${className} relative w-full aspect-video max-h-96 bg-muted rounded-xl overflow-hidden flex items-center justify-center`}>
+          <div className="text-center p-4">
+            <p className="text-destructive mb-2">Tour no disponible</p>
+            <p className="text-muted-foreground text-sm mb-4">
+              {isError ? "Error al cargar el tour" : "El tour no tiene escenas configuradas"}
+            </p>
+            <button
+              onClick={handleRetry}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      </VirtualTourErrorBoundary>
+    );
+  }
+
+  return (
+    <VirtualTourErrorBoundary
+      fallbackScene={currentScene.thumbnailUrl}
+      onRetry={handleRetry}
+      tourId={tourId}
+    >
+      <Suspense fallback={<VirtualTourSkeleton className={className} />}>
+        <VirtualTourCanvas
+          scene={currentScene}
+          onFullscreenChange={handleFullscreenChange}
+          onLoad={handleCanvasLoad}
+          onError={handleCanvasError}
+          className={className}
+        />
+      </Suspense>
+
+      {isFullscreen && (
+        <VirtualTourCompass
+          heading={0} // Will be updated from canvas via context or prop drilling
+          visible={true}
+          className="pointer-events-none"
+        />
+      )}
+    </VirtualTourErrorBoundary>
+  );
+}
