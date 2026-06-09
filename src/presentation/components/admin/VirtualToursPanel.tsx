@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useVirtualTours, useEliminarVirtualTour } from "@/presentation/hooks/use-virtual-tour";
+import { useVirtualTours, useEliminarVirtualTour, useActualizarVirtualTour } from "@/presentation/hooks/use-virtual-tour";
 import { VirtualTourForm } from "./VirtualTourForm";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ const estadoConfig: Record<TourEstado, { label: string; color: string }> = {
 export function VirtualToursPanel() {
   const { data: tours, isLoading } = useVirtualTours();
   const eliminarTour = useEliminarVirtualTour();
+  const actualizarTour = useActualizarVirtualTour();
   const [search, setSearch] = useState("");
   const [filterEstado, setFilterEstado] = useState<string>("");
   const [formOpen, setFormOpen] = useState(false);
@@ -134,6 +135,29 @@ export function VirtualToursPanel() {
                       </td>
                       <td className="p-4 text-center">
                         <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() =>
+                              actualizarTour.mutate({
+                                id: tour.id,
+                                data: {
+                                  estado:
+                                    tour.estado === "publicado" ? "borrador" : "publicado",
+                                },
+                              })
+                            }
+                            className="text-muted-foreground hover:text-primary transition-colors"
+                            title={
+                              tour.estado === "publicado"
+                                ? "Despublicar"
+                                : "Publicar"
+                            }
+                          >
+                            {tour.estado === "publicado" ? (
+                              <EyeOff size={16} />
+                            ) : (
+                              <Eye size={16} />
+                            )}
+                          </button>
                           <button
                             onClick={() => handleEdit(tour.id)}
                             className="text-muted-foreground hover:text-primary transition-colors"

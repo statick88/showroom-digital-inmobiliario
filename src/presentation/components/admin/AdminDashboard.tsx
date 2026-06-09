@@ -34,6 +34,7 @@ import {
   Search,
   Filter,
   FileText,
+  Orbit,
 } from "lucide-react";
 import type { EstadoPropiedad } from "@/domain/entities/propiedad";
 
@@ -88,7 +89,7 @@ export function AdminDashboard() {
             <NavButton tab="usuarios" current={tab} icon="group" onClick={setTab}>
               Usuarios
             </NavButton>
-            <NavButton tab="audit-log" current={tab} icon="file_text" onClick={setTab}>
+            <NavButton tab="audit-log" current={tab} icon="description" onClick={setTab}>
               Registro Auditoría
             </NavButton>
             <NavButton tab="virtual-tours" current={tab} icon="view_in_ar" onClick={setTab}>
@@ -162,6 +163,12 @@ export function AdminDashboard() {
             icon={<FileText size={20} />}
             label="Auditoría"
             onClick={() => setTab("audit-log")}
+          />
+          <MobileTabButton
+            active={tab === "virtual-tours"}
+            icon={<Orbit size={20} />}
+            label="Tours 360°"
+            onClick={() => setTab("virtual-tours")}
           />
         </div>
       )}

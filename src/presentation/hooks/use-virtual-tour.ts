@@ -47,7 +47,7 @@ export function useCrearVirtualTour() {
   return useMutation({
     mutationFn: (data: CrearVirtualTourData) => virtualTourRepository.create(data),
     onSuccess: (_newTour, variables) => {
-      qc.invalidateQueries({ queryKey: ["virtual-tours", "proyecto", variables.proyectoId] });
+      qc.invalidateQueries({ queryKey: ["virtual-tours"] });
     },
   });
 }
@@ -58,8 +58,7 @@ export function useActualizarVirtualTour() {
     mutationFn: ({ id, data }: { id: string; data: ActualizarVirtualTourData }) =>
       virtualTourRepository.update(id, data),
     onSuccess: (updatedTour) => {
-      qc.invalidateQueries({ queryKey: ["virtual-tours", updatedTour.id] });
-      qc.invalidateQueries({ queryKey: ["virtual-tours", "proyecto", updatedTour.proyectoId] });
+      qc.invalidateQueries({ queryKey: ["virtual-tours"] });
     },
   });
 }
