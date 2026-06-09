@@ -65,7 +65,7 @@ export const virtualTourRepository: IVirtualTourRepository = {
         nombre: data.nombre,
         descripcion: data.descripcion ?? null,
         escenas: data.escenas,
-        escena_inicial_id: data.escenaInicialId,
+        escena_inicial_id: data.escenaInicialId || null,
         metadatos: data.metadatos ?? {},
         estado: data.estado ?? "borrador",
       })
@@ -82,7 +82,7 @@ export const virtualTourRepository: IVirtualTourRepository = {
     if (data.nombre !== undefined) updates.nombre = data.nombre;
     if (data.descripcion !== undefined) updates.descripcion = data.descripcion;
     if (data.escenas !== undefined) updates.escenas = data.escenas;
-    if (data.escenaInicialId !== undefined) updates.escena_inicial_id = data.escenaInicialId;
+    if (data.escenaInicialId !== undefined) updates.escena_inicial_id = data.escenaInicialId || null;
     if (data.metadatos !== undefined) updates.metadatos = data.metadatos;
     if (data.estado !== undefined) updates.estado = data.estado;
 

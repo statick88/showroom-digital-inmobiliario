@@ -122,7 +122,7 @@ export function VirtualToursPanel() {
                   return (
                     <tr key={tour.id} className="hover:bg-muted transition-colors">
                       <td className="p-4 text-sm font-medium text-foreground">{tour.nombre}</td>
-                      <td className="p-4 text-sm text-muted-foreground">{tour.proyectoId.slice(0, 8)}...</td>
+                      <td className="p-4 text-sm text-muted-foreground">{tour.proyectoId?.slice(0, 8) ?? "—"}...</td>
                       <td className="p-4 text-sm text-muted-foreground">{tour.escenas.length}</td>
                       <td className="p-4">
                         <span className={cn("text-xs px-2 py-1 rounded-full font-medium", ec.color)}>

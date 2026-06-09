@@ -40,11 +40,11 @@ interface VirtualTourFormProps {
 }
 
 function newSceneId(): string {
-  return `scene-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  return crypto.randomUUID();
 }
 
 function newHotspotId(): string {
-  return `hs-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+  return crypto.randomUUID();
 }
 
 const emptyScene = (): SceneInput => ({
@@ -170,7 +170,7 @@ export function VirtualTourForm({ open, onOpenChange, tourId }: VirtualTourFormP
       nombre,
       descripcion: descripcion || undefined,
       escenas,
-      escenaInicialId: scenes[0]?.id ?? "",
+      escenaInicialId: scenes[0]!.id,
       metadatos: {},
       estado,
     };
