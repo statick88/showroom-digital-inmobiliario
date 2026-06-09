@@ -27,7 +27,7 @@ export function useCloudinaryUpload(
 
   const upload = useCallback(
     async (file: File): Promise<UploadResult | null> => {
-      // Validaciones
+      // Validate file type
       const validTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
       if (!validTypes.includes(file.type)) {
         const err = new Error("Formato no válido. Use JPEG, PNG, WebP o AVIF");
@@ -36,7 +36,8 @@ export function useCloudinaryUpload(
         return null;
       }
 
-      const maxSize = 50 * 1024 * 1024; // 50MB
+      // Validate file size (50MB max)
+      const maxSize = 50 * 1024 * 1024;
       if (file.size > maxSize) {
         const err = new Error("Archivo demasiado grande. Máximo 50MB");
         setError(err);
@@ -49,7 +50,7 @@ export function useCloudinaryUpload(
       setError(null);
 
       try {
-        // Simular progreso (Cloudinary no expone progreso nativo en browser)
+        // Simulate progress (Cloudinary REST API doesn't expose upload progress)
         const progressInterval = setInterval(() => {
           setProgress((p) => Math.min(p + 10, 90));
         }, 100);
