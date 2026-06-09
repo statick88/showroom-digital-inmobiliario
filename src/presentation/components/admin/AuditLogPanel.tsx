@@ -249,7 +249,7 @@ function AuditLogTable({
                       />
                     )}
                   </td>
-                  <td className="p-3 text-sm font-mono text-primary">{row.id.slice(0, 8)}…</td>
+                  <td className="p-3 text-sm font-mono text-primary">{String(row.id ?? "").slice(0, 8)}…</td>
                   <td className="p-3 text-sm text-foreground">{row.tabla}</td>
                   <td className="p-3 text-center">
                     <AccionBadge accion={row.accion} />

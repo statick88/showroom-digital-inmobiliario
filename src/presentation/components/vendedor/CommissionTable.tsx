@@ -64,7 +64,7 @@ export function CommissionTable({ vendedorId }: CommissionTableProps) {
                 className="border-b border-border last:border-0"
               >
                 <td className="px-4 py-3 text-foreground">
-                  {commission.propertyId.slice(0, 8)}
+                  {String(commission.propertyId ?? "").slice(0, 8)}
                 </td>
                 <td className="px-4 py-3 text-right text-foreground">
                   {formatPEN(commission.salePrice)}
