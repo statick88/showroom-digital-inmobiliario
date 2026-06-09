@@ -13,6 +13,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Plus, Trash2, GripVertical } from "lucide-react";
+import { ImageUploader } from "@/presentation/components/shared/ImageUploader";
 
 interface SceneInput {
   id: string;
@@ -313,21 +314,21 @@ export function VirtualTourForm({ open, onOpenChange, tourId }: VirtualTourFormP
                         />
                       </div>
                       <div className="flex flex-col gap-1">
-                        <label className="text-xs text-muted-foreground">URL Imagen 360° *</label>
-                        <input
-                          className="px-3 py-1.5 rounded-lg border border-input text-sm bg-card"
-                          placeholder="https://ejemplo.com/imagen-360.jpg"
+                        <label className="text-xs text-muted-foreground">Imagen 360° *</label>
+                        <ImageUploader
                           value={scene.textureUrl}
-                          onChange={(e) => updateScene(si, { textureUrl: e.target.value })}
+                          onChange={(url) => updateScene(si, { textureUrl: url })}
+                          folder={`tours/${scene.id}`}
+                          label="subir imagen 360°"
                         />
                       </div>
                       <div className="flex flex-col gap-1">
-                        <label className="text-xs text-muted-foreground">URL Thumbnail *</label>
-                        <input
-                          className="px-3 py-1.5 rounded-lg border border-input text-sm bg-card"
-                          placeholder="https://ejemplo.com/thumb.jpg"
+                        <label className="text-xs text-muted-foreground">Thumbnail *</label>
+                        <ImageUploader
                           value={scene.thumbnailUrl}
-                          onChange={(e) => updateScene(si, { thumbnailUrl: e.target.value })}
+                          onChange={(url) => updateScene(si, { thumbnailUrl: url })}
+                          folder={`tours/${scene.id}`}
+                          label="subir thumbnail"
                         />
                       </div>
 
