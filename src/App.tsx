@@ -10,6 +10,7 @@ import type { Route } from "@/presentation/components/shared/Navbar";
 import type { TabView } from "@/presentation/components/shared/HeaderNav";
 import { env } from "@/config/env";
 import { useProyecto } from "@/presentation/hooks/useProyectos";
+import { useVirtualToursByProyecto } from "@/presentation/hooks/use-virtual-tour";
 import { AdminDashboard } from "@/presentation/components/admin/AdminDashboard";
 import { CookieBanner } from "@/presentation/components/shared/CookieBanner";
 import { MapView } from "@/presentation/components/map/MapView";
@@ -318,6 +319,8 @@ function AppContent() {
     null,
   );
   const { data: proyecto } = useProyecto(env.proyectoId);
+  const { data: virtualTours } = useVirtualToursByProyecto(proyecto?.id);
+  const tourId = virtualTours?.[0]?.id; // Use the first virtual tour for this project
   // T-4.4: when the signed-in user is a vendedor or admin, the ficha
   // opens in vendor mode so the Reservar / Vender buttons are visible.
   const rol = useAuthStore((s) => s.rol);
@@ -355,6 +358,7 @@ function AppContent() {
               descripcion={proyecto?.descripcion ?? "Explora nuestro proyecto de lotización."}
               imagenUrl={proyecto?.imagenHero}
               imagenes360={proyecto?.imagenes360}
+              tourId={tourId}
             />
           </div>
         )}
