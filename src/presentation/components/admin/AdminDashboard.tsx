@@ -12,6 +12,7 @@ import { TopClickedTable } from "@/presentation/components/admin/TopClickedTable
 import { LeadsTable } from "@/presentation/components/admin/LeadsTable";
 import { UsuariosPanel } from "@/presentation/components/admin/UsuariosPanel";
 import { AuditLogPanel } from "@/presentation/components/admin/AuditLogPanel";
+import { VirtualToursPanel } from "@/presentation/components/admin/VirtualToursPanel";
 import { Icon } from "@/components/ui/icon";
 import {
   Dialog,
@@ -36,7 +37,7 @@ import {
 } from "lucide-react";
 import type { EstadoPropiedad } from "@/domain/entities/propiedad";
 
-type Tab = "dashboard" | "propiedades" | "leads" | "usuarios" | "audit-log";
+type Tab = "dashboard" | "propiedades" | "leads" | "usuarios" | "audit-log" | "virtual-tours";
 
 // ── Confirm dialog state ───────────────────────────────────────────
 interface ConfirmState {
@@ -90,6 +91,9 @@ export function AdminDashboard() {
             <NavButton tab="audit-log" current={tab} icon="file_text" onClick={setTab}>
               Registro Auditoría
             </NavButton>
+            <NavButton tab="virtual-tours" current={tab} icon="view_in_ar" onClick={setTab}>
+              Tours 360°
+            </NavButton>
           </nav>
 
           {/* User Profile (3.9) */}
@@ -120,6 +124,7 @@ export function AdminDashboard() {
         {tab === "leads" && <LeadsTab />}
         {tab === "usuarios" && <UsuariosTab />}
         {tab === "audit-log" && <AuditLogTab />}
+        {tab === "virtual-tours" && <VirtualToursTab />}
       </main>
 
       {/* ── Mobile bottom tab bar (3.10) ──────────────────────── */}
@@ -629,6 +634,17 @@ function AuditLogTab() {
   return (
     <div className="p-4 md:p-8 space-y-6">
       <AuditLogPanel />
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  VIRTUAL TOURS TAB
+// ════════════════════════════════════════════════════════════════════
+function VirtualToursTab() {
+  return (
+    <div className="p-4 md:p-8 space-y-6">
+      <VirtualToursPanel />
     </div>
   );
 }

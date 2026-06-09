@@ -4,7 +4,7 @@
 CREATE TABLE lead_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   visitor_id TEXT NOT NULL,
-  property_id UUID REFERENCES properties(id) ON DELETE CASCADE,
+  property_id UUID REFERENCES lotes(id) ON DELETE CASCADE,
   event_type TEXT NOT NULL CHECK (event_type IN ('view', 'whatsapp_click', 'time_spent', 'repeat_visit')),
   metadata JSONB DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW()

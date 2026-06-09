@@ -61,6 +61,9 @@ vi.mock("@/presentation/components/admin/AuditLogPanel", () => ({
     return <div data-testid="audit-log-panel">AuditLogPanel</div>;
   },
 }));
+vi.mock("@/presentation/components/admin/VirtualToursPanel", () => ({
+  VirtualToursPanel: () => <div data-testid="virtual-tours-panel">VirtualToursPanel</div>,
+}));
 
 import { AdminDashboard } from "@/presentation/components/admin/AdminDashboard";
 

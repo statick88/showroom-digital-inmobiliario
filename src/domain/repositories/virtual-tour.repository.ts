@@ -5,6 +5,7 @@ import type {
 } from "../entities/virtual-tour";
 
 export interface IVirtualTourRepository {
+  findAll(): Promise<VirtualTour[]>;
   findByProyectoId(proyectoId: string): Promise<VirtualTour[]>;
   findById(id: string): Promise<VirtualTour | null>;
   create(data: CrearVirtualTourData): Promise<VirtualTour>;

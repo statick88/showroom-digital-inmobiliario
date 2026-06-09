@@ -24,6 +24,16 @@ function mapVirtualTour(row: Record<string, unknown>): VirtualTour {
 }
 
 export const virtualTourRepository: IVirtualTourRepository = {
+  async findAll() {
+    const { data, error } = await supabase
+      .from("tours_360")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    rethrowIfPresent(error, "Error al listar tours virtuales");
+    return (data ?? []).map(mapVirtualTour);
+  },
+
   async findByProyectoId(proyectoId) {
     const { data, error } = await supabase
       .from("tours_360")

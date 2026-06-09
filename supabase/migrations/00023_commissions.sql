@@ -17,7 +17,7 @@ CREATE TABLE commission_rules (
 CREATE TABLE vendedor_commissions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   vendedor_id UUID REFERENCES auth.users(id),
-  property_id UUID REFERENCES properties(id),
+  property_id UUID REFERENCES lotes(id),
   sale_price NUMERIC NOT NULL CHECK (sale_price > 0),
   commission_amount NUMERIC NOT NULL,
   rule_applied TEXT,

@@ -7,6 +7,17 @@ import type { CrearVirtualTourData, ActualizarVirtualTourData } from "@/domain/e
 const STALE_TIME = 5 * 60 * 1000; // 5 minutes
 const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
 
+export function useVirtualTours() {
+  return useQuery({
+    queryKey: ["virtual-tours"],
+    queryFn: () => virtualTourRepository.findAll(),
+    staleTime: STALE_TIME,
+    gcTime: CACHE_TIME,
+    retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+}
+
 export function useVirtualTour(tourId: string | undefined) {
   return useQuery({
     queryKey: ["virtual-tours", tourId],
