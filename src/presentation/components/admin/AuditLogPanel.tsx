@@ -256,7 +256,7 @@ function AuditLogTable({
                   </td>
                   <td className="p-3 text-sm text-foreground">{row.actor}</td>
                   <td className="p-3 text-sm font-mono text-muted-foreground">
-                    {row.registroId.slice(0, 12)}…
+                    {String(row.registroId ?? "").slice(0, 12)}…
                   </td>
                   <td className="p-3 text-sm text-muted-foreground whitespace-nowrap">
                     {formatFechaEsPE(row.createdAt)}
