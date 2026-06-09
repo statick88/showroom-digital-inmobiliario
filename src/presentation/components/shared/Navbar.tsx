@@ -3,14 +3,19 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Menu, X, MapPin, Building2, Shield, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/presentation/hooks/useAuthStore";
+import { AuthButtons } from "@/presentation/components/auth/AuthButtons";
+import { UserDropdown } from "@/presentation/components/auth/UserDropdown";
 
-export type Route = "showroom" | "app" | "admin" | "vendedor" | "privacidad";
+export type Route = "showroom" | "app" | "admin" | "vendedor" | "privacidad" | "auth";
 
 interface NavbarProps {
   currentRoute: Route;
   onNavigate: (route: Route) => void;
   isAuthenticated?: boolean;
   proyectoNombre?: string;
+  /** When true, show user dropdown instead of login/register buttons */
+  showUserMenu?: boolean;
 }
 
 interface NavItem {
@@ -32,9 +37,15 @@ export function Navbar({
   onNavigate,
   isAuthenticated = false,
   proyectoNombre,
+  showUserMenu = false,
 }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Get auth state from store if not provided via props
+  const storeRol = useAuthStore((s) => s.rol);
+  const storeNombre = useAuthStore((s) => s.nombre);
+  const effectiveIsAuthenticated = showUserMenu || isAuthenticated;
 
   const handleNavigate = useCallback(
     (route: Route) => {
@@ -112,6 +123,15 @@ export function Navbar({
             })}
           </div>
 
+          {/* Auth section: User dropdown or login/register buttons */}
+          <div className="hidden md:flex items-center">
+            {effectiveIsAuthenticated ? (
+              <UserDropdown />
+            ) : (
+              <AuthButtons onNavigate={handleNavigate} />
+            )}
+          </div>
+
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -149,6 +169,17 @@ export function Navbar({
                 </button>
               );
             })}
+
+            {/* Mobile auth section */}
+            <div className="pt-2 border-t border-border mt-2">
+              {effectiveIsAuthenticated ? (
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <UserDropdown />
+                </div>
+              ) : (
+                <AuthButtons onNavigate={handleNavigate} />
+              )}
+            </div>
           </div>
         </div>
       )}

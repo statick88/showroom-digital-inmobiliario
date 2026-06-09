@@ -18,6 +18,7 @@ import { VendedorPanel } from "@/presentation/components/vendedor/VendedorPanel"
 import { useAuthStore } from "@/presentation/hooks/useAuthStore";
 import { usuariosRepository } from "@/data/repositories";
 import { UbicacionMapa } from "@/presentation/components/map/UbicacionMapa";
+import { AuthPage } from "@/presentation/components/auth/AuthPage";
 
 const MapaLotes = lazy(() =>
   import("@/presentation/components/lotes/MapaLotes").then((m) => ({ default: m.MapaLotes })),
@@ -51,7 +52,8 @@ export function App() {
       hash === "app" ||
       hash === "showroom" ||
       hash === "privacidad" ||
-      hash === "vendedor"
+      hash === "vendedor" ||
+      hash === "auth"
     )
       return hash;
     return "showroom";
@@ -118,6 +120,20 @@ export function App() {
   const handleNavigate = (target: Route) => {
     window.location.hash = `#${target}`;
   };
+
+  // Auth route: show AuthPage
+  if (effectiveRoute === "auth") {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <AuthPage
+          onLogin={() => {
+            window.location.hash = "#showroom";
+          }}
+        />
+        <Toaster />
+      </QueryClientProvider>
+    );
+  }
 
   if (effectiveRoute === "admin") {
     return (
