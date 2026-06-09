@@ -20,6 +20,10 @@ import { useAuthStore } from "@/presentation/hooks/useAuthStore";
 import { usuariosRepository } from "@/data/repositories";
 import { UbicacionMapa } from "@/presentation/components/map/UbicacionMapa";
 import { AuthPage } from "@/presentation/components/auth/AuthPage";
+import { MisionVision } from "@/presentation/components/landing/MisionVision";
+import { TourPreview } from "@/presentation/components/landing/TourPreview";
+import { Contacto } from "@/presentation/components/landing/Contacto";
+import { LandingFooter } from "@/presentation/components/landing/LandingFooter";
 
 const MapaLotes = lazy(() =>
   import("@/presentation/components/lotes/MapaLotes").then((m) => ({ default: m.MapaLotes })),
@@ -352,7 +356,7 @@ function AppContent() {
         )}
 
         {tab === "inicio" && (
-          <div className="space-y-8">
+          <div className="space-y-0">
             <HeroProyecto
               nombre={proyecto?.nombre}
               descripcion={proyecto?.descripcion ?? "Explora nuestro proyecto de lotización."}
@@ -360,6 +364,13 @@ function AppContent() {
               imagenes360={proyecto?.imagenes360}
               tourId={tourId}
             />
+            <MisionVision />
+            <TourPreview
+              tourId={tourId}
+              projectName={proyecto?.nombre}
+            />
+            <Contacto />
+            <LandingFooter projectName={proyecto?.nombre} />
           </div>
         )}
 

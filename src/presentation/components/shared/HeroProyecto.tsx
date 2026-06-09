@@ -47,9 +47,11 @@ export function HeroProyecto({ nombre, descripcion, imagenUrl, imagenes360, tour
             <button
               type="button"
               onClick={() => setShowTour(true)}
-              className="mt-4 inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-xl typo-label-md font-bold hover:bg-white/30 transition-all"
+              className="mt-4 inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm text-foreground px-6 py-3 rounded-xl typo-label-md font-bold hover:bg-white hover:shadow-lg transition-all group cursor-pointer"
             >
-              <Icon name="360" size={20} />
+              <span className="flex items-center justify-center size-8 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                <Icon name="360" size={20} className="text-primary" />
+              </span>
               Ver tour 360°
             </button>
           )}

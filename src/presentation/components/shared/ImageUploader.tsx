@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { useImageUpload } from "@/presentation/hooks/useImageUpload";
+import { useCloudinaryUpload, getThumbnailUrl } from "@/presentation/hooks/useCloudinaryUpload";
 import { Button } from "@/components/ui/button";
 import { Upload, X, ImageIcon, Loader2 } from "lucide-react";
 
@@ -9,6 +9,7 @@ interface ImageUploaderProps {
   folder?: string;
   label?: string;
   accept?: string;
+  useThumbnail?: boolean;
 }
 
 export function ImageUploader({
@@ -17,18 +18,23 @@ export function ImageUploader({
   folder = "tours",
   label = "Subir imagen",
   accept = "image/jpeg,image/png,image/webp",
+  useThumbnail = false,
 }: ImageUploaderProps) {
-  const { upload, isUploading, error, reset } = useImageUpload();
+  const { upload, isUploading, error, lastResult } = useCloudinaryUpload({ folder });
   const [dragActive, setDragActive] = useState(false);
+
+  const displayUrl = useThumbnail && lastResult?.publicId
+    ? getThumbnailUrl(lastResult.publicId, 300)
+    : value || (lastResult?.secureUrl ?? "");
 
   const handleFile = useCallback(
     async (file: File) => {
-      const result = await upload(file, folder);
+      const result = await upload(file);
       if (result) {
-        onChange(result.url);
+        onChange(result.secureUrl);
       }
     },
-    [upload, folder, onChange],
+    [upload, onChange],
   );
 
   const handleDrop = useCallback(
@@ -64,14 +70,13 @@ export function ImageUploader({
 
   const handleClear = useCallback(() => {
     onChange("");
-    reset();
-  }, [onChange, reset]);
+  }, [onChange]);
 
-  if (value) {
+  if (displayUrl) {
     return (
       <div className="relative group">
         <img
-          src={value}
+          src={displayUrl}
           alt="Preview"
           className="w-full h-32 object-cover rounded-lg border border-border"
         />
@@ -121,7 +126,7 @@ export function ImageUploader({
       )}
 
       {error && (
-        <p className="text-xs text-destructive mt-2">{error}</p>
+        <p className="text-xs text-destructive mt-2">{error.message}</p>
       )}
     </div>
   );
