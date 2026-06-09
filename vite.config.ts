@@ -42,6 +42,14 @@ export default defineConfig({
               expiration: { maxEntries: 100, maxAgeSeconds: 86400 },
             },
           },
+          {
+            urlPattern: ({ url }) => url.pathname === "/showroom-digital-inmobiliario/" || url.pathname.endsWith("/showroom-digital-inmobiliario/index.html"),
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "html-cache",
+              expiration: { maxEntries: 1, maxAgeSeconds: 0 },
+            },
+          },
         ],
       },
     }),
