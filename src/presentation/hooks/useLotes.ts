@@ -10,6 +10,7 @@ export function useLotes(proyectoId: string, filtros?: FiltrosLotes) {
   return useQuery({
     queryKey: ["lotes", proyectoId, filtros],
     queryFn: () => lotesRepository.listar(proyectoId, filtros),
+    enabled: Boolean(proyectoId),
   });
 }
 
