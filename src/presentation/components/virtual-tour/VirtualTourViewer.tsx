@@ -7,7 +7,7 @@ import { VirtualTourSkeleton } from "./VirtualTourSkeleton";
 import { VirtualTourErrorBoundary } from "./VirtualTourErrorBoundary";
 import { VirtualTourCompass } from "./VirtualTourCompass";
 import { ParcelDetailPanel } from "./ParcelDetailPanel";
-import type { VirtualTour, VirtualTourScene } from "@/domain/entities/virtual-tour";
+import type { VirtualTourScene } from "@/domain/entities/virtual-tour";
 import type { Lote } from "@/domain/entities/lote";
 
 // Lazy load the heavy R3F canvas component
