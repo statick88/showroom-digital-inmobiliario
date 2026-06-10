@@ -2,10 +2,13 @@
 
 import { Suspense, lazy, useEffect, useState, useCallback } from "react";
 import { useVirtualTour } from "@/presentation/hooks/use-virtual-tour";
+import { useParcelsForTour } from "@/presentation/hooks/useParcelsForTour";
 import { VirtualTourSkeleton } from "./VirtualTourSkeleton";
 import { VirtualTourErrorBoundary } from "./VirtualTourErrorBoundary";
 import { VirtualTourCompass } from "./VirtualTourCompass";
-import type { VirtualTour, VirtualTourScene } from "@/domain/entities/virtual-tour";
+import { ParcelDetailPanel } from "./ParcelDetailPanel";
+import type { VirtualTourScene } from "@/domain/entities/virtual-tour";
+import type { Lote } from "@/domain/entities/lote";
 
 // Lazy load the heavy R3F canvas component
 const VirtualTourCanvas = lazy(() =>
@@ -28,9 +31,11 @@ export function VirtualTourViewer({
   onError,
 }: VirtualTourViewerProps) {
   const { data: tour, isLoading, isError, refetch } = useVirtualTour(tourId);
+  const { parcels, panoramaCenter } = useParcelsForTour(tourId);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentScene, setCurrentScene] = useState<VirtualTourScene | null>(null);
   const [sceneHistory, setSceneHistory] = useState<string[]>([]);
+  const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
 
   // Find initial scene when tour loads
   useEffect(() => {
@@ -63,6 +68,14 @@ export function VirtualTourViewer({
   const handleRetry = useCallback(() => {
     refetch();
   }, [refetch]);
+
+  const handleParcelClick = useCallback((lote: Lote) => {
+    setSelectedLote(lote);
+  }, []);
+
+  const handleDetailClose = useCallback(() => {
+    setSelectedLote(null);
+  }, []);
 
   // Navigate to a scene by hotspot
   const navigateToScene = useCallback(
@@ -136,8 +149,19 @@ export function VirtualTourViewer({
             onLoad={handleCanvasLoad}
             onError={handleCanvasError}
             className={className}
+            parcels={parcels}
+            panoramaCenter={panoramaCenter}
+            onParcelClick={handleParcelClick}
           />
         </Suspense>
+
+        {/* Parcel detail panel */}
+        <ParcelDetailPanel
+          lote={selectedLote}
+          tourId={tourId}
+          isOpen={selectedLote !== null}
+          onClose={handleDetailClose}
+        />
 
         {/* Scene navigation bar */}
         {tour.escenas.length > 1 && (
