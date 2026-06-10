@@ -91,7 +91,7 @@ describe("useTourAnalytics", () => {
       );
       // Verify exactly 50 events were passed
       const firstCall = mockInsertEvents.mock.calls[0];
-      expect(firstCall[0]).toHaveLength(50);
+      expect(firstCall?.[0]).toHaveLength(50);
     });
   });
 
@@ -109,7 +109,7 @@ describe("useTourAnalytics", () => {
       unmount();
 
       expect(mockInsertEvents).toHaveBeenCalled();
-      const flushedEvents = mockInsertEvents.mock.calls[0][0];
+      const flushedEvents = mockInsertEvents.mock.calls[0]?.[0];
       expect(flushedEvents).toHaveLength(2);
     });
 
@@ -160,16 +160,16 @@ describe("useTourAnalytics", () => {
         vi.advanceTimersByTime(5_000);
       });
 
-      const events = mockInsertEvents.mock.calls[0][0];
-      expect(events[0]).toMatchObject({
+      const events = mockInsertEvents.mock.calls[0]?.[0];
+      expect(events?.[0]).toMatchObject({
         event_type: "whatsapp_click",
         tour_id: "tour-1",
         parcel_id: "p-1",
         visitor_id: "00000000-0000-0000-0000-000000000001",
         metadata: { phone: "+51999" },
       });
-      expect(events[0].id).toBeDefined();
-      expect(events[0].created_at).toBeDefined();
+      expect(events?.[0]?.id).toBeDefined();
+      expect(events?.[0]?.created_at).toBeDefined();
     });
   });
 });

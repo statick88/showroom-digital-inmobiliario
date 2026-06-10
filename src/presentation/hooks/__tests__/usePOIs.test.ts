@@ -70,7 +70,7 @@ describe("usePOIs", () => {
 
       expect(listMock).toHaveBeenCalledWith("tour-1");
       expect(result.current.pois).toHaveLength(1);
-      expect(result.current.pois[0].name).toBe("Club House");
+      expect(result.current.pois?.[0]?.name).toBe("Club House");
     });
 
     it("returns empty array when no POIs exist", async () => {
