@@ -9,6 +9,7 @@ export interface VirtualTourScene {
   pitch: number;                // Initial pitch in degrees
   fov: number;                  // Field of view in degrees
   hotspots?: VirtualTourHotspot[];
+  panoramaCenter?: { lat: number; lng: number }; // Center coordinates for parcel overlay projection
 }
 
 export interface VirtualTourHotspot {
