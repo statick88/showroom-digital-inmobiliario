@@ -18,6 +18,17 @@ Acceso: `#admin` (requiere login con rol `admin`)
 - Cambios en BD → UI se actualiza sin recargar
 - Indicador verde "Conectado" en header
 
+### Pestañas del Dashboard
+| Pestaña | Descripción |
+|---------|-------------|
+| **Dashboard** | Métricas generales, gráficos, progreso |
+| **Propiedades** | CRUD de propiedades con filtros |
+| **Leads** | Gestión de leads y seguimiento |
+| **Usuarios** | Administración de vendedores |
+| **Auditoría** | Logs de cambios en el sistema |
+| **Analytics** | Métricas del tour 360° (P1) |
+| **Tour** | Gestión de POIs y configuración (P1) |
+
 ---
 
 ## 2. Gestión de Propiedades
@@ -100,7 +111,57 @@ Acceso: `#admin` (requiere login con rol `admin`)
 
 ---
 
-## 6. Usuarios y Roles
+## 6. Analytics del Tour (P1)
+
+### Métricas del Tour 360°
+- **Top parcelas** — gráfico de barras con las parcelas más clickeadas
+- **Eventos por tipo** — pie chart de distribución de eventos
+- **Resumen** — total visitantes, eventos, clics
+- **Filtro por fechas** — seleccionar rango de fechas
+
+### Eventos trackeados
+| Evento | Descripción |
+|--------|-------------|
+| `parcel_click` | Clic en una parcela del tour |
+| `whatsapp_click` | Clic en botón de WhatsApp |
+| `share_click` | Clic en botón de compartir |
+| `tour_start` | Inicio del tour |
+
+### Cómo usar
+1. Selecciona la pestaña "Analytics" en el dashboard
+2. Usa el filtro de fechas para ver métricas específicas
+3. Revisa el gráfico de barras para ver las parcelas más populares
+4. El pie chart muestra la distribución de eventos
+
+---
+
+## 7. Gestión de Tour (P1)
+
+### POIs (Puntos de Interés)
+| Campo | Descripción |
+|-------|-------------|
+| Nombre | Nombre del POI |
+| Tipo | amenity, road, attraction, landmark, other |
+| Coordenadas | lat/lng en el mapa |
+| Descripción | Información adicional |
+
+### CRUD de POIs
+1. **Crear** — Click en "Nuevo POI", completa el formulario
+2. **Editar** — Click en el icono de editar junto al POI
+3. **Eliminar** — Click en el icono de eliminar, confirma
+
+### Iconos por tipo
+| Tipo | Icono | Ejemplo |
+|------|-------|---------|
+| amenity | 🏢 | Club House, Estacionamiento |
+| road | 🛣️ | Acceso principal |
+| attraction | 🎯 | Campo de golf, Piscina |
+| landmark | 🏛️ | Monumento, Plaza |
+| other | 📍 | Otro punto de interés |
+
+---
+
+## 8. Usuarios y Roles
 
 ### Tabla `usuarios_rol`
 | Campo | Valores |
@@ -116,7 +177,7 @@ Acceso: `#admin` (requiere login con rol `admin`)
 
 ---
 
-## 7. Configuración del Proyecto
+## 9. Configuración del Proyecto
 
 ### Variables de entorno (GitHub Secrets)
 | Secret | Descripción |
@@ -129,7 +190,7 @@ Acceso: `#admin` (requiere login con rol `admin`)
 
 ---
 
-## 8. Supabase Realtime
+## 10. Supabase Realtime
 
 ### Habilitar tablas
 ```sql
@@ -142,7 +203,7 @@ alter publication supabase_realtime add table vendedor_commissions;
 
 ---
 
-## 9. Deploy y CI/CD
+## 11. Deploy y CI/CD
 
 ### GitHub Actions
 - Push a `main` → Deploy automático a GitHub Pages

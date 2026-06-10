@@ -44,6 +44,10 @@ Directorio: `screenshots/`
 | `00021` | `lead_events` | Tracking engagement |
 | `00022` | `lead_scores` + RPC | Lead scoring |
 | `00023` | `commission_rules`, `vendedor_commissions`, `invoices` | Comisiones + SUNAT |
+| `00028` | `tours` | Coordenadas centro del panorama |
+| `00029` | `tours` | Backfill de coordenadas |
+| `00030` | `analytics_events` | Eventos de analytics del tour |
+| `00031` | `tour_pois` | Puntos de interés del tour |
 
 ## Comandos Útiles
 

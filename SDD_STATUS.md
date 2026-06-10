@@ -6,8 +6,8 @@
 |------|--------|
 | `openspec/config.yaml` | ✅ |
 | `DESIGN.md` | ✅ |
-| Specs (10 specs) | ✅ |
-| Migraciones (00001–00018) | ✅ |
+| Specs (12 specs) | ✅ |
+| Migraciones (00001–00031) | ✅ |
 | RLS en tablas de negocio | ✅ (migraciones previas) |
 | `spatial_ref_sys` RLS | ⚠️ migración `00018` lista, requiere ejecución manual una sola vez |
 | `.env.local` | ✅ (URL + publishable key) |
@@ -34,5 +34,45 @@ IDs fijos predecibles, idempotente (`ON CONFLICT DO UPDATE`), cubre legacy + lot
 1. **Aplicar migración 00018** — abrir https://supabase.com/dashboard/project/ktfmrfhznwqsfziafltr/editor, pegar el contenido de `supabase/migrations/00018_fix_spatial_ref_sys_rls.sql` y ejecutarlo.
 2. **Ejecutar seed** — en el mismo SQL Editor, pegar el contenido de `supabase/seed/seed.sql` y ejecutarlo.
 3. **Verificar** con las queries y cantidades indicadas más arriba.
+4. **Aplicar migraciones P1** — ejecutar `00030_analytics_events.sql` y `00031_tour_pois.sql`.
 
 Eso elimina el warning y carga todos los datos de prueba listos para producción.
+
+---
+
+## P1 Features — Completado ✅
+
+### Implementado
+| Feature | Estado | PR |
+|---------|--------|-----|
+| Interactive Masterplan Overlay | ✅ | PR #9 (main) |
+| Analytics Events Table | ✅ | PR #14 (pending merge) |
+| Tour POIs Table | ✅ | PR #14 (pending merge) |
+| useTourAnalytics Hook | ✅ | PR #14 (pending merge) |
+| usePOIs Hook | ✅ | PR #14 (pending merge) |
+| POIMarker Component | ✅ | PR #14 (pending merge) |
+| POIOverlay Component | ✅ | PR #14 (pending merge) |
+| POIDetailPanel Component | ✅ | PR #14 (pending merge) |
+| TourAnalyticsDashboard | ✅ | PR #14 (pending merge) |
+| TourManagementTab | ✅ | PR #14 (pending merge) |
+
+### Migraciones P1
+| Migración | Tabla | Propósito |
+|-----------|-------|-----------|
+| `00030_analytics_events.sql` | `analytics_events` | Eventos de analytics del tour |
+| `00031_tour_pois.sql` | `tour_pois` | Puntos de interés del tour |
+
+### PR Final
+**https://github.com/statick88/showroom-digital-inmobiliario/pull/14**
+
+### Tests
+- 93/94 test files pass (1 pre-existing env var failure)
+- 795+ tests passing
+- 14 E2E tests passing
+- 0 regressions
+
+### Next Steps
+1. Merge PR #14 to main
+2. Ejecutar migraciones 00030 y 00031 en Supabase dashboard
+3. Deploy a producción via CI/CD
+4. Verificar funcionalidades P1 en producción
