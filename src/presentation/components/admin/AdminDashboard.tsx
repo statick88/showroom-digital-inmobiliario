@@ -535,9 +535,7 @@ function PropiedadesTab() {
                       </select>
                     </td>
                     <td className="p-4 text-center">
-                      <button className="text-muted-foreground hover:text-primary transition-colors">
-                        <Icon name="edit" size={18} />
-                      </button>
+                      {/* TODO: Add edit functionality when needed */}
                     </td>
                   </tr>
                 ))
