@@ -10,7 +10,8 @@ export interface ParcelLabelProps {
   onClick: (lote: Lote) => void;
 }
 
-function formatPrice(price: number, currency: "PEN" | "USD"): string {
+function formatPrice(price: number | null | undefined, currency: "PEN" | "USD"): string {
+  if (price === null || price === undefined) return "Consultar";
   const symbol = currency === "PEN" ? "S/" : "$";
   return `${symbol} ${price.toLocaleString("es-PE")}`;
 }
