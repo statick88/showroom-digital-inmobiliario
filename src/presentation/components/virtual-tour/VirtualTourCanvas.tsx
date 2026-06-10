@@ -5,6 +5,8 @@ import { OrbitControls } from "@react-three/drei";
 import { useRef, useEffect, useState, useCallback, Suspense } from "react";
 import * as THREE from "three";
 import type { VirtualTourScene } from "@/domain/entities/virtual-tour";
+import type { Lote } from "@/domain/entities/lote";
+import { ParcelOverlay } from "@/presentation/components/virtual-tour/ParcelOverlay";
 
 // Auto-rotating camera component
 function AutoRotateCamera({
@@ -70,12 +72,18 @@ function LoadingOverlay() {
   );
 }
 
-interface VirtualTourCanvasProps {
+export interface VirtualTourCanvasProps {
   scene: VirtualTourScene;
   onFullscreenChange?: (isFullscreen: boolean) => void;
   onLoad?: () => void;
   onError?: (error: Error) => void;
   className?: string;
+  /** Parcels to overlay on the panorama (optional). */
+  parcels?: Lote[];
+  /** Center coordinate for parcel projection (optional). */
+  panoramaCenter?: { lat: number; lng: number } | null;
+  /** Callback when a parcel is clicked (optional). */
+  onParcelClick?: (lote: Lote) => void;
 }
 
 export function VirtualTourCanvas({
@@ -84,6 +92,9 @@ export function VirtualTourCanvas({
   onLoad,
   onError,
   className = "",
+  parcels,
+  panoramaCenter,
+  onParcelClick,
 }: VirtualTourCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<any>(null);
@@ -201,6 +212,14 @@ export function VirtualTourCanvas({
         </Suspense>
 
         <AutoRotateCamera enabled={autoRotate} speed={0.0008} />
+
+        {parcels && parcels.length > 0 && panoramaCenter && onParcelClick && (
+          <ParcelOverlay
+            parcels={parcels}
+            panoramaCenter={panoramaCenter}
+            onParcelClick={onParcelClick}
+          />
+        )}
 
         <OrbitControls
           ref={controlsRef}

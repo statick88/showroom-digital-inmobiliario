@@ -5,7 +5,8 @@ import { useVirtualTour } from "@/presentation/hooks/use-virtual-tour";
 import { useLotes } from "@/presentation/hooks/useLotes";
 import { useRealtimeLotes } from "@/presentation/hooks/useRealtimeLotes";
 import type { Lote } from "@/domain/entities/lote";
-import type { GeoCoordinate } from "@/domain/entities/property";
+
+export type GeoCoordinate = { lat: number; lng: number };
 
 export interface UseParcelsForTourResult {
   /** Lotes for the tour's project, or empty if no panoramaCenter. */
@@ -40,7 +41,7 @@ export function useParcelsForTour(tourId: string): UseParcelsForTourResult {
     const initialScene = tour.escenas.find(
       (s) => s.id === tour.escenaInicialId,
     ) ?? tour.escenas[0];
-    return initialScene.panoramaCenter ?? null;
+    return initialScene?.panoramaCenter ?? null;
   }, [tour]);
 
   const parcels = useMemo<Lote[]>(() => {

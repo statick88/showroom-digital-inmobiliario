@@ -34,12 +34,12 @@ export function ParcelDetailPanel({
 
   // Swipe-down to dismiss (mobile)
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartY.current = e.touches[0].clientY;
+    touchStartY.current = e.touches[0]?.clientY ?? 0;
   }, []);
 
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
-      const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+      const deltaY = (e.changedTouches[0]?.clientY ?? 0) - touchStartY.current;
       if (deltaY > 80) {
         onClose();
       }

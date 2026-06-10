@@ -117,10 +117,15 @@ describe("useParcelsForTour", () => {
 // ── Edge cases ─────────────────────────────────────────────────────
 describe("useParcelsForTour — edge cases", () => {
   it("returns empty parcels when tour has no panoramaCenter", () => {
-    mockTourData({
-      ...mockTour,
-      escenas: [{ ...mockTour.escenas[0], panoramaCenter: undefined }],
-    });
+    // Override the mock to return a scene without panoramaCenter
+    vi.mocked(useVirtualTour).mockReturnValue({
+      data: {
+        ...mockTour,
+        escenas: [{ ...mockTour.escenas[0], panoramaCenter: undefined }],
+      },
+      isLoading: false,
+      isError: false,
+    } as any);
     mockLotesData(mockLotes);
 
     const { result } = renderHook(
