@@ -13,6 +13,8 @@ import { LeadsTable } from "@/presentation/components/admin/LeadsTable";
 import { UsuariosPanel } from "@/presentation/components/admin/UsuariosPanel";
 import { AuditLogPanel } from "@/presentation/components/admin/AuditLogPanel";
 import { VirtualToursPanel } from "@/presentation/components/admin/VirtualToursPanel";
+import { TourAnalyticsDashboard } from "@/presentation/components/admin/TourAnalyticsDashboard";
+import { TourManagementTab } from "@/presentation/components/admin/TourManagementTab";
 import { Icon } from "@/components/ui/icon";
 import {
   Dialog,
@@ -35,10 +37,12 @@ import {
   Filter,
   FileText,
   Orbit,
+  BarChart3,
+  MapPin,
 } from "lucide-react";
 import type { EstadoPropiedad } from "@/domain/entities/propiedad";
 
-type Tab = "dashboard" | "propiedades" | "leads" | "usuarios" | "audit-log" | "virtual-tours";
+type Tab = "dashboard" | "propiedades" | "leads" | "usuarios" | "audit-log" | "virtual-tours" | "analytics" | "tour-management";
 
 // ── Confirm dialog state ───────────────────────────────────────────
 interface ConfirmState {
@@ -95,6 +99,12 @@ export function AdminDashboard() {
             <NavButton tab="virtual-tours" current={tab} icon="view_in_ar" onClick={setTab}>
               Tours 360°
             </NavButton>
+            <NavButton tab="analytics" current={tab} icon="bar_chart" onClick={setTab}>
+              Analytics
+            </NavButton>
+            <NavButton tab="tour-management" current={tab} icon="tour" onClick={setTab}>
+              Tour
+            </NavButton>
           </nav>
 
           {/* User Profile (3.9) */}
@@ -126,6 +136,8 @@ export function AdminDashboard() {
         {tab === "usuarios" && <UsuariosTab />}
         {tab === "audit-log" && <AuditLogTab />}
         {tab === "virtual-tours" && <VirtualToursTab />}
+        {tab === "analytics" && <AnalyticsTab />}
+        {tab === "tour-management" && <TourManagementTabScreen />}
       </main>
 
       {/* ── Mobile bottom tab bar (3.10) ──────────────────────── */}
@@ -169,6 +181,18 @@ export function AdminDashboard() {
             icon={<Orbit size={20} />}
             label="Tours 360°"
             onClick={() => setTab("virtual-tours")}
+          />
+          <MobileTabButton
+            active={tab === "analytics"}
+            icon={<BarChart3 size={20} />}
+            label="Analytics"
+            onClick={() => setTab("analytics")}
+          />
+          <MobileTabButton
+            active={tab === "tour-management"}
+            icon={<MapPin size={20} />}
+            label="Tour"
+            onClick={() => setTab("tour-management")}
           />
         </div>
       )}
@@ -652,6 +676,28 @@ function VirtualToursTab() {
   return (
     <div className="p-4 md:p-8 space-y-6">
       <VirtualToursPanel />
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  ANALYTICS TAB  (read-only dashboard)
+// ════════════════════════════════════════════════════════════════════
+function AnalyticsTab() {
+  return (
+    <div className="p-4 md:p-8 space-y-6 animate-in fade-in duration-500">
+      <TourAnalyticsDashboard />
+    </div>
+  );
+}
+
+// ════════════════════════════════════════════════════════════════════
+//  TOUR MANAGEMENT TAB  (CRUD)
+// ════════════════════════════════════════════════════════════════════
+function TourManagementTabScreen() {
+  return (
+    <div className="p-4 md:p-8 space-y-6 animate-in fade-in duration-500">
+      <TourManagementTab />
     </div>
   );
 }
