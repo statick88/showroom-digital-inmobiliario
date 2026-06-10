@@ -110,7 +110,7 @@ describe("useWhatsAppTour — hook", () => {
     });
 
     expect(window.open).toHaveBeenCalledTimes(1);
-    const calledUrl = (window.open as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+    const calledUrl = (window.open as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string;
     expect(calledUrl).toContain("wa.me");
     expect(calledUrl).toContain(encodeURIComponent("LT-042"));
     expect(calledUrl).toContain(encodeURIComponent("200 m²"));
@@ -130,7 +130,7 @@ describe("useWhatsAppTour — hook", () => {
       result.current.openWhatsApp();
     });
 
-    const calledUrl = (window.open as ReturnType<typeof vi.fn>).mock.calls[0][0] as string;
+    const calledUrl = (window.open as ReturnType<typeof vi.fn>).mock.calls[0]?.[0] as string;
     expect(calledUrl).toContain(encodeURIComponent("$ 120,000"));
   });
 
