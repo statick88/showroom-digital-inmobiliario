@@ -57,7 +57,7 @@ export const analyticsRepository: AnalyticsRepository = {
     const rows = (data ?? []) as Record<string, unknown>[];
 
     return {
-      total_visitors: 0,
+      total_visitors: 0, // Computed client-side from distinct visitor_ids if needed
       total_events: rows.reduce(
         (sum, r) => sum + (Number(r.total_clicks) || 0), 0
       ),

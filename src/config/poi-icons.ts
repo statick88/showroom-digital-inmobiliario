@@ -17,9 +17,9 @@ export const POI_ICONS: Record<POIType, string> = {
  * Lighter variants for readability on DOM badges.
  */
 export const POI_COLORS: Record<POIType, { bg: string; text: string }> = {
-  amenity: { bg: "#dbeafe", text: "#1e40af" },
-  road: { bg: "#e0e7ff", text: "#3730a3" },
-  attraction: { bg: "#fef3c7", text: "#92400e" },
-  landmark: { bg: "#ede9fe", text: "#5b21b6" },
-  other: { bg: "#f3f4f6", text: "#374151" },
+  amenity: { bg: "#dbeafe", text: "#1e40af" }, // blue
+  road: { bg: "#e0e7ff", text: "#3730a3" }, // indigo
+  attraction: { bg: "#fef3c7", text: "#92400e" }, // amber
+  landmark: { bg: "#ede9fe", text: "#5b21b6" }, // violet
+  other: { bg: "#f3f4f6", text: "#374151" }, // gray
 };

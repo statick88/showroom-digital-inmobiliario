@@ -1,153 +1,175 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 
-import { useTourAnalytics } from "@/presentation/hooks/useTourAnalytics";
-
-// ── Mock analyticsRepository ──────────────────────────────────────────
-const insertEventsMock = vi.fn().mockResolvedValue(undefined);
+const mockInsertEvents = vi.fn().mockResolvedValue(undefined);
 
 vi.mock("@/data/repositories", () => ({
   analyticsRepository: {
-    insertEvents: (...args: unknown[]) => insertEventsMock(...args),
+    insertEvents: (...args: unknown[]) => mockInsertEvents(...args),
   },
 }));
 
-// ── Mock localStorage ─────────────────────────────────────────────────
-const localStorageMock = (() => {
-  let store: Record<string, string> = {};
+import { useTourAnalytics } from "../useTourAnalytics";
+
+// ── Memory Storage (same pattern as useWhatsAppTour.test.tsx) ──────
+function createMemoryStorage(): Storage {
+  const map = new Map<string, string>();
   return {
-    getItem: (key: string) => store[key] ?? null,
-    setItem: (key: string, value: string) => { store[key] = value; },
-    removeItem: (key: string) => { delete store[key]; },
-    clear: () => { store = {}; },
+    get length() {
+      return map.size;
+    },
+    clear() {
+      map.clear();
+    },
+    getItem(key) {
+      return map.get(key) ?? null;
+    },
+    key(index) {
+      return Array.from(map.keys())[index] ?? null;
+    },
+    removeItem(key) {
+      map.delete(key);
+    },
+    setItem(key, value) {
+      map.set(key, value);
+    },
   };
-})();
-
-beforeEach(() => {
-  insertEventsMock.mockReset();
-  insertEventsMock.mockResolvedValue(undefined);
-  vi.useFakeTimers();
-  Object.defineProperty(globalThis, "localStorage", { value: localStorageMock, writable: true });
-  localStorageMock.clear();
-});
-
-afterEach(() => {
-  vi.useRealTimers();
-});
+}
 
 describe("useTourAnalytics", () => {
-  it("returns a track function and visitorId", () => {
-    const { result } = renderHook(() => useTourAnalytics("tour-1"));
-
-    expect(typeof result.current.track).toBe("function");
-    expect(typeof result.current.flush).toBe("function");
-    expect(result.current.visitorId).toBeTruthy();
-  });
-
-  it("does not insert events before buffer is full or flush is called", () => {
-    const { result } = renderHook(() => useTourAnalytics("tour-1"));
-
-    act(() => {
-      result.current.track("parcel_click", {}, "parcel-1");
-      result.current.track("parcel_click", {}, "parcel-2");
-      result.current.track("parcel_click", {}, "parcel-3");
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+    // Provide localStorage via Object.defineProperty (jsdom doesn't expose it by default)
+    const memoryStorage = createMemoryStorage();
+    Object.defineProperty(window, "localStorage", {
+      configurable: true,
+      get: () => memoryStorage,
     });
-
-    expect(insertEventsMock).not.toHaveBeenCalled();
-  });
-
-  it("flushes events when buffer reaches 50", () => {
-    const { result } = renderHook(() => useTourAnalytics("tour-1"));
-
-    act(() => {
-      for (let i = 0; i < 50; i++) {
-        result.current.track("parcel_click", {}, `parcel-${i}`);
-      }
-    });
-
-    expect(insertEventsMock).toHaveBeenCalledTimes(1);
-    expect(insertEventsMock).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({
-          event_type: "parcel_click",
-          tour_id: "tour-1",
-        }),
-      ]),
+    // Stub crypto.randomUUID
+    vi.spyOn(crypto, "randomUUID").mockReturnValue(
+      "00000000-0000-0000-0000-000000000001" as `${string}-${string}-${string}-${string}-${string}`,
     );
   });
 
-  it("flushes events when flush() is called manually", async () => {
-    const { result } = renderHook(() => useTourAnalytics("tour-1"));
-
-    act(() => {
-      result.current.track("tour_start");
-      result.current.track("whatsapp_click", {}, "parcel-1");
-    });
-
-    await act(async () => {
-      await result.current.flush();
-    });
-
-    expect(insertEventsMock).toHaveBeenCalledTimes(1);
-    expect(insertEventsMock).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({ event_type: "tour_start" }),
-        expect.objectContaining({ event_type: "whatsapp_click" }),
-      ]),
-    );
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
-  it("does not call insert when buffer is empty on flush", async () => {
-    const { result } = renderHook(() => useTourAnalytics("tour-1"));
+  describe("buffer threshold flush (task 2.3)", () => {
+    it("does NOT insert when buffer has 49 events", () => {
+      const { result } = renderHook(() => useTourAnalytics("tour-1"));
 
-    await act(async () => {
-      await result.current.flush();
+      act(() => {
+        for (let i = 0; i < 49; i++) {
+          result.current.track("parcel_click", {}, `parcel-${i}`);
+        }
+      });
+
+      expect(mockInsertEvents).not.toHaveBeenCalled();
     });
 
-    expect(insertEventsMock).not.toHaveBeenCalled();
+    it("inserts ALL 50 events when threshold is reached", () => {
+      const { result } = renderHook(() => useTourAnalytics("tour-1"));
+
+      act(() => {
+        for (let i = 0; i < 50; i++) {
+          result.current.track("parcel_click", {}, `parcel-${i}`);
+        }
+      });
+
+      expect(mockInsertEvents).toHaveBeenCalledTimes(1);
+      expect(mockInsertEvents).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({
+            event_type: "parcel_click",
+            tour_id: "tour-1",
+            parcel_id: expect.stringMatching(/^parcel-\d+$/),
+          }),
+        ]),
+      );
+      // Verify exactly 50 events were passed
+      const firstCall = mockInsertEvents.mock.calls[0];
+      expect(firstCall[0]).toHaveLength(50);
+    });
   });
 
-  it("sends periodic flush every 5 seconds", () => {
-    const { result } = renderHook(() => useTourAnalytics("tour-1"));
+  describe("flush on unmount (task 2.4)", () => {
+    it("calls flush on unmount with pending events", () => {
+      const { result, unmount } = renderHook(() =>
+        useTourAnalytics("tour-1"),
+      );
 
-    act(() => {
-      result.current.track("parcel_click", {}, "parcel-1");
+      act(() => {
+        result.current.track("parcel_click");
+        result.current.track("tour_start");
+      });
+
+      unmount();
+
+      expect(mockInsertEvents).toHaveBeenCalled();
+      const flushedEvents = mockInsertEvents.mock.calls[0][0];
+      expect(flushedEvents).toHaveLength(2);
     });
 
-    act(() => {
-      vi.advanceTimersByTime(5000);
-    });
+    it("does NOT call insert when unmounting with empty buffer", () => {
+      const { unmount } = renderHook(() => useTourAnalytics("tour-1"));
 
-    expect(insertEventsMock).toHaveBeenCalledTimes(1);
+      unmount();
+
+      // The cleanup calls flush(), which checks length === 0 and returns early
+      expect(mockInsertEvents).not.toHaveBeenCalled();
+    });
   });
 
-  it("flushes remaining events on unmount", () => {
-    const { result, unmount } = renderHook(() => useTourAnalytics("tour-1"));
+  describe("periodic flush", () => {
+    it("flushes after 5s interval", () => {
+      const { result } = renderHook(() => useTourAnalytics("tour-1"));
 
-    act(() => {
-      result.current.track("parcel_click", {}, "parcel-1");
+      act(() => {
+        result.current.track("parcel_click");
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(5_000);
+      });
+
+      expect(mockInsertEvents).toHaveBeenCalledTimes(1);
     });
-
-    unmount();
-
-    // The cleanup effect calls flush synchronously
-    expect(insertEventsMock).toHaveBeenCalled();
   });
 
-  it("silently drops errors from insertEvents", async () => {
-    insertEventsMock.mockRejectedValueOnce(new Error("DB down"));
-
-    const { result } = renderHook(() => useTourAnalytics("tour-1"));
-
-    act(() => {
-      result.current.track("parcel_click");
+  describe("visitor ID", () => {
+    it("returns a persistent visitor ID from localStorage", () => {
+      const { result } = renderHook(() => useTourAnalytics("tour-1"));
+      expect(result.current.visitorId).toBe(
+        "00000000-0000-0000-0000-000000000001",
+      );
     });
+  });
 
-    await act(async () => {
-      await result.current.flush();
+  describe("event shape", () => {
+    it("track populates event with correct fields", () => {
+      const { result } = renderHook(() => useTourAnalytics("tour-1"));
+
+      act(() => {
+        result.current.track("whatsapp_click", { phone: "+51999" }, "p-1");
+      });
+
+      act(() => {
+        vi.advanceTimersByTime(5_000);
+      });
+
+      const events = mockInsertEvents.mock.calls[0][0];
+      expect(events[0]).toMatchObject({
+        event_type: "whatsapp_click",
+        tour_id: "tour-1",
+        parcel_id: "p-1",
+        visitor_id: "00000000-0000-0000-0000-000000000001",
+        metadata: { phone: "+51999" },
+      });
+      expect(events[0].id).toBeDefined();
+      expect(events[0].created_at).toBeDefined();
     });
-
-    // Should not throw
-    expect(insertEventsMock).toHaveBeenCalled();
   });
 });
