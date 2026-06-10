@@ -24,16 +24,12 @@ export function ParcelOverlay({
   onParcelClick,
   radius = 499,
 }: ParcelOverlayProps) {
-  if (!panoramaCenter) {
-    console.warn(
-      "[ParcelOverlay] panoramaCenter not provided — parcel overlays disabled"
-    );
-    return null;
-  }
-
   // Precompute label positions (center of each polygon)
+  // NOTE: useMemo must be called unconditionally (Rules of Hooks)
   const labelPositions = useMemo(() => {
     const positions: Record<string, [number, number, number]> = {};
+
+    if (!panoramaCenter) return positions;
 
     for (const parcel of parcels) {
       if (!parcel.poligonoCoords || parcel.poligonoCoords.length === 0) continue;
@@ -65,6 +61,14 @@ export function ParcelOverlay({
 
     return positions;
   }, [parcels, panoramaCenter, radius]);
+
+  // Graceful degradation: log warning and return null if panoramaCenter is missing
+  if (!panoramaCenter) {
+    console.warn(
+      "[ParcelOverlay] panoramaCenter not provided — parcel overlays disabled"
+    );
+    return null;
+  }
 
   return (
     <group>
