@@ -10,7 +10,7 @@ Showroom inmobiliario interactivo con mapa de propiedades en tiempo real, analyt
 - **React Query** + **Zustand** (state management)
 - **Leaflet** (mapas interactivos con marcadores circulares 16px)
 - **Supabase** (PostgreSQL, autenticación, Realtime)
-- **Vitest** (unit testing, **722+ tests**)
+- **Vitest** (unit testing, **795+ tests**)
 - **Playwright** (E2E testing)
 - **vite-plugin-pwa** (Progressive Web App)
 - **Workbox** (service worker + caching estratégico)
@@ -63,6 +63,8 @@ Showroom inmobiliario interactivo con mapa de propiedades en tiempo real, analyt
 - Gestión de leads con estado y seguimiento
 - Modificación inline de estado (CCI, método de pago) con confirmación
 - **Actualización en tiempo real** vía Supabase Realtime
+- **Analytics Dashboard** — gráficos de barras, pie charts, métricas de tour
+- **Tour Management** — CRUD de POIs (amenidades, puntos de interés)
 
 ### 🔒 Cumplimiento Legal
 - **LPDP (Ley 29733)**: Banner de cookies con consentimiento explícito
@@ -77,6 +79,28 @@ Showroom inmobiliario interactivo con mapa de propiedades en tiempo real, analyt
 - Eventos tipados: `click_propiedad`, `vista_detalle`
 - Sesiones vía `crypto.randomUUID()` + localStorage
 - **Actualización en tiempo real** sin recargar página
+
+### 🧭 Virtual Tour 360°
+- Tour interactivo con panorama esférico (R3F + drei)
+- **Parcel Overlay** — lotes proyectados en 3D con estados en tiempo real
+- **POI Markers** — amenidades y puntos de interés con iconos emoji
+- **WhatsApp Deep Links** — contacto directo desde el tour
+- **Keyboard Navigation** — flechas, WASD, scroll para rotación
+- **Auto-rotation** — rotación automática con pausa en interacción
+
+### 🎯 Tour Analytics (P1)
+- **Batched Analytics** — buffer de 50 eventos, flush cada 5s
+- **Visitor Tracking** — ID persistente vía localStorage
+- **Event Types** — `parcel_click`, `whatsapp_click`, `share_click`, `tour_start`
+- **RPC Aggregation** — `get_analytics_summary` para métricas agregadas
+- **Date Range Filtering** — filtrar por rango de fechas
+
+### 🏢 POI System (P1)
+- **POI Types** — amenity, road, attraction, landmark, other
+- **Emoji Icons** — 🏢 amenidad, 🛣️ vía, 🎯 atracción, 🏛️ monumento, 📍 otro
+- **CRUD Operations** — crear, editar, eliminar POIs
+- **Badge Colors** — colores por tipo de POI
+- **Detail Panel** — información del POI en bottom-sheet
 
 ## Development
 
@@ -137,15 +161,16 @@ alter publication supabase_realtime add table lotes;
 ```
 src/
 ├── domain/                    # Entidades, repositorios (interfaces)
-│   ├── entities/             # Propiedad, Lote, MetricaClick, Lead, LeadEvent, LeadScore, Commission, CommissionRule
-│   └── repositories/         # Interfaces: leadEvents, leadScores, commissions
+│   ├── entities/             # Propiedad, Lote, MetricaClick, Lead, LeadEvent, LeadScore, Commission, CommissionRule, TourPOI, AnalyticsEvent
+│   └── repositories/         # Interfaces: leadEvents, leadScores, commissions, analytics, tourPOIs
 ├── data/                     # Implementaciones
-│   └── repositories/         # Supabase repos + lead events + lead scores + commissions
+│   └── repositories/         # Supabase repos + lead events + lead scores + commissions + analytics + tour POIs
 ├── presentation/             # UI
 │   ├── components/
 │   │   ├── map/              # Mapa, marcadores, filtros, LeadForm
-│   │   ├── admin/            # Dashboard, gráficos, tablas
+│   │   ├── admin/            # Dashboard, gráficos, tablas, TourAnalyticsDashboard, TourManagementTab
 │   │   ├── detail/           # Panel de detalle de propiedad
+│   │   ├── virtual-tour/     # ParcelOverlay, POIMarker, POIOverlay, POIDetailPanel
 │   │   ├── vendedor/         # VendedorDashboard, CommissionTable, TeamLeadsView
 │   │   ├── whatsapp/         # WhatsAppButton
 │   │   ├── pwa/              # OfflineIndicator
@@ -161,7 +186,11 @@ src/
 │   │   ├── useRealtimeLotes.ts          # Realtime lotes
 │   │   ├── useClickTracker.ts           # Tracking de clics
 │   │   ├── useTopClicks.ts              # Top propiedades clickeadas
-│   │   └── useStatusMutation.ts         # Mutación de estado con confirmación
+│   │   ├── useStatusMutation.ts         # Mutación de estado con confirmación
+│   │   ├── useTourAnalytics.ts          # Analytics batched del tour
+│   │   ├── useAnalyticsAggregates.ts    # Métricas agregadas (RPC)
+│   │   ├── usePOIs.ts                   # CRUD de puntos de interés
+│   │   └── useParcelsForTour.ts         # Lotes proyectados en tour 360°
 │   └── store/                # Zustand stores (MapInstanceStore, AuthStore)
 ├── lib/                      # Utilidades
 │   ├── supabase/             # Cliente Supabase
@@ -170,6 +199,8 @@ src/
 └── config/                   # Configuración
     ├── env.ts                # Variables de entorno tipadas
     ├── markers.ts            # Config de marcadores (16px, colores)
+    ├── parcel-colors.ts      # Colores por estado de lote
+    ├── poi-icons.ts          # Iconos emoji por tipo de POI
     └── glass.css             # Estilos glassmorphism
 ```
 
@@ -190,6 +221,10 @@ alter publication supabase_realtime add table lotes;
 | `00021_lead_events.sql` | `lead_events` | Tracking de engagement (views, whatsapp_clicks, time_spent, repeat_visit) |
 | `00022_lead_scores.sql` | `lead_scores` + RPC `compute_lead_score` | Scores computados + función server-side |
 | `00023_commissions.sql` | `commission_rules`, `vendedor_commissions`, `invoices` | Reglas de comisión, tracking + facturación |
+| `00028_add_panorama_center.sql` | `tours` | Coordenadas centro del panorama (lat/lng) |
+| `00029_backfill_panorama_centers.sql` | `tours` | Backfill de coordenadas para tours existentes |
+| `00030_analytics_events.sql` | `analytics_events` | Eventos de analytics del tour (batched) |
+| `00031_tour_pois.sql` | `tour_pois` | Puntos de interés del tour (amenidades, etc.) |
 
 ## Diseño
 
@@ -202,7 +237,7 @@ alter publication supabase_realtime add table lotes;
 ## Tests
 
 ```bash
-# Unit tests (Vitest) — 722+ tests
+# Unit tests (Vitest) — 795+ tests
 pnpm test
 
 # Con coverage
@@ -217,13 +252,13 @@ src/presentation/components/vendedor/__tests__/  # VendedorDashboard, Commission
 src/presentation/components/whatsapp/__tests__/  # WhatsAppButton
 src/presentation/components/pwa/__tests__/  # OfflineIndicator, useOnlineStatus
 src/presentation/components/leads/__tests__/  # LeadScoreCard, LeadScoringPanel
-src/presentation/hooks/__tests__/         # useWhatsApp, useLeadScoring, useCommissions, useOnlineStatus
+src/presentation/hooks/__tests__/         # useWhatsApp, useLeadScoring, useCommissions, useOnlineStatus, useTourAnalytics, usePOIs, useAnalyticsAggregates
 src/data/repositories/__tests__/          # lead-events, lead-scores, commissions
 src/domain/entities/__tests__/            # lead, lead-score, commission
 src/domain/repositories/__tests__/        # lead-events, lead-scores, commissions
 src/lib/schemas/__tests__/                # migrations 00021, 00022, 00023
 src/lib/sunat/__tests__/                  # ruc-validator
-src/testing/e2e/                          # E2E con Playwright
+src/testing/e2e/                          # E2E con Playwright (14 tests)
 ```
 
 ## Licencia
