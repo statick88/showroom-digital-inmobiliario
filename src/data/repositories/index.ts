@@ -11,3 +11,4 @@ export { usuariosRepository } from "./supabase-usuarios.repository.impl";
 export { virtualTourRepository } from "./supabase-virtual-tour.repository.impl";
 export { analyticsRepository } from "./analytics.repository.impl";
 export { tourPOIsRepository } from "./tour-pois.repository.impl";
+export { supabasePagosRepository as pagosRepository } from "./supabase-pagos.repository.impl";
