@@ -408,6 +408,9 @@ function AppContent() {
             lote={selectedLote}
             onClose={() => setSelectedLote(null)}
             modoVendedor={modoVendedor}
+            coordenadasCentro={proyecto?.coordenadasCentro}
+            nombreProyecto={proyecto?.nombre}
+            ubicacionProyecto={proyecto?.ubicacion}
           />
         </Suspense>
       )}

@@ -8,17 +8,31 @@ interface UbicacionMapaProps {
   lng: number;
   nombre?: string;
   direccion?: string;
+  zoom?: number;
+  compact?: boolean;
 }
 
-export function UbicacionMapa({ lat, lng, nombre, direccion }: UbicacionMapaProps) {
+export function UbicacionMapa({
+  lat,
+  lng,
+  nombre,
+  direccion,
+  zoom = 15,
+  compact = false,
+}: UbicacionMapaProps) {
   return (
-    <div className="rounded-xl overflow-hidden border border-border h-[400px]">
+    <div
+      className={`rounded-xl overflow-hidden border border-border ${
+        compact ? "h-[200px]" : "h-[400px]"
+      }`}
+    >
       <MapContainer
         center={[lat, lng]}
-        zoom={15}
+        zoom={zoom}
         className="h-full w-full"
-        zoomControl={true}
+        zoomControl={!compact}
         scrollWheelZoom={false}
+        attributionControl={!compact}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

@@ -2,12 +2,16 @@ import { useState } from "react";
 import type { Lote } from "@/domain/entities/lote";
 import { StatusChip } from "@/components/ui/status-chip";
 import { Icon } from "@/components/ui/icon";
+import { UbicacionMapa } from "@/presentation/components/map/UbicacionMapa";
 import { ConsultaLote } from "./ConsultaLote";
 
 export interface LoteDetailContentProps {
   lote: Lote;
   onClose: () => void;
   modoVendedor?: boolean;
+  coordenadasCentro?: { lat: number; lng: number };
+  nombreProyecto?: string;
+  ubicacionProyecto?: string;
 }
 
 function formatPrice(price: number, currency: "PEN" | "USD"): string {
@@ -20,7 +24,14 @@ function formatPrice(price: number, currency: "PEN" | "USD"): string {
  * Renders lot details: image, code, description, status, price, dimensions, and action buttons.
  * Used by both FichaTecnicaLote (modal wrapper) and ParcelDetailPanel (tour context).
  */
-export function LoteDetailContent({ lote, onClose, modoVendedor }: LoteDetailContentProps) {
+export function LoteDetailContent({
+  lote,
+  onClose,
+  modoVendedor,
+  coordenadasCentro,
+  nombreProyecto,
+  ubicacionProyecto,
+}: LoteDetailContentProps) {
   const [showConsulta, setShowConsulta] = useState(false);
 
   return (
@@ -82,6 +93,19 @@ export function LoteDetailContent({ lote, onClose, modoVendedor }: LoteDetailCon
             </div>
           )}
         </div>
+
+        {coordenadasCentro && (
+          <div>
+            <p className="typo-label-md text-muted-foreground mb-2">Ubicación del proyecto</p>
+            <UbicacionMapa
+              lat={coordenadasCentro.lat}
+              lng={coordenadasCentro.lng}
+              nombre={nombreProyecto}
+              direccion={ubicacionProyecto}
+              compact
+            />
+          </div>
+        )}
 
         <div className="flex gap-3 pt-2">
           {!modoVendedor && lote.estado === "disponible" && (

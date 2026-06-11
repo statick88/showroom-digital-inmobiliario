@@ -6,9 +6,19 @@ interface FichaTecnicaLoteProps {
   lote: Lote;
   onClose: () => void;
   modoVendedor?: boolean;
+  coordenadasCentro?: { lat: number; lng: number };
+  nombreProyecto?: string;
+  ubicacionProyecto?: string;
 }
 
-export function FichaTecnicaLote({ lote, onClose, modoVendedor }: FichaTecnicaLoteProps) {
+export function FichaTecnicaLote({
+  lote,
+  onClose,
+  modoVendedor,
+  coordenadasCentro,
+  nombreProyecto,
+  ubicacionProyecto,
+}: FichaTecnicaLoteProps) {
   // T-4.4: Reservar button delegates to useLoteStatusMutation so the
   // mutation hook owns the toast + cache invalidation.
   const { mutate: cambiarEstado, isPending } = useLoteStatusMutation();
@@ -26,7 +36,14 @@ export function FichaTecnicaLote({ lote, onClose, modoVendedor }: FichaTecnicaLo
         className="bg-card border border-border rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <LoteDetailContent lote={lote} onClose={onClose} modoVendedor={modoVendedor} />
+        <LoteDetailContent
+          lote={lote}
+          onClose={onClose}
+          modoVendedor={modoVendedor}
+          coordenadasCentro={coordenadasCentro}
+          nombreProyecto={nombreProyecto}
+          ubicacionProyecto={ubicacionProyecto}
+        />
 
         {modoVendedor && (
           <div className="px-6 pb-6 flex gap-2">
