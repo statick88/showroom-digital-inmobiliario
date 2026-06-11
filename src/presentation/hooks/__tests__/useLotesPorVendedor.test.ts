@@ -40,6 +40,15 @@ vi.mock("@/config/env", () => ({
   env: { proyectoId: "env-proj-1" },
 }));
 
+vi.mock("@/presentation/context/ProjectContext", () => ({
+  useProjectContext: () => ({
+    selectedProjectId: "env-proj-1",
+    setSelectedProjectId: vi.fn(),
+    projects: [],
+    isLoading: false,
+  }),
+}));
+
 function makeLote(id: string, codigo: string): Lote {
   return {
     id,
