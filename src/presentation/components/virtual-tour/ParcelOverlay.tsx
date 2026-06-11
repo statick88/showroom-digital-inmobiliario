@@ -32,10 +32,11 @@ export function ParcelOverlay({
     if (!panoramaCenter) return positions;
 
     for (const parcel of parcels) {
-      if (!parcel.poligonoCoords || parcel.poligonoCoords.length === 0) continue;
+      const coords = parcel.poligonoCoords;
+      if (!Array.isArray(coords) || coords.length === 0) continue;
 
-      const ring = parcel.poligonoCoords[0];
-      if (!ring || ring.length === 0) continue;
+      const ring = coords[0];
+      if (!Array.isArray(ring) || ring.length === 0) continue;
 
       // Average all vertices to get the centroid
       let sumLng = 0;
@@ -74,7 +75,8 @@ export function ParcelOverlay({
     <group>
       {/* Parcel boundary lines */}
       {parcels.map((parcel) => {
-        if (!parcel.poligonoCoords || parcel.poligonoCoords.length === 0) {
+        const coords = parcel.poligonoCoords;
+        if (!Array.isArray(coords) || coords.length === 0) {
           return null;
         }
 

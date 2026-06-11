@@ -27,8 +27,10 @@ export function ParcelPolygonMesh({
   const lineSegments = useMemo(() => {
     const positions: number[] = [];
 
+    if (!Array.isArray(geojson)) return new THREE.BufferGeometry();
+
     for (const ring of geojson) {
-      if (ring.length < 2) continue;
+      if (!Array.isArray(ring) || ring.length < 2) continue;
 
       const projected: [number, number, number][] = ring
         .filter((coord: number[]) => coord.length >= 2)

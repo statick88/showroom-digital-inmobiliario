@@ -14,7 +14,7 @@ function mapLote(row: Record<string, unknown>): Lote {
     precio: Number(row.precio),
     moneda: row.moneda as "PEN" | "USD",
     estado: row.estado as EstadoLote,
-    poligonoCoords: row.poligono_coords as number[][][],
+    poligonoCoords: Array.isArray(row.poligono_coords) ? (row.poligono_coords as number[][][]) : [],
     imagenPlano: row.imagen_plano as string | undefined,
     descripcion: row.descripcion as string | undefined,
     orden: (row.orden as number) ?? 0,
