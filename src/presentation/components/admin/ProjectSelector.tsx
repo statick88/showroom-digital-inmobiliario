@@ -1,39 +1,47 @@
 "use client";
 
 import { useProjectContext } from "@/presentation/context/ProjectContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function ProjectSelector() {
   const { selectedProjectId, setSelectedProjectId, projects, isLoading } = useProjectContext();
 
   if (isLoading) {
     return (
-      <div className="h-10 w-48 animate-pulse rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+      <div className="h-10 w-48 animate-pulse rounded-lg bg-muted" />
     );
   }
 
   if (projects.length <= 1) {
-    return null; // No selector needed for single project
+    return null;
   }
 
   return (
     <div className="flex items-center gap-2">
-      <label htmlFor="project-select" className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-        Proyecto:
+      <label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+        Proyecto
       </label>
-      <select
-        id="project-select"
+      <Select
         value={selectedProjectId ?? ""}
-        onChange={(e) => setSelectedProjectId(e.target.value || null)}
-        className="rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm
-                   focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500
-                   dark:border-neutral-600 dark:bg-neutral-800 dark:text-white"
+        onValueChange={(v) => setSelectedProjectId(v || null)}
       >
-        {projects.map((p) => (
-          <option key={p.id} value={p.id}>
-            {p.nombre}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger className="w-[220px]">
+          <SelectValue placeholder="Seleccionar proyecto" />
+        </SelectTrigger>
+        <SelectContent>
+          {projects.map((p) => (
+            <SelectItem key={p.id} value={p.id}>
+              {p.nombre}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

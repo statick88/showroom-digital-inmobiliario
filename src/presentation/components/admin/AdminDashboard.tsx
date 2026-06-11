@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { usePropiedades } from "@/presentation/hooks/usePropiedades.legacy";
+import { propiedadesRepository } from "@/data/repositories";
 import { useMetricas } from "@/presentation/hooks/useMetricas";
 import { useStatusMutation } from "@/presentation/hooks/useStatusMutation";
 import { useRealtimePropiedades } from "@/presentation/hooks/useRealtimePropiedades";
@@ -410,6 +412,8 @@ function MetricCard({
 function PropiedadesTab() {
   const { data: propiedades, isLoading } = usePropiedades({});
   const statusMutation = useStatusMutation();
+  const queryClient = useQueryClient();
+  const { selectedProjectId } = useProjectContext();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -421,6 +425,46 @@ function PropiedadesTab() {
   });
   const [cci, setCci] = useState("");
   const [metodoPago, setMetodoPago] = useState("");
+
+  // ── Create property dialog state ────────────────────────────────
+  const [createOpen, setCreateOpen] = useState(false);
+  const [form, setForm] = useState({
+    codigo: "",
+    titulo: "",
+    tipo: "lote" as TipoPropiedad,
+    precio: "",
+    areaM2: "",
+    cuartos: "",
+    banios: "",
+    distrito: "",
+    descripcion: "",
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (data: typeof form) =>
+      propiedadesRepository.crear({
+        codigo: data.codigo,
+        titulo: data.titulo,
+        tipo: data.tipo,
+        precio: Number(data.precio),
+        areaM2: data.areaM2 ? Number(data.areaM2) : undefined,
+        cuartos: data.cuartos ? Number(data.cuartos) : undefined,
+        banios: data.banios ? Number(data.banios) : undefined,
+        distrito: data.distrito || undefined,
+        descripcion: data.descripcion || undefined,
+        agenciaId: selectedProjectId ?? "",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["propiedades"] });
+      setCreateOpen(false);
+      setForm({ codigo: "", titulo: "", tipo: "lote", precio: "", areaM2: "", cuartos: "", banios: "", distrito: "", descripcion: "" });
+    },
+  });
+
+  const handleCreate = useCallback(() => {
+    if (!form.codigo.trim() || !form.titulo.trim() || !form.precio) return;
+    createMutation.mutate(form);
+  }, [form, createMutation]);
 
   // Filtering logic
   const filtered = (propiedades ?? []).filter((p) => {
@@ -486,7 +530,10 @@ function PropiedadesTab() {
           <h2 className="text-2xl font-bold text-foreground">Gestión de Propiedades</h2>
           <p className="text-sm text-muted-foreground">Administra el inventario y estados</p>
         </div>
-        <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:brightness-110 transition-all text-sm">
+        <button
+          onClick={() => setCreateOpen(true)}
+          className="bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-sm hover:brightness-110 transition-all text-sm"
+        >
           <Icon name="add" size={20} />
           Nueva Propiedad
         </button>
@@ -661,6 +708,137 @@ function PropiedadesTab() {
               </Button>
               <Button onClick={handleConfirm} disabled={statusMutation.isPending}>
                 {statusMutation.isPending ? "Actualizando..." : "Confirmar"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        )}
+      </Dialog>
+
+      {/* Create Property Dialog */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        {createOpen && (
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Nueva Propiedad</DialogTitle>
+              <DialogDescription>Registra una nueva propiedad en el inventario</DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs text-muted-foreground font-medium">Código *</label>
+                  <input
+                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    placeholder="LOTE-001"
+                    value={form.codigo}
+                    onChange={(e) => setForm({ ...form, codigo: e.target.value })}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs text-muted-foreground font-medium">Tipo *</label>
+                  <select
+                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    value={form.tipo}
+                    onChange={(e) => setForm({ ...form, tipo: e.target.value as TipoPropiedad })}
+                  >
+                    <option value="lote">Lote</option>
+                    <option value="departamento">Departamento</option>
+                    <option value="casa">Casa</option>
+                    <option value="local">Local</option>
+                    <option value="oficina">Oficina</option>
+                    <option value="terreno">Terreno</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs text-muted-foreground font-medium">Título *</label>
+                <input
+                  className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                  placeholder="Lote 120m² en Urbanización Los Olivos"
+                  value={form.titulo}
+                  onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs text-muted-foreground font-medium">Precio (S/) *</label>
+                  <input
+                    type="number"
+                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    placeholder="85000"
+                    value={form.precio}
+                    onChange={(e) => setForm({ ...form, precio: e.target.value })}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs text-muted-foreground font-medium">Área (m²)</label>
+                  <input
+                    type="number"
+                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    placeholder="120"
+                    value={form.areaM2}
+                    onChange={(e) => setForm({ ...form, areaM2: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs text-muted-foreground font-medium">Cuartos</label>
+                  <input
+                    type="number"
+                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    value={form.cuartos}
+                    onChange={(e) => setForm({ ...form, cuartos: e.target.value })}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs text-muted-foreground font-medium">Baños</label>
+                  <input
+                    type="number"
+                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    value={form.banios}
+                    onChange={(e) => setForm({ ...form, banios: e.target.value })}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs text-muted-foreground font-medium">Distrito</label>
+                  <input
+                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    placeholder="Ate"
+                    value={form.distrito}
+                    onChange={(e) => setForm({ ...form, distrito: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs text-muted-foreground font-medium">Descripción</label>
+                <textarea
+                  className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm resize-none"
+                  rows={3}
+                  placeholder="Descripción de la propiedad..."
+                  value={form.descripcion}
+                  onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
+                />
+              </div>
+
+              {createMutation.isError && (
+                <p className="text-sm text-destructive">Error al crear propiedad. Verifica los datos.</p>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCreateOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleCreate}
+                disabled={createMutation.isPending || !form.codigo.trim() || !form.titulo.trim() || !form.precio}
+              >
+                {createMutation.isPending ? "Creando..." : "Crear Propiedad"}
               </Button>
             </DialogFooter>
           </DialogContent>
