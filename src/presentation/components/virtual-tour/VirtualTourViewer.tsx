@@ -3,12 +3,14 @@
 import { Suspense, lazy, useEffect, useState, useCallback } from "react";
 import { useVirtualTour } from "@/presentation/hooks/use-virtual-tour";
 import { useParcelsForTour } from "@/presentation/hooks/useParcelsForTour";
+import { useTourPreload } from "@/presentation/hooks/useTourPreload";
 import { VirtualTourSkeleton } from "./VirtualTourSkeleton";
 import { VirtualTourErrorBoundary } from "./VirtualTourErrorBoundary";
 import { VirtualTourCompass } from "./VirtualTourCompass";
 import { ParcelDetailPanel } from "./ParcelDetailPanel";
 import type { VirtualTourScene } from "@/domain/entities/virtual-tour";
 import type { Lote } from "@/domain/entities/lote";
+import { Download, Check, Loader2, AlertCircle } from "lucide-react";
 
 // Lazy load the heavy R3F canvas component
 const VirtualTourCanvas = lazy(() =>
@@ -36,6 +38,42 @@ export function VirtualTourViewer({
   const [currentScene, setCurrentScene] = useState<VirtualTourScene | null>(null);
   const [sceneHistory, setSceneHistory] = useState<string[]>([]);
   const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
+
+  // Tour preload hook for offline caching
+  const { preload, progress, isPreloaded, isTourCached } = useTourPreload();
+  const [isCheckingCache, setIsCheckingCache] = useState(false);
+
+  // Check if tour is already cached when tour loads
+  useEffect(() => {
+    if (tour && tour.escenas.length > 0) {
+      setIsCheckingCache(true);
+      const sceneUrls = tour.escenas
+        .flatMap((scene) => [scene.textureUrl, scene.textureUrlFallback].filter(Boolean))
+        .filter((url): url is string => Boolean(url));
+      
+      isTourCached(sceneUrls).then((cached) => {
+        if (cached) {
+          // Tour is already fully cached
+        }
+        setIsCheckingCache(false);
+      }).catch(() => {
+        setIsCheckingCache(false);
+      });
+    }
+  }, [tour, isTourCached]);
+
+  const handleDownloadTour = useCallback(async () => {
+    if (!tour) return;
+    
+    // Collect all unique scene URLs (texture + fallback + thumbnail)
+    const sceneUrls = tour.escenas.flatMap((scene) => [
+      scene.textureUrl,
+      scene.textureUrlFallback,
+      scene.thumbnailUrl,
+    ]).filter((url): url is string => Boolean(url));
+
+    await preload(sceneUrls);
+  }, [tour, preload]);
 
   // Find initial scene when tour loads
   useEffect(() => {
@@ -207,6 +245,44 @@ export function VirtualTourViewer({
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
           </button>
+        )}
+
+        {/* Download Tour Button */}
+        {tour && (
+          <div className="absolute top-3 right-3 z-30">
+            <button
+              onClick={handleDownloadTour}
+              disabled={progress !== null || isCheckingCache}
+              data-testid="download-tour-button"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg backdrop-blur-sm transition-all ${
+                isPreloaded && !progress
+                  ? "bg-green-600/90 text-white cursor-default"
+                  : progress
+                  ? "bg-blue-600/90 text-white cursor-wait"
+                  : "bg-black/50 hover:bg-black/70 text-white"
+              }`}
+              title={isPreloaded ? "Tour descargado ✓" : progress ? `Descargando... ${progress.loaded}/${progress.total}` : "Descargar tour para uso offline"}
+            >
+              {progress ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                  <span className="text-sm font-medium">{progress.loaded}/{progress.total}</span>
+                </>
+              ) : isCheckingCache ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              ) : isPreloaded ? (
+                <>
+                  <Check className="size-4" aria-hidden="true" />
+                  <span className="text-sm font-medium">Descargado</span>
+                </>
+              ) : (
+                <>
+                  <Download className="size-4" aria-hidden="true" />
+                  <span className="text-sm font-medium">Descargar</span>
+                </>
+              )}
+            </button>
+          </div>
         )}
 
         {isFullscreen && (
