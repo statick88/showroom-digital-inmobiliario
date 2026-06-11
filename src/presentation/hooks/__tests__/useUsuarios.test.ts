@@ -115,6 +115,7 @@ describe("useUsuarios (T-4.1) — write hooks (mutations)", () => {
         email: "nuevo@x.com",
         password: "temporal123",
         nombre: "Nuevo",
+        dni: "12345678",
         rol: "vendedor",
       });
     });
@@ -122,6 +123,7 @@ describe("useUsuarios (T-4.1) — write hooks (mutations)", () => {
       email: "nuevo@x.com",
       password: "temporal123",
       nombre: "Nuevo",
+      dni: "12345678",
       rol: "vendedor",
     });
   });
@@ -143,6 +145,7 @@ describe("useUsuarios (T-4.1) — write hooks (mutations)", () => {
         email: "x@x.com",
         password: "12345678",
         nombre: "X",
+        dni: "87654321",
         rol: "vendedor",
       });
     });

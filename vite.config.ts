@@ -52,6 +52,15 @@ export default defineConfig({
               expiration: { maxEntries: 1, maxAgeSeconds: 0 },
             },
           },
+          {
+            // Cache 360° tour images from Supabase Storage
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "tour-images-cache",
+              expiration: { maxEntries: 50, maxAgeSeconds: 30 * 24 * 60 * 60 },
+            },
+          },
         ],
       },
     }),
