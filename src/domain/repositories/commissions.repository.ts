@@ -5,6 +5,7 @@ import type {
 } from "@/domain/entities/commission";
 
 export interface CommissionsRepository {
+  listar(): Promise<Commission[]>;
   listarPorVendedor(vendedorId: string): Promise<Commission[]>;
   crear(data: {
     vendedorId: string;

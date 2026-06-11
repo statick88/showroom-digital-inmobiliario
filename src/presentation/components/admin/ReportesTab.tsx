@@ -3,6 +3,8 @@
 import { useState, useMemo } from "react";
 import { useLotes } from "@/presentation/hooks/useLotes";
 import { useTransacciones } from "@/presentation/hooks/useTransacciones";
+import { useAllPagos } from "@/presentation/hooks/useAllPagos";
+import { useAllComisiones } from "@/presentation/hooks/useAllComisiones";
 import { useExport, type ExportColumn } from "@/presentation/hooks/useExport";
 import { useProjectContext } from "@/presentation/context/ProjectContext";
 import { Button } from "@/components/ui/button";
@@ -47,12 +49,44 @@ const VENTAS_COLS: ExportColumn<Record<string, unknown>>[] = [
   { key: "moneda", header: "Moneda" },
 ];
 
+// ── Comisiones columns ────────────────────────────────────────
+const COMISIONES_COLS: ExportColumn<Record<string, unknown>>[] = [
+  {
+    key: "createdAt",
+    header: "Fecha",
+    format: (v) => new Date(v as string).toLocaleDateString("es-PE"),
+  },
+  { key: "vendedorId", header: "Vendedor ID" },
+  { key: "propertyId", header: "Lote ID" },
+  { key: "salePrice", header: "Precio Venta" },
+  { key: "commissionAmount", header: "Comisión" },
+  { key: "ruleApplied", header: "Regla Aplicada" },
+  { key: "status", header: "Estado" },
+];
+
+// ── Pagos columns ─────────────────────────────────────────────
+const PAGOS_COLS: ExportColumn<Record<string, unknown>>[] = [
+  {
+    key: "fechaPago",
+    header: "Fecha Pago",
+    format: (v) => new Date(v as string).toLocaleDateString("es-PE"),
+  },
+  { key: "transaccionId", header: "Transacción ID" },
+  { key: "monto", header: "Monto" },
+  { key: "metodoPago", header: "Método" },
+  { key: "cci", header: "CCI" },
+  { key: "referenciaExterna", header: "Referencia" },
+  { key: "notas", header: "Notas" },
+];
+
 export function ReportesTab() {
   const [reportType, setReportType] = useState<ReportType>("inventario");
   const { selectedProjectId } = useProjectContext();
   const { exportData, isExporting } = useExport();
   const { data: lotes } = useLotes(selectedProjectId ?? undefined);
   const { data: transacciones } = useTransacciones();
+  const { data: allPagos } = useAllPagos();
+  const { data: allComisiones } = useAllComisiones();
 
   const reportData = useMemo(() => {
     switch (reportType) {
@@ -76,13 +110,29 @@ export function ReportesTab() {
           moneda: t.moneda,
         }));
       case "comisiones":
-        return []; // TODO: wire useCommissions when available
+        return (allComisiones ?? []).map((c) => ({
+          createdAt: c.createdAt,
+          vendedorId: c.vendedorId,
+          propertyId: c.propertyId,
+          salePrice: c.salePrice,
+          commissionAmount: c.commissionAmount,
+          ruleApplied: c.ruleApplied ?? "",
+          status: c.status,
+        }));
       case "pagos":
-        return []; // TODO: wire usePagos (requires transaccion IDs)
+        return (allPagos ?? []).map((p) => ({
+          fechaPago: p.fechaPago,
+          transaccionId: p.transaccionId,
+          monto: p.monto,
+          metodoPago: p.metodoPago,
+          cci: p.cci ?? "",
+          referenciaExterna: p.referenciaExterna ?? "",
+          notas: p.notas ?? "",
+        }));
       default:
         return [];
     }
-  }, [reportType, lotes, transacciones]);
+  }, [reportType, lotes, transacciones, allPagos, allComisiones]);
 
   const columns = useMemo(() => {
     switch (reportType) {
@@ -90,6 +140,10 @@ export function ReportesTab() {
         return INVENTARIO_COLS;
       case "ventas":
         return VENTAS_COLS;
+      case "comisiones":
+        return COMISIONES_COLS;
+      case "pagos":
+        return PAGOS_COLS;
       default:
         return [];
     }

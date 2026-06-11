@@ -33,6 +33,16 @@ function mapCommissionRule(row: Record<string, unknown>): CommissionRule {
 }
 
 export const commissionsRepository: CommissionsRepository = {
+  async listar() {
+    const { data, error } = await supabase
+      .from("vendedor_commissions")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    rethrowIfPresent(error, "Error al cargar comisiones");
+    return (data ?? []).map((row) => mapCommission(row as Record<string, unknown>));
+  },
+
   async listarPorVendedor(vendedorId: string) {
     const { data, error } = await supabase
       .from("vendedor_commissions")

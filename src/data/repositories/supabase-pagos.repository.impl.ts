@@ -30,6 +30,16 @@ function mapToRow(data: CrearPagoData): Record<string, unknown> {
 }
 
 export const supabasePagosRepository: PagosRepository = {
+  async findAll(): Promise<Pago[]> {
+    const { data, error } = await supabase
+      .from("pagos")
+      .select("*")
+      .order("fecha_pago", { ascending: false });
+
+    if (error) throw error;
+    return (data ?? []).map(mapRow);
+  },
+
   async findByTransaccionId(transaccionId: string): Promise<Pago[]> {
     const { data, error } = await supabase
       .from("pagos")
