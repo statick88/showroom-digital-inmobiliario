@@ -66,6 +66,21 @@ Showroom inmobiliario interactivo con mapa de propiedades en tiempo real, analyt
 - **Analytics Dashboard** — gráficos de barras, pie charts, métricas de tour
 - **Tour Management** — CRUD de POIs (amenidades, puntos de interés)
 
+### 🌙 Dark Mode
+- Toggle light/dark/system en navbar
+- Persistencia en localStorage
+- System preference detection (`prefers-color-scheme`)
+- `prefers-reduced-motion` — animaciones deshabilitadas para usuarios con vértigo/mareos
+
+### ♿ Accessibility (WCAG 2.2)
+- Skip-to-content link
+- Form labels con `htmlFor`/`id` en todos los formularios
+- `role="dialog"` + `aria-modal` en todos los modales
+- Error boundaries en rutas principales
+- `loading="lazy"` en imágenes below-fold
+- Alt text semántico en galerías
+- Heading hierarchy correcta (h1→h2→h3)
+
 ### 🔒 Cumplimiento Legal
 - **LPDP (Ley 29733)**: Banner de cookies con consentimiento explícito
 - Privacidad trackeada: `consent_timestamp`, `consent_ip`, `user_agent`
@@ -129,20 +144,26 @@ npx playwright test
 
 ## Deploy
 
-El proyecto se despliega automáticamente en **GitHub Actions** → **GitHub Pages** cuando se hace push a `main`.
+El proyecto se despliega vía `gh-pages` a **GitHub Pages**:
+
+```bash
+# Build + deploy
+pnpm build && npx gh-pages -d out --dotfiles
+```
 
 ```
 https://statick88.github.io/showroom-digital-inmobiliario/
 ```
 
-### Secrets requeridos (GitHub Actions)
+### Variables de entorno (`.env.local`)
 
-| Secret | Descripción |
-|--------|-------------|
+| Variable | Descripción |
+|----------|-------------|
 | `VITE_SUPABASE_URL` | URL del proyecto Supabase |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Clave publicable de Supabase |
 | `VITE_AGENCIA_ID` | ID de la agencia inmobiliaria |
 | `VITE_TURNSTILE_SITE_KEY` | Site key de Cloudflare Turnstile |
+| `VITE_PROYECTO_ID` | UUID del proyecto seed (gitignored) |
 
 > ⚠️ Las variables usan prefijo `VITE_` (Vite), no `NEXT_PUBLIC_`.
 
@@ -175,7 +196,7 @@ src/
 │   │   ├── whatsapp/         # WhatsAppButton
 │   │   ├── pwa/              # OfflineIndicator
 │   │   ├── leads/            # LeadScoreCard, LeadScoringPanel
-│   │   └── shared/           # Navbar, HeaderNav, CookieBanner
+│   │   └── shared/           # Navbar, HeaderNav, CookieBanner, DarkModeToggle
 │   ├── hooks/                # Custom hooks
 │   │   ├── useWhatsApp.ts           # wa.me URL + tracking
 │   │   ├── useOnlineStatus.ts       # online/offline detection
@@ -192,6 +213,9 @@ src/
 │   │   ├── usePOIs.ts                   # CRUD de puntos de interés
 │   │   └── useParcelsForTour.ts         # Lotes proyectados en tour 360°
 │   └── store/                # Zustand stores (MapInstanceStore, AuthStore)
+├── components/               # Componentes reutilizables
+│   ├── ui/                   # shadcn/ui + Skeleton, EmptyState
+│   └── ...
 ├── lib/                      # Utilidades
 │   ├── supabase/             # Cliente Supabase
 │   ├── sunat/                # RUC validator + cache
@@ -225,6 +249,7 @@ alter publication supabase_realtime add table lotes;
 | `00029_backfill_panorama_centers.sql` | `tours` | Backfill de coordenadas para tours existentes |
 | `00030_analytics_events.sql` | `analytics_events` | Eventos de analytics del tour (batched) |
 | `00031_tour_pois.sql` | `tour_pois` | Puntos de interés del tour (amenidades, etc.) |
+| `00033_pagos_table.sql` | `pagos` | Pagos de propiedades con tracking |
 
 ## Diseño
 

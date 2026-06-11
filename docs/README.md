@@ -48,6 +48,7 @@ Directorio: `screenshots/`
 | `00029` | `tours` | Backfill de coordenadas |
 | `00030` | `analytics_events` | Eventos de analytics del tour |
 | `00031` | `tour_pois` | Puntos de interés del tour |
+| `00033` | `pagos` | Pagos de propiedades |
 
 ## Comandos Útiles
 
@@ -63,9 +64,9 @@ pnpm test:e2e               # E2E (Playwright)
 pnpm verify                 # typecheck + lint + test + build
 
 # Deploy
-git push origin main        # Trigger GitHub Actions → GitHub Pages
+pnpm build && npx gh-pages -d out --dotfiles
 ```
 
 ---
 
-*Documentación v1.2.0 — Showroom Digital Inmobiliario*
+*Documentación v1.3.0 — Showroom Digital Inmobiliario*
