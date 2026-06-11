@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { Lote } from "@/domain/entities/lote";
 import { useLoteStatusMutation } from "@/presentation/hooks/useLoteStatusMutation";
 import { LoteDetailContent } from "./LoteDetailContent";
@@ -27,9 +28,21 @@ export function FichaTecnicaLote({
     cambiarEstado({ loteId: lote.id, estado });
   };
 
+  // Close on Escape key
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Ficha técnica: ${lote.codigo}`}
       onClick={onClose}
     >
       <div

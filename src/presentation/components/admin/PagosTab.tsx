@@ -6,6 +6,7 @@ import { usePagos, useTotalPagado, useCrearPago } from "@/presentation/hooks/use
 import { metodoPagoSchema } from "@/lib/schemas/metodo-pago";
 import type { CrearPagoData } from "@/domain/entities/pago";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { CircleDollarSign, Plus, ArrowLeft } from "lucide-react";
 
@@ -41,7 +42,7 @@ export function PagosTab() {
         <p className="text-sm text-muted-foreground">Registro de pagos por transacción</p>
       </header>
 
-      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-[0px_12px_32px_rgba(160,152,144,0.15)]">
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-modal">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-muted">
@@ -90,8 +91,11 @@ export function PagosTab() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">
-                    No hay transacciones
+                  <td colSpan={6}>
+                    <EmptyState
+                      title="No hay transacciones"
+                      description="Las transacciones aparecerán aquí cuando se registren ventas."
+                    />
                   </td>
                 </tr>
               )}
@@ -147,7 +151,7 @@ function PagosDetalle({
   return (
     <div className="p-4 md:p-8 space-y-6">
       <header className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={onBack}>
+        <Button variant="ghost" size="sm" onClick={onBack} aria-label="Volver">
           <ArrowLeft size={16} />
         </Button>
         <div>
@@ -160,7 +164,7 @@ function PagosDetalle({
       <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
         <div className="flex justify-between items-center">
           <span className="text-sm text-muted-foreground">Total pagado</span>
-          <span className="text-lg font-bold text-green-600">S/ {totalPagado.toLocaleString("es-PE")}</span>
+          <span className="text-lg font-bold text-status-success">S/ {totalPagado.toLocaleString("es-PE")}</span>
         </div>
       </div>
 
@@ -177,9 +181,10 @@ function PagosDetalle({
                 min="0.01"
                 value={form.monto}
                 onChange={(e) => setForm({ ...form, monto: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm focus:ring-1 focus:ring-primary outline-none"
+                className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"
                 placeholder="0.00"
                 required
+                aria-label="Monto en soles"
               />
             </div>
             <div>
@@ -188,6 +193,7 @@ function PagosDetalle({
                 value={form.metodoPago}
                 onChange={(e) => setForm({ ...form, metodoPago: e.target.value })}
                 className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm"
+                aria-label="Método de pago"
               >
                 {metodoPagoSchema.options.map((m) => (
                   <option key={m} value={m}>
@@ -202,8 +208,9 @@ function PagosDetalle({
                 type="text"
                 value={form.cci}
                 onChange={(e) => setForm({ ...form, cci: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm focus:ring-1 focus:ring-primary outline-none"
+                className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"
                 placeholder="000-000-00000000000-000"
+                aria-label="Código CCI"
               />
             </div>
             <div>
@@ -212,8 +219,9 @@ function PagosDetalle({
                 type="text"
                 value={form.referenciaExterna}
                 onChange={(e) => setForm({ ...form, referenciaExterna: e.target.value })}
-                className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm focus:ring-1 focus:ring-primary outline-none"
+                className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"
                 placeholder="N° operación, comprobante..."
+                aria-label="Referencia externa"
               />
             </div>
           </div>
@@ -222,9 +230,10 @@ function PagosDetalle({
             <textarea
               value={form.notas}
               onChange={(e) => setForm({ ...form, notas: e.target.value })}
-              className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm focus:ring-1 focus:ring-primary outline-none"
+              className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"
               rows={2}
               placeholder="Observaciones..."
+              aria-label="Notas del pago"
             />
           </div>
           <Button type="submit" disabled={crearPago.isPending}>
@@ -277,8 +286,11 @@ function PagosDetalle({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">
-                    No hay pagos registrados
+                  <td colSpan={6}>
+                    <EmptyState
+                      title="No hay pagos registrados"
+                      description="Registra un pago para comenzar."
+                    />
                   </td>
                 </tr>
               )}

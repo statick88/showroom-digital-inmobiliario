@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, Suspense, lazy } from "react";
+import { useState, useEffect, useRef, Suspense, lazy, Component } from "react";
+import type { ErrorInfo, ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
@@ -25,6 +26,55 @@ import { TourPreview } from "@/presentation/components/landing/TourPreview";
 import { Contacto } from "@/presentation/components/landing/Contacto";
 import { LandingFooter } from "@/presentation/components/landing/LandingFooter";
 import { PWAInstallPrompt } from "@/presentation/components/ui/PWAInstallPrompt";
+import { AlertTriangle } from "lucide-react";
+
+// ── Error Boundary (Task 6) ──────────────────────────────────────
+interface ErrorBoundaryProps {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("ErrorBoundary caught:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        this.props.fallback ?? (
+          <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
+            <AlertTriangle className="size-12 text-destructive mb-4" />
+            <h2 className="text-lg font-semibold text-foreground mb-2">Algo salió mal</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Ocurrió un error inesperado. Por favor, intenta de nuevo.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:brightness-110 transition-all"
+            >
+              Reintentar
+            </button>
+          </div>
+        )
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const MapaLotes = lazy(() =>
   import("@/presentation/components/lotes/MapaLotes").then((m) => ({ default: m.MapaLotes })),
@@ -131,6 +181,7 @@ export function App() {
   if (effectiveRoute === "auth") {
     return (
       <QueryClientProvider client={queryClient}>
+        <SkipToContent />
         <AuthPage
           onLogin={() => {
             window.location.hash = "#showroom";
@@ -144,7 +195,10 @@ export function App() {
   if (effectiveRoute === "admin") {
     return (
       <QueryClientProvider client={queryClient}>
-        <AdminDashboard />
+        <SkipToContent />
+        <ErrorBoundary>
+          <AdminDashboard />
+        </ErrorBoundary>
         <Toaster />
       </QueryClientProvider>
     );
@@ -153,16 +207,21 @@ export function App() {
   if (effectiveRoute === "vendedor") {
     return (
       <QueryClientProvider client={queryClient}>
-        <RoleGuard rol="vendedor">
-          <div className="min-h-screen bg-background">
-            <Navbar
-              currentRoute="vendedor"
-              onNavigate={handleNavigate}
-              isAuthenticated={authenticated}
-            />
-            <VendedorPanel />
-          </div>
-        </RoleGuard>
+        <SkipToContent />
+        <ErrorBoundary>
+          <RoleGuard rol="vendedor">
+            <div className="min-h-screen bg-background">
+              <Navbar
+                currentRoute="vendedor"
+                onNavigate={handleNavigate}
+                isAuthenticated={authenticated}
+              />
+              <div id="main-content" tabIndex={-1}>
+                <VendedorPanel />
+              </div>
+            </div>
+          </RoleGuard>
+        </ErrorBoundary>
         <Toaster />
       </QueryClientProvider>
     );
@@ -171,14 +230,19 @@ export function App() {
   if (effectiveRoute === "showroom") {
     return (
       <QueryClientProvider client={queryClient}>
-        <div className="min-h-screen bg-background">
-          <Navbar
-            currentRoute="showroom"
-            onNavigate={handleNavigate}
-            isAuthenticated={authenticated}
-          />
-          <MapView />
-        </div>
+        <SkipToContent />
+        <ErrorBoundary>
+          <div className="min-h-screen bg-background">
+            <Navbar
+              currentRoute="showroom"
+              onNavigate={handleNavigate}
+              isAuthenticated={authenticated}
+            />
+            <div id="main-content" tabIndex={-1}>
+              <MapView />
+            </div>
+          </div>
+        </ErrorBoundary>
         <Toaster />
       </QueryClientProvider>
     );
@@ -187,11 +251,14 @@ export function App() {
   if (effectiveRoute === "privacidad") {
     return (
       <QueryClientProvider client={queryClient}>
-        <PrivacidadPage
-          onBack={() => {
-            window.location.hash = "#showroom";
-          }}
-        />
+        <SkipToContent />
+        <ErrorBoundary>
+          <PrivacidadPage
+            onBack={() => {
+              window.location.hash = "#showroom";
+            }}
+          />
+        </ErrorBoundary>
         <Toaster />
       </QueryClientProvider>
     );
@@ -199,9 +266,24 @@ export function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
+      <SkipToContent />
+      <ErrorBoundary>
+        <AppContent />
+      </ErrorBoundary>
       <Toaster />
     </QueryClientProvider>
+  );
+}
+
+// ── Skip-to-content link (Task 1) ────────────────────────────────
+function SkipToContent() {
+  return (
+    <a
+      href="#main-content"
+      className="sr-only focus:not-sr-only focus:absolute focus:z-[9999] focus:top-2 focus:left-2 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-lg"
+    >
+      Saltar al contenido principal
+    </a>
   );
 }
 
@@ -345,7 +427,7 @@ function AppContent() {
 
       <HeaderNav currentTab={tab} onTabChange={setTab} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {tab === "lotizacion" && (
           <Suspense
             fallback={<div className="flex h-96 items-center justify-center">Cargando mapa...</div>}

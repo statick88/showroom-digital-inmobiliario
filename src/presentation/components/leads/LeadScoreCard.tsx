@@ -12,9 +12,9 @@ interface LeadScoreCardProps {
 }
 
 function getScoreLevel(score: number): { label: string; color: string; bg: string } {
-  if (score >= 61) return { label: "Alto", color: "text-emerald-700", bg: "bg-emerald-100" };
-  if (score >= 31) return { label: "Medio", color: "text-amber-700", bg: "bg-amber-100" };
-  return { label: "Bajo", color: "text-red-700", bg: "bg-red-100" };
+  if (score >= 61) return { label: "Alto", color: "text-status-success", bg: "bg-status-success/10" };
+  if (score >= 31) return { label: "Medio", color: "text-status-warning", bg: "bg-status-warning/10" };
+  return { label: "Bajo", color: "text-status-destructive", bg: "bg-status-destructive/10" };
 }
 
 export function LeadScoreCard({ score, breakdown, visitorId }: LeadScoreCardProps) {

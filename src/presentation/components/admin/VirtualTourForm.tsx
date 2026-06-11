@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Trash2, GripVertical } from "lucide-react";
 import { ImageUploader } from "@/presentation/components/shared/ImageUploader";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface SceneInput {
   id: string;
@@ -203,7 +210,7 @@ export function VirtualTourForm({ open, onOpenChange, tourId }: VirtualTourFormP
             <div className="flex flex-col gap-1.5">
               <label className="text-xs text-muted-foreground font-medium">Nombre *</label>
               <input
-                className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                className="w-full px-3 py-2 rounded-lg border border-input focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none bg-card text-sm"
                 placeholder="Tour Virtual - Mi Proyecto"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
@@ -211,25 +218,25 @@ export function VirtualTourForm({ open, onOpenChange, tourId }: VirtualTourFormP
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs text-muted-foreground font-medium">Proyecto *</label>
-              <select
-                className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
-                value={proyectoId}
-                onChange={(e) => setProyectoId(e.target.value)}
-              >
-                <option value="">Seleccionar proyecto...</option>
-                {proyectos?.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nombre}
-                  </option>
-                ))}
-              </select>
+              <Select value={proyectoId} onValueChange={setProyectoId}>
+                <SelectTrigger className="w-full" aria-label="Seleccionar proyecto">
+                  <SelectValue placeholder="Seleccionar proyecto..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {proyectos?.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.nombre}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-muted-foreground font-medium">Descripción</label>
             <textarea
-              className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm resize-none"
+              className="w-full px-3 py-2 rounded-lg border border-input focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none bg-card text-sm resize-none"
               rows={2}
               placeholder="Descripción del tour virtual..."
               value={descripcion}
@@ -239,15 +246,16 @@ export function VirtualTourForm({ open, onOpenChange, tourId }: VirtualTourFormP
 
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-muted-foreground font-medium">Estado</label>
-            <select
-              className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
-              value={estado}
-              onChange={(e) => setEstado(e.target.value as typeof estado)}
-            >
-              <option value="borrador">Borrador</option>
-              <option value="publicado">Publicado</option>
-              <option value="archivado">Archivado</option>
-            </select>
+            <Select value={estado} onValueChange={(val) => setEstado(val as typeof estado)}>
+              <SelectTrigger className="w-full" aria-label="Estado del tour">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="borrador">Borrador</SelectItem>
+                <SelectItem value="publicado">Publicado</SelectItem>
+                <SelectItem value="archivado">Archivado</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Scenes */}

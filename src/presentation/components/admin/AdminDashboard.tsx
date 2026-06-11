@@ -21,7 +21,18 @@ import { PagosTab } from "@/presentation/components/admin/PagosTab";
 import { ReportesTab } from "@/presentation/components/admin/ReportesTab";
 import { ProjectProvider, useProjectContext } from "@/presentation/context/ProjectContext";
 import { ProjectSelector } from "@/presentation/components/admin/ProjectSelector";
+import { DarkModeToggle } from "@/presentation/components/shared/DarkModeToggle";
 import { Icon } from "@/components/ui/icon";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Dialog,
   DialogContent,
@@ -101,6 +112,12 @@ function AdminDashboardInner() {
             <ProjectSelector />
           </div>
 
+          {/* Dark Mode Toggle */}
+          <div className="flex items-center gap-2">
+            <DarkModeToggle />
+            <span className="text-xs text-muted-foreground">Tema</span>
+          </div>
+
           <nav className="flex flex-col gap-2 flex-grow">
             <NavButton tab="dashboard" current={tab} icon="dashboard" onClick={setTab}>
               Dashboard
@@ -173,7 +190,8 @@ function AdminDashboardInner() {
       {isMobile && (
         <div
           data-testid="mobile-tab-bar"
-          className="fixed bottom-0 left-0 right-0 z-50 flex bg-card border-t border-border md:hidden"
+          className="fixed bottom-0 left-0 right-0 z-50 flex flex-nowrap overflow-x-auto bg-card border-t border-border md:hidden scrollbar-hide"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           <MobileTabButton
             active={tab === "dashboard"}
@@ -257,12 +275,12 @@ function MobileTabButton({
     <button
       onClick={onClick}
       className={cn(
-        "flex-1 flex flex-col items-center gap-1 py-3 text-xs transition-colors",
+        "flex-shrink-0 flex flex-col items-center gap-1 py-3 px-3 min-w-[64px] text-xs transition-colors",
         active ? "text-primary" : "text-muted-foreground hover:text-foreground",
       )}
     >
       {icon}
-      <span className="font-medium">{label}</span>
+      <span className="font-medium whitespace-nowrap">{label}</span>
     </button>
   );
 }
@@ -387,7 +405,7 @@ function MetricCard({
   const display = suffix ? `${value}${suffix}` : value.toLocaleString("es-PE");
 
   return (
-    <div className="bg-card border border-border p-4 rounded-xl shadow-[0px_4px_20px_rgba(160,152,144,0.08)]">
+    <div className="bg-card border border-border p-4 rounded-xl shadow-card">
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
       <p className="text-lg font-bold text-primary">{display}</p>
       {trend && (
@@ -489,7 +507,7 @@ function PropiedadesTab() {
   };
 
   const handleStatusFilter = (val: string) => {
-    setStatusFilter(val);
+    setStatusFilter(val === "all" ? "" : val);
     setPage(1);
   };
 
@@ -540,32 +558,34 @@ function PropiedadesTab() {
       </header>
 
       {/* Search + Filters (3.7) */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-[0px_12px_32px_rgba(160,152,144,0.15)]">
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-modal">
         <div className="p-4 bg-muted/50 border-b border-border flex flex-wrap gap-4 items-center">
           <div className="relative flex-grow max-w-md">
             <Search
               size={18}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
-            <input
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+            <Input
+              className="w-full pl-10 pr-4 py-2 rounded-lg"
               placeholder="Buscar por código o título..."
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
+              aria-label="Buscar por código o título"
             />
           </div>
           <div className="flex gap-3 items-center">
             <Filter size={18} className="text-muted-foreground" />
-            <select
-              className="bg-card border border-input rounded-lg px-4 py-2 text-sm"
-              value={statusFilter}
-              onChange={(e) => handleStatusFilter(e.target.value)}
-            >
-              <option value="">Todos los estados</option>
-              <option value="disponible">Disponible</option>
-              <option value="separado">Separado</option>
-              <option value="vendido">Vendido</option>
-            </select>
+            <Select value={statusFilter || "all"} onValueChange={handleStatusFilter}>
+              <SelectTrigger className="w-[180px]" aria-label="Filtrar por estado">
+                <SelectValue placeholder="Todos los estados" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los estados</SelectItem>
+                <SelectItem value="disponible">Disponible</SelectItem>
+                <SelectItem value="separado">Separado</SelectItem>
+                <SelectItem value="vendido">Vendido</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -587,8 +607,12 @@ function PropiedadesTab() {
             <tbody className="divide-y divide-border">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">
-                    Cargando...
+                  <td colSpan={6} className="p-8">
+                    <div className="space-y-3">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Skeleton key={i} className="h-12 w-full" />
+                      ))}
+                    </div>
                   </td>
                 </tr>
               ) : paginated.length > 0 ? (
@@ -602,24 +626,31 @@ function PropiedadesTab() {
                     </td>
                     <td className="p-4">
                       {/* Inline status dropdown (3.4) */}
-                      <select
+                      <Select
                         value={p.estado}
-                        onChange={(e) =>
-                          openConfirm(p.id, p.codigo, e.target.value as EstadoPropiedad)
+                        onValueChange={(val) =>
+                          openConfirm(p.id, p.codigo, val as EstadoPropiedad)
                         }
-                        className={cn(
-                          "text-sm rounded-lg px-2 py-1 border border-input bg-card cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary",
-                          p.estado === "disponible" && "text-status-success",
-                          p.estado === "separado" && "text-status-warning",
-                          p.estado === "vendido" && "text-status-destructive",
-                        )}
                       >
-                        {estadoOptions.map((opt) => (
-                          <option key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger
+                          className={cn(
+                            "text-sm rounded-lg px-2 py-1 border border-input bg-card cursor-pointer w-[130px]",
+                            p.estado === "disponible" && "text-status-success",
+                            p.estado === "separado" && "text-status-warning",
+                            p.estado === "vendido" && "text-status-destructive",
+                          )}
+                          aria-label={`Estado de ${p.codigo}`}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {estadoOptions.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </td>
                     <td className="p-4 text-center">
                       {/* TODO: Add edit functionality when needed */}
@@ -628,10 +659,11 @@ function PropiedadesTab() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">
-                    {search || statusFilter
-                      ? "No se encontraron propiedades con esos filtros"
-                      : "No hay propiedades"}
+                  <td colSpan={6} className="p-8">
+                    <EmptyState
+                      title={search || statusFilter ? "No se encontraron propiedades con esos filtros" : "No hay propiedades"}
+                      description={search || statusFilter ? "Intenta ajustar los filtros de búsqueda." : "Registra una propiedad para comenzar."}
+                    />
                   </td>
                 </tr>
               )}
@@ -676,8 +708,8 @@ function PropiedadesTab() {
               {/* CCI input */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs text-muted-foreground font-medium">CCI (opcional)</label>
-                <input
-                  className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                <Input
+                  className="w-full"
                   placeholder="002-XXXXXXXXXXXX-XX"
                   value={cci}
                   onChange={(e) => setCci(e.target.value)}
@@ -689,16 +721,17 @@ function PropiedadesTab() {
                 <label className="text-xs text-muted-foreground font-medium">
                   Método de pago (opcional)
                 </label>
-                <select
-                  className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
-                  value={metodoPago}
-                  onChange={(e) => setMetodoPago(e.target.value)}
-                >
-                  <option value="">Seleccionar...</option>
-                  <option value="efectivo">Efectivo</option>
-                  <option value="transferencia">Transferencia</option>
-                  <option value="financiamiento">Financiamiento</option>
-                </select>
+                <Select value={metodoPago || "none"} onValueChange={(val) => setMetodoPago(val === "none" ? "" : val)}>
+                  <SelectTrigger className="w-full" aria-label="Método de pago">
+                    <SelectValue placeholder="Seleccionar..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Seleccionar...</SelectItem>
+                    <SelectItem value="efectivo">Efectivo</SelectItem>
+                    <SelectItem value="transferencia">Transferencia</SelectItem>
+                    <SelectItem value="financiamiento">Financiamiento</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -727,59 +760,64 @@ function PropiedadesTab() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs text-muted-foreground font-medium">Código *</label>
-                  <input
-                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                  <Input
+                    className="w-full"
                     placeholder="LOTE-001"
                     value={form.codigo}
                     onChange={(e) => setForm({ ...form, codigo: e.target.value })}
+                    aria-label="Código de propiedad"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs text-muted-foreground font-medium">Tipo *</label>
-                  <select
-                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
-                    value={form.tipo}
-                    onChange={(e) => setForm({ ...form, tipo: e.target.value as TipoPropiedad })}
-                  >
-                    <option value="lote">Lote</option>
-                    <option value="departamento">Departamento</option>
-                    <option value="casa">Casa</option>
-                    <option value="local">Local</option>
-                    <option value="oficina">Oficina</option>
-                    <option value="terreno">Terreno</option>
-                  </select>
+                  <Select value={form.tipo} onValueChange={(val) => setForm({ ...form, tipo: val as TipoPropiedad })}>
+                    <SelectTrigger className="w-full" aria-label="Tipo de propiedad">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="lote">Lote</SelectItem>
+                      <SelectItem value="departamento">Departamento</SelectItem>
+                      <SelectItem value="casa">Casa</SelectItem>
+                      <SelectItem value="local">Local</SelectItem>
+                      <SelectItem value="oficina">Oficina</SelectItem>
+                      <SelectItem value="terreno">Terreno</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs text-muted-foreground font-medium">Título *</label>
-                <input
-                  className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                <Input
+                  className="w-full"
                   placeholder="Lote 120m² en Urbanización Los Olivos"
                   value={form.titulo}
                   onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+                  aria-label="Título de la propiedad"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs text-muted-foreground font-medium">Precio (S/) *</label>
-                  <input
+                  <Input
                     type="number"
-                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    className="w-full"
                     placeholder="85000"
                     value={form.precio}
                     onChange={(e) => setForm({ ...form, precio: e.target.value })}
+                    aria-label="Precio en soles"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs text-muted-foreground font-medium">Área (m²)</label>
-                  <input
+                  <Input
                     type="number"
-                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    className="w-full"
                     placeholder="120"
                     value={form.areaM2}
                     onChange={(e) => setForm({ ...form, areaM2: e.target.value })}
+                    aria-label="Área en metros cuadrados"
                   />
                 </div>
               </div>
@@ -787,29 +825,32 @@ function PropiedadesTab() {
               <div className="grid grid-cols-3 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs text-muted-foreground font-medium">Cuartos</label>
-                  <input
+                  <Input
                     type="number"
-                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    className="w-full"
                     value={form.cuartos}
                     onChange={(e) => setForm({ ...form, cuartos: e.target.value })}
+                    aria-label="Número de cuartos"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs text-muted-foreground font-medium">Baños</label>
-                  <input
+                  <Input
                     type="number"
-                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                    className="w-full"
                     value={form.banios}
                     onChange={(e) => setForm({ ...form, banios: e.target.value })}
+                    aria-label="Número de baños"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs text-muted-foreground font-medium">Distrito</label>
-                  <input
-                    className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+                  <Input
+                    className="w-full"
                     placeholder="Ate"
                     value={form.distrito}
                     onChange={(e) => setForm({ ...form, distrito: e.target.value })}
+                    aria-label="Distrito"
                   />
                 </div>
               </div>
@@ -817,11 +858,12 @@ function PropiedadesTab() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs text-muted-foreground font-medium">Descripción</label>
                 <textarea
-                  className="w-full px-3 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm resize-none"
+                  className="w-full px-3 py-2 rounded-lg border border-input focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none bg-card text-sm resize-none"
                   rows={3}
                   placeholder="Descripción de la propiedad..."
                   value={form.descripcion}
                   onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
+                  aria-label="Descripción de la propiedad"
                 />
               </div>
 

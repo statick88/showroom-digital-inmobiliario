@@ -1,11 +1,13 @@
 "use client";
 
 import { useTopLeadScores } from "@/presentation/hooks/useLeadScoring";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 
 function getScoreLabel(score: number): { label: string; className: string } {
-  if (score >= 61) return { label: "Alto", className: "bg-green-100 text-green-800" };
-  if (score >= 31) return { label: "Medio", className: "bg-yellow-100 text-yellow-800" };
-  return { label: "Bajo", className: "bg-red-100 text-red-800" };
+  if (score >= 61) return { label: "Alto", className: "bg-status-success/10 text-status-success" };
+  if (score >= 31) return { label: "Medio", className: "bg-status-warning/10 text-status-warning" };
+  return { label: "Bajo", className: "bg-status-destructive/10 text-status-destructive" };
 }
 
 export function TeamLeadsView() {
@@ -13,17 +15,29 @@ export function TeamLeadsView() {
 
   if (isLoading) {
     return (
-      <div className="py-8 text-center text-muted-foreground">
-        Cargando leads...
+      <div className="space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="flex items-center justify-between rounded-lg border border-border p-3">
+            <div className="space-y-2 flex-grow">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-48" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-6 w-8" />
+              <Skeleton className="h-5 w-12 rounded-full" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
   if (!leads || leads.length === 0) {
     return (
-      <div className="py-8 text-center text-muted-foreground">
-        Sin leads registrados
-      </div>
+      <EmptyState
+        title="Sin leads registrados"
+        description="Los leads aparecerán aquí cuando los visitantes interactúen con las propiedades."
+      />
     );
   }
 

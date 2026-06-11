@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/presentation/hooks/useAuthStore";
 import { AuthButtons } from "@/presentation/components/auth/AuthButtons";
 import { UserDropdown } from "@/presentation/components/auth/UserDropdown";
+import { DarkModeToggle } from "@/presentation/components/shared/DarkModeToggle";
 
 export type Route = "showroom" | "app" | "admin" | "vendedor" | "privacidad" | "auth";
 
@@ -124,7 +125,8 @@ export function Navbar({
           </div>
 
           {/* Auth section: User dropdown or login/register buttons */}
-          <div className="hidden md:flex items-center">
+          <div className="hidden md:flex items-center gap-2">
+            <DarkModeToggle />
             {effectiveIsAuthenticated ? (
               <UserDropdown />
             ) : (

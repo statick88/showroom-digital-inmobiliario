@@ -133,7 +133,7 @@ export function TourManagementTab() {
         <div className="flex flex-col gap-1.5">
           <label className="text-xs text-muted-foreground font-medium">Tour ID</label>
           <input
-            className="px-3 py-2 rounded-lg border border-input bg-card text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            className="px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"
             placeholder="UUID del tour"
             value={tourId}
             onChange={(e) => setTourId(e.target.value)}
@@ -315,7 +315,7 @@ function FormField({
     <div className="flex flex-col gap-1.5">
       <label className="text-xs text-muted-foreground font-medium">{label}</label>
       <input
-        className="w-full px-3 py-2 rounded-lg border border-input bg-card text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+        className="w-full px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}

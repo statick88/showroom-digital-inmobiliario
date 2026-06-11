@@ -1,11 +1,13 @@
 "use client";
 
 import { useCommissions } from "@/presentation/hooks/useCommissions";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const STATUS_CONFIG = {
-  pending: { label: "Pendiente", className: "bg-yellow-100 text-yellow-800" },
-  approved: { label: "Aprobado", className: "bg-green-100 text-green-800" },
-  paid: { label: "Pagado", className: "bg-blue-100 text-blue-800" },
+  pending: { label: "Pendiente", className: "bg-status-warning/10 text-status-warning" },
+  approved: { label: "Aprobado", className: "bg-status-success/10 text-status-success" },
+  paid: { label: "Pagado", className: "bg-primary/10 text-primary" },
 } as const;
 
 function formatPEN(amount: number): string {
@@ -21,17 +23,20 @@ export function CommissionTable({ vendedorId }: CommissionTableProps) {
 
   if (isLoading) {
     return (
-      <div className="py-8 text-center text-muted-foreground">
-        Cargando comisiones...
+      <div className="space-y-3 py-4">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
       </div>
     );
   }
 
   if (!commissions || commissions.length === 0) {
     return (
-      <div className="py-8 text-center text-muted-foreground">
-        Sin comisiones registradas
-      </div>
+      <EmptyState
+        title="Sin comisiones registradas"
+        description="Las comisiones aparecerán aquí cuando se registren ventas."
+      />
     );
   }
 

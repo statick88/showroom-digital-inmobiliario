@@ -106,66 +106,70 @@ export function PropertyFilters({ filters, onFilterChange }: PropertyFiltersProp
         {/* Tipo */}
         <div>
           <label className="typo-label-md text-muted-foreground mb-1 block">Tipo</label>
-          <select
-            value={filters.tipo}
-            onChange={(e) => update("tipo", e.target.value)}
-            className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
-            {TIPO_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+          <Select value={filters.tipo || "all"} onValueChange={(val) => update("tipo", val === "all" ? "" : val)}>
+            <SelectTrigger className="h-8 w-full" aria-label="Tipo de propiedad">
+              <SelectValue placeholder="Todos" />
+            </SelectTrigger>
+            <SelectContent>
+              {TIPO_OPTIONS.map((o) => (
+                <SelectItem key={o.value || "all"} value={o.value || "all"}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Estado */}
         <div>
           <label className="typo-label-md text-muted-foreground mb-1 block">Estado</label>
-          <select
-            value={filters.estado}
-            onChange={(e) => update("estado", e.target.value)}
-            className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
-            {ESTADO_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+          <Select value={filters.estado || "all"} onValueChange={(val) => update("estado", val === "all" ? "" : val)}>
+            <SelectTrigger className="h-8 w-full" aria-label="Estado de propiedad">
+              <SelectValue placeholder="Todos" />
+            </SelectTrigger>
+            <SelectContent>
+              {ESTADO_OPTIONS.map((o) => (
+                <SelectItem key={o.value || "all"} value={o.value || "all"}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Distrito */}
         <div>
           <label className="typo-label-md text-muted-foreground mb-1 block">Distrito</label>
-          <select
-            value={filters.distrito}
-            onChange={(e) => update("distrito", e.target.value)}
-            className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
-            <option value="">Todos</option>
-            {DISTRITOS.map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
+          <Select value={filters.distrito || "all"} onValueChange={(val) => update("distrito", val === "all" ? "" : val)}>
+            <SelectTrigger className="h-8 w-full" aria-label="Distrito">
+              <SelectValue placeholder="Todos" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {DISTRITOS.map((d) => (
+                <SelectItem key={d} value={d}>
+                  {d}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Moneda */}
         <div>
           <label className="typo-label-md text-muted-foreground mb-1 block">Moneda</label>
-          <select
-            value={filters.moneda}
-            onChange={(e) => update("moneda", e.target.value)}
-            className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
-            {MONEDA_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
+          <Select value={filters.moneda || "all"} onValueChange={(val) => update("moneda", val === "all" ? "" : val)}>
+            <SelectTrigger className="h-8 w-full" aria-label="Moneda">
+              <SelectValue placeholder="Todas" />
+            </SelectTrigger>
+            <SelectContent>
+              {MONEDA_OPTIONS.map((o) => (
+                <SelectItem key={o.value || "all"} value={o.value || "all"}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Precio Min */}

@@ -25,7 +25,7 @@ import {
 import { useAnalyticsAggregates } from "@/presentation/hooks/useAnalyticsAggregates";
 import type { DateRange } from "@/presentation/hooks/useAnalyticsAggregates";
 
-const PIE_COLORS = ["#2563eb", "#7c3aed", "#f59e0b", "#10b981", "#ef4444"];
+const PIE_COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
 
 function formatDate(d: Date): string {
   return d.toISOString().slice(0, 10);
@@ -62,7 +62,7 @@ export function TourAnalyticsDashboard() {
         <div className="flex flex-col gap-1.5">
           <label className="text-xs text-muted-foreground font-medium">Tour ID</label>
           <input
-            className="px-3 py-2 rounded-lg border border-input bg-card text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+            className="px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"
             placeholder="UUID del tour"
             value={tourId}
             onChange={(e) => setTourId(e.target.value)}
@@ -121,7 +121,7 @@ export function TourAnalyticsDashboard() {
                     <XAxis dataKey="parcel_code" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} />
                     <Tooltip />
-                    <Bar dataKey="total_clicks" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="total_clicks" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -223,7 +223,7 @@ export function TourAnalyticsDashboard() {
 
 function SummaryCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="bg-card border border-border p-4 rounded-xl shadow-[0px_4px_20px_rgba(160,152,144,0.08)]">
+    <div className="bg-card border border-border p-4 rounded-xl shadow-card">
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
       <p className="text-lg font-bold text-primary">{value.toLocaleString("es-PE")}</p>
     </div>

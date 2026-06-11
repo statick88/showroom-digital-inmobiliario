@@ -41,17 +41,18 @@ on conflict (id) do update set
   updated_at         = now();
 
 -- =============================================================================
--- 3. USUARIOS / VENDEDORES (usuarios_rol) — sin auth_user_id
+-- 3. USUARIOS / VENDEDORES (usuarios_rol) — auth_user_id para admin
 -- =============================================================================
-insert into public.usuarios_rol (id, email, nombre, rol, telefono, activo)
+insert into public.usuarios_rol (id, auth_user_id, email, nombre, rol, telefono, activo)
 values
-  ('5adf837d-da5b-435f-acfa-0508ac3b602e', 'admin@showroom.test',    'Admin Sistema',  'admin',    '999-000-001', true),
-  ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'vendedor1@showroom.test','María López',    'vendedor', '999-000-002', true),
-  ('b2c3d4e5-f6a7-8901-bcde-fa2345678901', 'vendedor2@showroom.test','Carlos Ruiz',    'vendedor', '999-000-003', true),
-  ('c3d4e5f6-a7b8-9012-cdef-ab3456789012', 'comprador1@showroom.test','Ana Torres',   'comprador','999-000-004', true),
-  ('d4e5f6a7-b8c9-0123-defa-bc4567890123', 'comprador2@showroom.test','Jorge Mendoza','comprador','999-000-005', true),
-  ('e5f6a7b8-c9d0-1234-efab-cd5678901234', 'comprador3@showroom.test','Lucía Fernández','comprador','999-000-006', true)
+  ('5adf837d-da5b-435f-acfa-0508ac3b602e', '5ae03f69-bd01-4fb8-b620-a4c12db49c9a', 'admin@showroom.test',    'Admin Sistema',  'admin',    '999-000-001', true),
+  ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', null, 'vendedor1@showroom.test','María López',    'vendedor', '999-000-002', true),
+  ('b2c3d4e5-f6a7-8901-bcde-fa2345678901', null, 'vendedor2@showroom.test','Carlos Ruiz',    'vendedor', '999-000-003', true),
+  ('c3d4e5f6-a7b8-9012-cdef-ab3456789012', null, 'comprador1@showroom.test','Ana Torres',   'comprador','999-000-004', true),
+  ('d4e5f6a7-b8c9-0123-defa-bc4567890123', null, 'comprador2@showroom.test','Jorge Mendoza','comprador','999-000-005', true),
+  ('e5f6a7b8-c9d0-1234-efab-cd5678901234', null, 'comprador3@showroom.test','Lucía Fernández','comprador','999-000-006', true)
 on conflict (id) do update set
+  auth_user_id = excluded.auth_user_id,
   email    = excluded.email,
   nombre   = excluded.nombre,
   rol      = excluded.rol,

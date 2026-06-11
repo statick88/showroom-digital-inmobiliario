@@ -43,8 +43,8 @@ export function OfflineIndicator() {
       data-testid="offline-indicator"
       className={`fixed bottom-4 left-4 z-50 flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg transition-all ${
         isOnline
-          ? "bg-green-600 text-white"
-          : "bg-orange-600 text-white"
+          ? "bg-status-success text-white"
+          : "bg-status-warning text-white"
       }`}
     >
       {/* Status icon */}

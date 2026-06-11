@@ -92,9 +92,9 @@ export function PropertyDetailPanel({
                 className="fixed inset-0 z-50 flex items-center justify-center p-4"
                 role="dialog"
                 aria-modal="true"
-                aria-label={propiedad.titulo}
+                aria-label="Detalle de propiedad"
               >
-                <div className="relative w-full max-w-lg rounded-xl bg-white dark:bg-zinc-900 shadow-modal overflow-hidden flex flex-col max-h-[90vh]">
+                <div className="relative w-full max-w-lg rounded-xl bg-card shadow-modal overflow-hidden flex flex-col max-h-[90vh]">
                   {/* Close button */}
                   <button
                     onClick={onClose}
@@ -174,10 +174,10 @@ export function PropertyDetailPanel({
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="fixed inset-y-0 right-0 z-50 w-full bg-white dark:bg-zinc-900 shadow-xl overflow-hidden flex flex-col"
+                className="fixed inset-y-0 right-0 z-50 w-full bg-card shadow-xl overflow-hidden flex flex-col"
                 role="dialog"
                 aria-modal="true"
-                aria-label={propiedad.titulo}
+                aria-label="Detalle de propiedad"
                 style={{ maxWidth: "100vw" }}
               >
                 {/* Close button */}
@@ -215,7 +215,7 @@ export function PropertyDetailPanel({
                 </div>
 
                 {/* CTA fixed at bottom */}
-                <div className="p-4 border-t border-border bg-white dark:bg-zinc-900">
+                <div className="p-4 border-t border-border bg-card">
                   <div className="flex gap-2">
                     <Button className="flex-1" size="lg" onClick={() => onContact?.(propiedad)}>
                       Contactar

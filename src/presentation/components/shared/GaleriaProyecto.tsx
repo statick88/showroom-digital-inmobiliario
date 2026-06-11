@@ -28,12 +28,14 @@ export function GaleriaProyecto({ imagenes, titulo }: GaleriaProyectoProps) {
             <button
               onClick={() => setSelected((p) => (p - 1 + imagenes.length) % imagenes.length)}
               className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white transition-colors shadow"
+              aria-label="Imagen anterior"
             >
               <Icon name="chevron_left" size={24} />
             </button>
             <button
               onClick={() => setSelected((p) => (p + 1) % imagenes.length)}
               className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 rounded-full p-2 hover:bg-white transition-colors shadow"
+              aria-label="Siguiente imagen"
             >
               <Icon name="chevron_right" size={24} />
             </button>

@@ -15,6 +15,15 @@ import {
 } from "@/components/ui/dialog";
 import { Search, Plus, Trash2, Edit, Eye, EyeOff, Archive } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type TourEstado = "borrador" | "publicado" | "archivado";
 
@@ -79,22 +88,23 @@ export function VirtualToursPanel() {
           <div className="relative flex-grow max-w-md">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-card text-sm"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-input focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none bg-card text-sm"
               placeholder="Buscar por nombre..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <select
-            className="bg-card border border-input rounded-lg px-4 py-2 text-sm"
-            value={filterEstado}
-            onChange={(e) => setFilterEstado(e.target.value)}
-          >
-            <option value="">Todos los estados</option>
-            <option value="borrador">Borrador</option>
-            <option value="publicado">Publicado</option>
-            <option value="archivado">Archivado</option>
-          </select>
+          <Select value={filterEstado || "all"} onValueChange={(val) => setFilterEstado(val === "all" ? "" : val)}>
+            <SelectTrigger className="w-[180px]" aria-label="Filtrar por estado">
+              <SelectValue placeholder="Todos los estados" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los estados</SelectItem>
+              <SelectItem value="borrador">Borrador</SelectItem>
+              <SelectItem value="publicado">Publicado</SelectItem>
+              <SelectItem value="archivado">Archivado</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Table */}
@@ -113,8 +123,12 @@ export function VirtualToursPanel() {
             <tbody className="divide-y divide-border">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">
-                    Cargando tours...
+                  <td colSpan={6} className="p-8">
+                    <div className="space-y-3">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <Skeleton key={i} className="h-12 w-full" />
+                      ))}
+                    </div>
                   </td>
                 </tr>
               ) : filtered.length > 0 ? (
@@ -179,8 +193,11 @@ export function VirtualToursPanel() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-sm text-muted-foreground">
-                    {search || filterEstado ? "No se encontraron tours con esos filtros" : "No hay tours virtuales"}
+                  <td colSpan={6}>
+                    <EmptyState
+                      title={search || filterEstado ? "No se encontraron tours con esos filtros" : "No hay tours virtuales"}
+                      description={search || filterEstado ? "Intenta ajustar los filtros." : "Crea un tour virtual para comenzar."}
+                    />
                   </td>
                 </tr>
               )}

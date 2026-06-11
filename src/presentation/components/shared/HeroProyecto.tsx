@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense, lazy } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { Icon } from "@/components/ui/icon";
 import { Tour360 } from "@/presentation/components/map/Tour360";
 import { VirtualTourSkeleton } from "@/presentation/components/virtual-tour/VirtualTourSkeleton";
@@ -23,6 +23,16 @@ interface HeroProyectoProps {
 
 export function HeroProyecto({ nombre, descripcion, imagenUrl, imagenes360, tourId }: HeroProyectoProps) {
   const [showTour, setShowTour] = useState(false);
+
+  // Close tour on Escape key
+  useEffect(() => {
+    if (!showTour) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowTour(false);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [showTour]);
 
   // Determine if we can show the tour button
   const hasTour = (tourId && tourId.length > 0) || (imagenes360 && imagenes360.length > 0);
@@ -63,7 +73,7 @@ export function HeroProyecto({ nombre, descripcion, imagenUrl, imagenes360, tour
           className="fixed inset-0 z-50 bg-black/70 p-4 sm:p-6 overflow-y-auto"
           role="dialog"
           aria-modal="true"
-          aria-label="Tour 360°"
+          aria-label="Vista previa del tour 360°"
           onClick={(e) => {
             // Close on backdrop click
             if (e.target === e.currentTarget) setShowTour(false);

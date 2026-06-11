@@ -67,7 +67,7 @@ export function LeadsTable() {
 
   if (isLoading) {
     return (
-      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-[0px_12px_32px_rgba(160,152,144,0.15)]">
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-modal">
         <div className="p-8 text-center text-sm text-muted-foreground">Cargando...</div>
       </div>
     );
@@ -75,7 +75,7 @@ export function LeadsTable() {
 
   return (
     <>
-      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-[0px_12px_32px_rgba(160,152,144,0.15)]">
+      <div className="bg-card border border-border rounded-xl overflow-hidden shadow-modal">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-muted">

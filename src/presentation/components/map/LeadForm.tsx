@@ -160,7 +160,12 @@ export function LeadForm({ onClose, propiedad }: LeadFormProps) {
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md rounded-xl bg-white dark:bg-zinc-900 shadow-modal overflow-hidden">
+      <div
+        className="relative w-full max-w-md rounded-xl bg-card shadow-modal overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Formulario de contacto"
+      >
         {/* Close button */}
         <button
           onClick={onClose}
@@ -192,7 +197,7 @@ export function LeadForm({ onClose, propiedad }: LeadFormProps) {
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               placeholder="Tu nombre completo"
-              className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:border-ring transition-all"
               disabled={submitting}
             />
           </div>
@@ -209,7 +214,7 @@ export function LeadForm({ onClose, propiedad }: LeadFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="correo@ejemplo.com"
-              className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+              className="w-full h-10 px-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:border-ring transition-all"
               disabled={submitting}
             />
           </div>
@@ -229,7 +234,7 @@ export function LeadForm({ onClose, propiedad }: LeadFormProps) {
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="999 999 999"
-                className="w-full h-10 pl-11 pr-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                className="w-full h-10 pl-11 pr-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:border-ring transition-all"
                 disabled={submitting}
               />
             </div>
@@ -254,7 +259,7 @@ export function LeadForm({ onClose, propiedad }: LeadFormProps) {
               type="checkbox"
               checked={privacyAccepted}
               onChange={(e) => setPrivacyAccepted(e.target.checked)}
-              className="mt-0.5 size-4 rounded border-border text-primary focus:ring-primary/30"
+              className="mt-0.5 size-4 rounded border-border text-primary focus-visible:ring-3 focus-visible:ring-ring/50"
               disabled={submitting}
             />
             <span className="text-xs text-muted-foreground leading-relaxed">
