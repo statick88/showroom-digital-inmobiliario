@@ -4,14 +4,29 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { lotesRepository } from "@/data/repositories";
 import { env } from "@/config/env";
 import { useAuthStore } from "@/presentation/hooks/useAuthStore";
+import { useProjectContext } from "@/presentation/context/ProjectContext";
 import type { CrearLoteData, EstadoLote, FiltrosLotes } from "@/domain/entities/lote";
 
-export function useLotes(proyectoId: string, filtros?: FiltrosLotes) {
+/**
+ * Main hook for fetching lotes scoped to a project.
+ * `proyectoId` is now optional — if omitted, the query is disabled.
+ * Callers (e.g., AdminDashboard) should pass `selectedProjectId` from `useProjectContext()`.
+ */
+export function useLotes(proyectoId?: string, filtros?: FiltrosLotes) {
   return useQuery({
     queryKey: ["lotes", proyectoId, filtros],
-    queryFn: () => lotesRepository.listar(proyectoId, filtros),
+    queryFn: () => lotesRepository.listar(proyectoId!, filtros),
     enabled: Boolean(proyectoId),
   });
+}
+
+/**
+ * Convenience hook that reads `proyectoId` from `useProjectContext()`.
+ * Use this when you don't want to thread the project ID manually.
+ */
+export function useLotesFromContext(filtros?: FiltrosLotes) {
+  const { selectedProjectId } = useProjectContext();
+  return useLotes(selectedProjectId ?? undefined, filtros);
 }
 
 /**

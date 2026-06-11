@@ -68,6 +68,7 @@ export function AdminDashboard() {
 function AdminDashboardInner() {
   const [tab, setTab] = useState<Tab>("dashboard");
   const [isMobile, setIsMobile] = useState(false);
+  const { selectedProjectId } = useProjectContext();
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -276,7 +277,8 @@ function NavButton({
 //  DASHBOARD TAB
 // ════════════════════════════════════════════════════════════════════
 function DashboardTab() {
-  const { data } = useMetricas();
+  const { selectedProjectId } = useProjectContext();
+  const { data } = useMetricas(selectedProjectId ?? undefined);
 
   const disponibles = data?.disponibles ?? 0;
   const separadas = data?.reservados ?? 0;

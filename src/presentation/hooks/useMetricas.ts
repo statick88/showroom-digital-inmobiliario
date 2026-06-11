@@ -4,9 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { transaccionesRepository } from "@/data/repositories/supabase-transacciones.repository.impl";
 import { env } from "@/config/env";
 
-export function useMetricas() {
+export function useMetricas(proyectoId?: string) {
+  const effectiveProyectoId = proyectoId ?? env.proyectoId;
   return useQuery({
-    queryKey: ["metricas", env.proyectoId],
-    queryFn: () => transaccionesRepository.obtenerMetricas(env.proyectoId),
+    queryKey: ["metricas", effectiveProyectoId],
+    queryFn: () => transaccionesRepository.obtenerMetricas(effectiveProyectoId),
+    enabled: Boolean(effectiveProyectoId),
   });
 }

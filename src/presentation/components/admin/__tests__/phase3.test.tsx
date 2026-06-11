@@ -140,9 +140,21 @@ vi.mock("@/presentation/hooks/useRealtimeLotes", () => ({
   useRealtimeLotes: () => ({ isSubscribed: true, error: null }),
 }));
 
-// ── Mock supabase client (used by realtime hooks) ──────────────────
+// ── Mock supabase client (used by realtime hooks + ProjectContext) ──────────────────
+const createMockQueryBuilder = () => {
+  const builder = {
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    order: vi.fn().mockReturnThis(),
+    single: vi.fn().mockResolvedValue({ data: null, error: null }),
+    then: vi.fn().mockResolvedValue({ data: [], error: null }),
+  };
+  return builder;
+};
+
 vi.mock("@/lib/supabase/client", () => ({
   supabase: {
+    from: vi.fn(() => createMockQueryBuilder()),
     channel: vi.fn(() => ({
       on: vi.fn(() => ({
         subscribe: vi.fn((cb) => {
