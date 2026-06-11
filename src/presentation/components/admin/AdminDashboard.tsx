@@ -15,6 +15,7 @@ import { AuditLogPanel } from "@/presentation/components/admin/AuditLogPanel";
 import { VirtualToursPanel } from "@/presentation/components/admin/VirtualToursPanel";
 import { TourAnalyticsDashboard } from "@/presentation/components/admin/TourAnalyticsDashboard";
 import { TourManagementTab } from "@/presentation/components/admin/TourManagementTab";
+import { PagosTab } from "@/presentation/components/admin/PagosTab";
 import { ProjectProvider, useProjectContext } from "@/presentation/context/ProjectContext";
 import { ProjectSelector } from "@/presentation/components/admin/ProjectSelector";
 import { Icon } from "@/components/ui/icon";
@@ -41,10 +42,11 @@ import {
   Orbit,
   BarChart3,
   MapPin,
+  CircleDollarSign,
 } from "lucide-react";
 import type { EstadoPropiedad } from "@/domain/entities/propiedad";
 
-type Tab = "dashboard" | "propiedades" | "leads" | "usuarios" | "audit-log" | "virtual-tours" | "analytics" | "tour-management";
+type Tab = "dashboard" | "propiedades" | "pagos" | "leads" | "usuarios" | "audit-log" | "virtual-tours" | "analytics" | "tour-management";
 
 // ── Confirm dialog state ───────────────────────────────────────────
 interface ConfirmState {
@@ -103,6 +105,9 @@ function AdminDashboardInner() {
             <NavButton tab="propiedades" current={tab} icon="domain" onClick={setTab}>
               Propiedades
             </NavButton>
+            <NavButton tab="pagos" current={tab} icon="payments" onClick={setTab}>
+              Pagos
+            </NavButton>
             <NavButton tab="leads" current={tab} icon="chat_bubble" onClick={setTab}>
               Leads
             </NavButton>
@@ -148,6 +153,7 @@ function AdminDashboardInner() {
       <main className="flex-grow bg-background min-h-screen pb-20 md:pb-0">
         {tab === "dashboard" && <DashboardTab />}
         {tab === "propiedades" && <PropiedadesTab />}
+        {tab === "pagos" && <PagosTab />}
         {tab === "leads" && <LeadsTab />}
         {tab === "usuarios" && <UsuariosTab />}
         {tab === "audit-log" && <AuditLogTab />}
@@ -173,6 +179,12 @@ function AdminDashboardInner() {
             icon={<Building2 size={20} />}
             label="Propiedades"
             onClick={() => setTab("propiedades")}
+          />
+          <MobileTabButton
+            active={tab === "pagos"}
+            icon={<CircleDollarSign size={20} />}
+            label="Pagos"
+            onClick={() => setTab("pagos")}
           />
           <MobileTabButton
             active={tab === "leads"}
