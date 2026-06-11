@@ -16,6 +16,7 @@ import { VirtualToursPanel } from "@/presentation/components/admin/VirtualToursP
 import { TourAnalyticsDashboard } from "@/presentation/components/admin/TourAnalyticsDashboard";
 import { TourManagementTab } from "@/presentation/components/admin/TourManagementTab";
 import { PagosTab } from "@/presentation/components/admin/PagosTab";
+import { ReportesTab } from "@/presentation/components/admin/ReportesTab";
 import { ProjectProvider, useProjectContext } from "@/presentation/context/ProjectContext";
 import { ProjectSelector } from "@/presentation/components/admin/ProjectSelector";
 import { Icon } from "@/components/ui/icon";
@@ -46,7 +47,7 @@ import {
 } from "lucide-react";
 import type { EstadoPropiedad } from "@/domain/entities/propiedad";
 
-type Tab = "dashboard" | "propiedades" | "pagos" | "leads" | "usuarios" | "audit-log" | "virtual-tours" | "analytics" | "tour-management";
+type Tab = "dashboard" | "propiedades" | "pagos" | "reportes" | "leads" | "usuarios" | "audit-log" | "virtual-tours" | "analytics" | "tour-management";
 
 // ── Confirm dialog state ───────────────────────────────────────────
 interface ConfirmState {
@@ -108,6 +109,9 @@ function AdminDashboardInner() {
             <NavButton tab="pagos" current={tab} icon="payments" onClick={setTab}>
               Pagos
             </NavButton>
+            <NavButton tab="reportes" current={tab} icon="summarize" onClick={setTab}>
+              Reportes
+            </NavButton>
             <NavButton tab="leads" current={tab} icon="chat_bubble" onClick={setTab}>
               Leads
             </NavButton>
@@ -154,6 +158,7 @@ function AdminDashboardInner() {
         {tab === "dashboard" && <DashboardTab />}
         {tab === "propiedades" && <PropiedadesTab />}
         {tab === "pagos" && <PagosTab />}
+        {tab === "reportes" && <ReportesTab />}
         {tab === "leads" && <LeadsTab />}
         {tab === "usuarios" && <UsuariosTab />}
         {tab === "audit-log" && <AuditLogTab />}
@@ -185,6 +190,12 @@ function AdminDashboardInner() {
             icon={<CircleDollarSign size={20} />}
             label="Pagos"
             onClick={() => setTab("pagos")}
+          />
+          <MobileTabButton
+            active={tab === "reportes"}
+            icon={<FileText size={20} />}
+            label="Reportes"
+            onClick={() => setTab("reportes")}
           />
           <MobileTabButton
             active={tab === "leads"}
