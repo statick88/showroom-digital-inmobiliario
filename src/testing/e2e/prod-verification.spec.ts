@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const BASE = process.env.BASE_URL || "https://showroom-digital-inmobiliario.vercel.app";
+const BASE = "https://statick88.github.io/showroom-digital-inmobiliario";
 const ADMIN_EMAIL = "dsaavedra88@gmail.com";
 const ADMIN_PASS = "a1b2c3d4*";
 const SUPABASE_PROJECT_REF = "ktfmrfhznwqsfziafltr";

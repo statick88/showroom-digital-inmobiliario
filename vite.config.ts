@@ -43,7 +43,7 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ url }) => url.pathname === "/" || url.pathname.endsWith("/index.html"),
+            urlPattern: ({ url }) => url.pathname === "/showroom-digital-inmobiliario/" || url.pathname.endsWith("/showroom-digital-inmobiliario/index.html"),
             handler: "NetworkFirst",
             options: {
               cacheName: "html-cache",
@@ -68,7 +68,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
-  base: "/",
+  base: "/showroom-digital-inmobiliario/",
   build: {
     outDir: "out",
     chunkSizeWarningLimit: 500,
