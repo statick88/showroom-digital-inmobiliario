@@ -43,7 +43,9 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ url }) => url.pathname === "/showroom-digital-inmobiliario/" || url.pathname.endsWith("/showroom-digital-inmobiliario/index.html"),
+            urlPattern: ({ url }) =>
+              url.pathname === "/showroom-digital-inmobiliario/" ||
+              url.pathname.endsWith("/showroom-digital-inmobiliario/index.html"),
             handler: "NetworkFirst",
             options: {
               cacheName: "html-cache",
@@ -86,4 +88,5 @@ export default defineConfig({
       },
     },
   },
+  envPrefix: "VITE_",
 });

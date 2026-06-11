@@ -6,9 +6,21 @@ function requireEnv(key: string): string {
   return val as string;
 }
 
+function getSupabaseKey(): string {
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const key = anonKey ?? publishableKey;
+  if (!key) {
+    throw new Error(
+      "Missing required env var: VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY)"
+    );
+  }
+  return key as string;
+}
+
 export const env = {
   supabaseUrl: requireEnv("VITE_SUPABASE_URL"),
-  supabaseKey: requireEnv("VITE_SUPABASE_PUBLISHABLE_KEY"),
+  supabaseKey: getSupabaseKey(),
   masterPlanImageUrl: (() => {
     const url = import.meta.env.VITE_MASTER_PLAN_IMAGE_URL ?? "";
     if (url && !url.startsWith("https://")) {
