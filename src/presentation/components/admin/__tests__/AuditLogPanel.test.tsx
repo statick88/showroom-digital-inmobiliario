@@ -230,8 +230,8 @@ describe("<AuditLogPanel> (T-5.5) — audit log table with filters, diff, and pa
     // Find pre elements in the container
     const preElements = container.getElementsByTagName("pre");
     // Check JSON content includes the expected values
-    expect(preElements[0].textContent).toContain("disponible");
-    expect(preElements[1].textContent).toContain("separado");
+    expect(preElements[0]?.textContent).toContain("disponible");
+    expect(preElements[1]?.textContent).toContain("separado");
   });
 
   it("(4) pagination next/prev updates page and calls useAuditLog with new page", async () => {

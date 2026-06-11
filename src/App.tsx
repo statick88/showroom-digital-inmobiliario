@@ -24,6 +24,7 @@ import { MisionVision } from "@/presentation/components/landing/MisionVision";
 import { TourPreview } from "@/presentation/components/landing/TourPreview";
 import { Contacto } from "@/presentation/components/landing/Contacto";
 import { LandingFooter } from "@/presentation/components/landing/LandingFooter";
+import { PWAInstallPrompt } from "@/presentation/components/ui/PWAInstallPrompt";
 
 const MapaLotes = lazy(() =>
   import("@/presentation/components/lotes/MapaLotes").then((m) => ({ default: m.MapaLotes })),
@@ -411,6 +412,7 @@ function AppContent() {
         </Suspense>
       )}
 
+      <PWAInstallPrompt />
       <CookieBanner />
 
       <footer className="border-t border-border mt-12 py-6 text-center">
