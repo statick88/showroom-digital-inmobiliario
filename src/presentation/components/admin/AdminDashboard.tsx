@@ -15,6 +15,8 @@ import { AuditLogPanel } from "@/presentation/components/admin/AuditLogPanel";
 import { VirtualToursPanel } from "@/presentation/components/admin/VirtualToursPanel";
 import { TourAnalyticsDashboard } from "@/presentation/components/admin/TourAnalyticsDashboard";
 import { TourManagementTab } from "@/presentation/components/admin/TourManagementTab";
+import { ProjectProvider, useProjectContext } from "@/presentation/context/ProjectContext";
+import { ProjectSelector } from "@/presentation/components/admin/ProjectSelector";
 import { Icon } from "@/components/ui/icon";
 import {
   Dialog,
@@ -56,6 +58,14 @@ const PAGE_SIZE = 10;
 
 // ── Main component ─────────────────────────────────────────────────
 export function AdminDashboard() {
+  return (
+    <ProjectProvider>
+      <AdminDashboardInner />
+    </ProjectProvider>
+  );
+}
+
+function AdminDashboardInner() {
   const [tab, setTab] = useState<Tab>("dashboard");
   const [isMobile, setIsMobile] = useState(false);
 
@@ -78,6 +88,11 @@ export function AdminDashboard() {
           <div>
             <h1 className="text-lg font-bold text-primary">Admin Panel</h1>
             <p className="text-xs text-muted-foreground">Gestión Inmobiliaria</p>
+          </div>
+
+          {/* Project Selector */}
+          <div className="pt-2 border-t border-border">
+            <ProjectSelector />
           </div>
 
           <nav className="flex flex-col gap-2 flex-grow">
