@@ -1,5 +1,3 @@
-"use client";
-
 import { useAuthStore } from "@/presentation/hooks/useAuthStore";
 import { useCommissions } from "@/presentation/hooks/useCommissions";
 import { CommissionTable } from "@/presentation/components/vendedor/CommissionTable";

@@ -1,5 +1,3 @@
-"use client";
-
 import type { EstadoLote } from "@/domain/entities/lote";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";

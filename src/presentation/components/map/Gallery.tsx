@@ -1,5 +1,3 @@
-"use client";
-
 import type { Propiedad } from "@/domain/entities/propiedad";
 import { ImageIcon } from "lucide-react";
 

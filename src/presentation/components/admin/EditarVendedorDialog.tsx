@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * `<EditarVendedorDialog>` — admin form to edit a vendedor (T-5.3, HU-009).
  *

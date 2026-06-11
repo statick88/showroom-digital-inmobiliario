@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * `<TransaccionesList>` — seller's transaction list (T-4.5, T-4.6, T-4.7, HU-008).
  *

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -105,9 +103,9 @@ export function PropertyFilters({ filters, onFilterChange }: PropertyFiltersProp
       <div className="grid grid-cols-2 gap-2">
         {/* Tipo */}
         <div>
-          <label className="typo-label-md text-muted-foreground mb-1 block">Tipo</label>
+          <label htmlFor="filter-tipo" className="typo-label-md text-muted-foreground mb-1 block">Tipo</label>
           <Select value={filters.tipo || "all"} onValueChange={(val) => update("tipo", val === "all" ? "" : val)}>
-            <SelectTrigger className="h-8 w-full" aria-label="Tipo de propiedad">
+            <SelectTrigger id="filter-tipo" className="h-8 w-full" aria-label="Tipo de propiedad">
               <SelectValue placeholder="Todos" />
             </SelectTrigger>
             <SelectContent>
@@ -122,9 +120,9 @@ export function PropertyFilters({ filters, onFilterChange }: PropertyFiltersProp
 
         {/* Estado */}
         <div>
-          <label className="typo-label-md text-muted-foreground mb-1 block">Estado</label>
+          <label htmlFor="filter-estado" className="typo-label-md text-muted-foreground mb-1 block">Estado</label>
           <Select value={filters.estado || "all"} onValueChange={(val) => update("estado", val === "all" ? "" : val)}>
-            <SelectTrigger className="h-8 w-full" aria-label="Estado de propiedad">
+            <SelectTrigger id="filter-estado" className="h-8 w-full" aria-label="Estado de propiedad">
               <SelectValue placeholder="Todos" />
             </SelectTrigger>
             <SelectContent>
@@ -139,9 +137,9 @@ export function PropertyFilters({ filters, onFilterChange }: PropertyFiltersProp
 
         {/* Distrito */}
         <div>
-          <label className="typo-label-md text-muted-foreground mb-1 block">Distrito</label>
+          <label htmlFor="filter-distrito" className="typo-label-md text-muted-foreground mb-1 block">Distrito</label>
           <Select value={filters.distrito || "all"} onValueChange={(val) => update("distrito", val === "all" ? "" : val)}>
-            <SelectTrigger className="h-8 w-full" aria-label="Distrito">
+            <SelectTrigger id="filter-distrito" className="h-8 w-full" aria-label="Distrito">
               <SelectValue placeholder="Todos" />
             </SelectTrigger>
             <SelectContent>
@@ -157,9 +155,9 @@ export function PropertyFilters({ filters, onFilterChange }: PropertyFiltersProp
 
         {/* Moneda */}
         <div>
-          <label className="typo-label-md text-muted-foreground mb-1 block">Moneda</label>
+          <label htmlFor="filter-moneda" className="typo-label-md text-muted-foreground mb-1 block">Moneda</label>
           <Select value={filters.moneda || "all"} onValueChange={(val) => update("moneda", val === "all" ? "" : val)}>
-            <SelectTrigger className="h-8 w-full" aria-label="Moneda">
+            <SelectTrigger id="filter-moneda" className="h-8 w-full" aria-label="Moneda">
               <SelectValue placeholder="Todas" />
             </SelectTrigger>
             <SelectContent>
@@ -174,8 +172,9 @@ export function PropertyFilters({ filters, onFilterChange }: PropertyFiltersProp
 
         {/* Precio Min */}
         <div>
-          <label className="typo-label-md text-muted-foreground mb-1 block">Precio min</label>
+          <label htmlFor="filter-precio-min" className="typo-label-md text-muted-foreground mb-1 block">Precio min</label>
           <Input
+            id="filter-precio-min"
             type="number"
             placeholder="0"
             value={filters.precioMin}
@@ -185,8 +184,9 @@ export function PropertyFilters({ filters, onFilterChange }: PropertyFiltersProp
 
         {/* Precio Max */}
         <div>
-          <label className="typo-label-md text-muted-foreground mb-1 block">Precio max</label>
+          <label htmlFor="filter-precio-max" className="typo-label-md text-muted-foreground mb-1 block">Precio max</label>
           <Input
+            id="filter-precio-max"
             type="number"
             placeholder="999999"
             value={filters.precioMax}

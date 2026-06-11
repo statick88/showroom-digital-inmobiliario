@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * `<RoleGuard>` — role-gated wrapper for routes (T-4.2).
  *

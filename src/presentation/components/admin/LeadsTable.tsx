@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useLeads } from "@/presentation/hooks/useLeads.legacy";
 import type { Lead } from "@/domain/entities/propiedad";

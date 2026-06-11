@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { usePOIs } from "@/presentation/hooks/usePOIs";
 import type {

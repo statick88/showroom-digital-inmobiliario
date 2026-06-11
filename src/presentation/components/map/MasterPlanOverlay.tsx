@@ -1,5 +1,3 @@
-"use client";
-
 import { ImageOverlay } from "react-leaflet";
 import { LatLngBounds } from "leaflet";
 

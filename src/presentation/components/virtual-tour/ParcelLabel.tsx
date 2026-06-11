@@ -1,5 +1,3 @@
-"use client";
-
 import { Html } from "@react-three/drei";
 import { PARCEL_BADGE_COLORS } from "@/config/parcel-colors";
 import type { Lote } from "@/domain/entities/lote";

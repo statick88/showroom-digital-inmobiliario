@@ -1,5 +1,3 @@
-"use client";
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { pagosRepository } from "@/data/repositories";
 import type { CrearPagoData } from "@/domain/entities/pago";

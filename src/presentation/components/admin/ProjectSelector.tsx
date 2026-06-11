@@ -1,5 +1,3 @@
-"use client";
-
 import { useProjectContext } from "@/presentation/context/ProjectContext";
 import {
   Select,
@@ -25,16 +23,15 @@ export function ProjectSelector() {
   const displayName = selected?.nombre || "Sin nombre";
 
   return (
-    <div className="flex items-center gap-2">
-      <label className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+    <div className="flex flex-col gap-1.5 w-full">
+      <label className="text-xs font-medium text-muted-foreground">
         Proyecto
       </label>
       <Select
         value={selectedProjectId ?? ""}
         onValueChange={(v) => setSelectedProjectId(v || null)}
       >
-        <SelectTrigger className="w-[220px]" aria-label="Seleccionar proyecto">
-          {/* Render the name directly inside the trigger as fallback */}
+        <SelectTrigger className="w-full" aria-label="Seleccionar proyecto">
           <span className="flex flex-1 text-left truncate">{displayName}</span>
         </SelectTrigger>
         <SelectContent>

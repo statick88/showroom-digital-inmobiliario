@@ -1,5 +1,3 @@
-"use client";
-
 import { useQuery } from "@tanstack/react-query";
 import { leadsRepository } from "@/data/repositories";
 import { env } from "@/config/env";

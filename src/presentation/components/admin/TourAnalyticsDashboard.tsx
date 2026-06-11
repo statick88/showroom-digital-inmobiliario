@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import {
   BarChart,
@@ -60,8 +58,9 @@ export function TourAnalyticsDashboard() {
       {/* Filters */}
       <div className="flex flex-wrap gap-4 items-end">
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-muted-foreground font-medium">Tour ID</label>
+          <label htmlFor="analytics-tour-id" className="text-xs text-muted-foreground font-medium">Tour ID</label>
           <input
+            id="analytics-tour-id"
             className="px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"
             placeholder="UUID del tour"
             value={tourId}
@@ -69,8 +68,9 @@ export function TourAnalyticsDashboard() {
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-muted-foreground font-medium">Desde</label>
+          <label htmlFor="analytics-start-date" className="text-xs text-muted-foreground font-medium">Desde</label>
           <input
+            id="analytics-start-date"
             type="date"
             className="px-3 py-2 rounded-lg border border-input bg-card text-sm"
             value={startDate}
@@ -78,8 +78,9 @@ export function TourAnalyticsDashboard() {
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-muted-foreground font-medium">Hasta</label>
+          <label htmlFor="analytics-end-date" className="text-xs text-muted-foreground font-medium">Hasta</label>
           <input
+            id="analytics-end-date"
             type="date"
             className="px-3 py-2 rounded-lg border border-input bg-card text-sm"
             value={endDate}

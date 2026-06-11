@@ -44,6 +44,9 @@ export function ConsultaLote({ lote, onClose }: ConsultaLoteProps) {
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Consultar lote"
     >
       <div
         className="bg-card border border-border rounded-2xl shadow-xl max-w-md w-full p-6"
@@ -66,8 +69,9 @@ export function ConsultaLote({ lote, onClose }: ConsultaLoteProps) {
             </p>
           </div>
           <div>
-            <label className="typo-label-md text-foreground block mb-1">Nombre</label>
+            <label htmlFor="consulta-nombre" className="typo-label-md text-foreground block mb-1">Nombre</label>
             <input
+              id="consulta-nombre"
               type="text"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
@@ -77,8 +81,9 @@ export function ConsultaLote({ lote, onClose }: ConsultaLoteProps) {
             />
           </div>
           <div>
-            <label className="typo-label-md text-foreground block mb-1">Correo</label>
+            <label htmlFor="consulta-correo" className="typo-label-md text-foreground block mb-1">Correo</label>
             <input
+              id="consulta-correo"
               type="email"
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
@@ -88,8 +93,9 @@ export function ConsultaLote({ lote, onClose }: ConsultaLoteProps) {
             />
           </div>
           <div>
-            <label className="typo-label-md text-foreground block mb-1">Teléfono</label>
+            <label htmlFor="consulta-telefono" className="typo-label-md text-foreground block mb-1">Teléfono</label>
             <input
+              id="consulta-telefono"
               type="tel"
               value={telefono}
               onChange={(e) => setTelefono(e.target.value)}

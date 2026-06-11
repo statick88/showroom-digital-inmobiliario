@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useCallback } from "react";
 import { POI_ICONS, POI_COLORS } from "@/config/poi-icons";
 import type { TourPOI } from "@/domain/entities/tour-poi";

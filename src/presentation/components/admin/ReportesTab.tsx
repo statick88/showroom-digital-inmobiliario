@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useMemo } from "react";
 import { useLotes } from "@/presentation/hooks/useLotes";
 import { useTransacciones } from "@/presentation/hooks/useTransacciones";

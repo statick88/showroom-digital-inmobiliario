@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo } from "react";
 import * as THREE from "three";
 import { projectToSphere } from "@/presentation/hooks/useParcelProjection";

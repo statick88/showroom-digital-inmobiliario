@@ -41,12 +41,7 @@ export const metricasRepository: MetricasRepository = {
         perfil_id: data.perfilId,
         pagina_origen: data.paginaOrigen,
       });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "";
-      const reason = message || "unknown";
-      if (typeof console !== "undefined") {
-        console.warn("[metricas] click tracking skipped:", reason);
-      }
+    } catch {
       // Swallow network/abort/resource errors — analytics must not
       // break the product experience.
     }

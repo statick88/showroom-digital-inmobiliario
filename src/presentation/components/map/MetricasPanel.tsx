@@ -1,5 +1,3 @@
-"use client";
-
 import { Icon } from "@/components/ui/icon";
 import { useMetricas } from "@/presentation/hooks/useMetricas";
 

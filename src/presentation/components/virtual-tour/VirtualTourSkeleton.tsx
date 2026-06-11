@@ -1,5 +1,3 @@
-"use client";
-
 export function VirtualTourSkeleton({ className = "" }: { className?: string }) {
   return (
     <div

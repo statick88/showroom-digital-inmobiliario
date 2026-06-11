@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
@@ -55,7 +53,7 @@ export function GaleriaProyecto({ imagenes, titulo }: GaleriaProyectoProps) {
                   : "border-transparent opacity-60 hover:opacity-100",
               )}
             >
-              <img src={img} alt="" className="w-full h-full object-cover" />
+              <img src={img} alt={`${titulo ?? "Propiedad"} imagen ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
             </button>
           ))}
         </div>

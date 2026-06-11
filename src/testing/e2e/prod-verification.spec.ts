@@ -9,12 +9,12 @@ const SUPABASE_PROJECT_REF = "ktfmrfhznwqsfziafltr";
 const ANON_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 
-if (!ANON_KEY || !SUPABASE_URL) {
-  throw new Error("Missing required environment variables: VITE_SUPABASE_PUBLISHABLE_KEY and VITE_SUPABASE_URL");
-}
+const hasEnv = Boolean(ANON_KEY && SUPABASE_URL);
 
 test.describe("Producción - Verificación funcional", () => {
   test.beforeEach(async ({ page }) => {
+    test.skip(!hasEnv, "Missing VITE_SUPABASE_PUBLISHABLE_KEY or VITE_SUPABASE_URL");
+
     // Get a fresh access token
     const tokenResponse = await page.request.post(
       `${SUPABASE_URL}/auth/v1/token?grant_type=password`,

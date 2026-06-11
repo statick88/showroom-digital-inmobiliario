@@ -1,5 +1,3 @@
-"use client";
-
 import type { Propiedad } from "@/domain/entities/propiedad";
 import { Ruler, Bed, Bath } from "lucide-react";
 

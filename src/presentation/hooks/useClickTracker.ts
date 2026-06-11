@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useRef, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { metricasRepository } from "@/data/repositories";

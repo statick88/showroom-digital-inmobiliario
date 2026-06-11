@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useTransacciones } from "@/presentation/hooks/useTransacciones";
 import { usePagos, useTotalPagado, useCrearPago } from "@/presentation/hooks/usePagos";
@@ -174,8 +172,9 @@ function PagosDetalle({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-muted-foreground">Monto (S/)</label>
+              <label htmlFor="pago-monto" className="text-xs text-muted-foreground">Monto (S/)</label>
               <input
+                id="pago-monto"
                 type="number"
                 step="0.01"
                 min="0.01"
@@ -188,8 +187,9 @@ function PagosDetalle({
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Método de Pago</label>
+              <label htmlFor="pago-metodo" className="text-xs text-muted-foreground">Método de Pago</label>
               <select
+                id="pago-metodo"
                 value={form.metodoPago}
                 onChange={(e) => setForm({ ...form, metodoPago: e.target.value })}
                 className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm"
@@ -203,8 +203,9 @@ function PagosDetalle({
               </select>
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">CCI (opcional)</label>
+              <label htmlFor="pago-cci" className="text-xs text-muted-foreground">CCI (opcional)</label>
               <input
+                id="pago-cci"
                 type="text"
                 value={form.cci}
                 onChange={(e) => setForm({ ...form, cci: e.target.value })}
@@ -214,8 +215,9 @@ function PagosDetalle({
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Referencia (opcional)</label>
+              <label htmlFor="pago-referencia" className="text-xs text-muted-foreground">Referencia (opcional)</label>
               <input
+                id="pago-referencia"
                 type="text"
                 value={form.referenciaExterna}
                 onChange={(e) => setForm({ ...form, referenciaExterna: e.target.value })}
@@ -226,8 +228,9 @@ function PagosDetalle({
             </div>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Notas (opcional)</label>
+            <label htmlFor="pago-notas" className="text-xs text-muted-foreground">Notas (opcional)</label>
             <textarea
+              id="pago-notas"
               value={form.notas}
               onChange={(e) => setForm({ ...form, notas: e.target.value })}
               className="w-full mt-1 px-3 py-2 rounded-lg border border-input bg-card text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"

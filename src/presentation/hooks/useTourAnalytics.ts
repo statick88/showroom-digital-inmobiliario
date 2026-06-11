@@ -1,5 +1,3 @@
-"use client";
-
 import { useRef, useEffect, useCallback, useMemo } from "react";
 import { analyticsRepository } from "@/data/repositories";
 import type { EventType, TourAnalyticsEvent } from "@/domain/entities/analytics";

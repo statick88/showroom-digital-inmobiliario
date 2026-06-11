@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * `<CrearVendedorDialog>` — admin form to create a new vendedor (T-5.2, HU-009).
  *

@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import { useState, useMemo } from "react";
 import { useAuditLog, useRealtimeAuditLog } from "@/presentation/hooks/useAuditLog";
@@ -115,12 +113,12 @@ function FilterBar({
     <div className="bg-card border border-border rounded-xl p-4 mb-4 shadow-sm">
       <div className="flex flex-wrap gap-3 items-end">
         <div className="flex flex-col gap-1.5 min-w-[180px]">
-          <label className="text-xs text-muted-foreground font-medium">Tabla</label>
+          <label htmlFor="audit-tabla" className="text-xs text-muted-foreground font-medium">Tabla</label>
           <Select
             value={filtros.tabla ?? ""}
             onValueChange={(v) => onFiltrosChange({ ...filtros, tabla: v || undefined })}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger id="audit-tabla" className="w-full">
               <SelectValue placeholder="Todas" />
             </SelectTrigger>
             <SelectContent>
@@ -137,12 +135,12 @@ function FilterBar({
         </div>
 
         <div className="flex flex-col gap-1.5 min-w-[160px]">
-          <label className="text-xs text-muted-foreground font-medium">Acción</label>
+          <label htmlFor="audit-accion" className="text-xs text-muted-foreground font-medium">Acción</label>
           <Select
             value={filtros.accion ?? ""}
             onValueChange={(v) => onFiltrosChange({ ...filtros, accion: v as Accion | undefined })}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger id="audit-accion" className="w-full">
               <SelectValue placeholder="Todas" />
             </SelectTrigger>
             <SelectContent>
@@ -157,8 +155,9 @@ function FilterBar({
         </div>
 
         <div className="flex flex-col gap-1.5 min-w-[180px] flex-grow">
-          <label className="text-xs text-muted-foreground font-medium">Actor</label>
+          <label htmlFor="audit-actor" className="text-xs text-muted-foreground font-medium">Actor</label>
           <Input
+            id="audit-actor"
             placeholder="Email o nombre..."
             value={filtros.actor ?? ""}
             onChange={(e) => onFiltrosChange({ ...filtros, actor: e.target.value || undefined })}
@@ -167,8 +166,9 @@ function FilterBar({
         </div>
 
         <div className="flex flex-col gap-1.5 min-w-[160px]">
-          <label className="text-xs text-muted-foreground font-medium">Fecha desde</label>
+          <label htmlFor="audit-fecha-desde" className="text-xs text-muted-foreground font-medium">Fecha desde</label>
           <Input
+            id="audit-fecha-desde"
             type="date"
             value={filtros.fechaDesde ?? ""}
             onChange={(e) =>
@@ -179,8 +179,9 @@ function FilterBar({
         </div>
 
         <div className="flex flex-col gap-1.5 min-w-[160px]">
-          <label className="text-xs text-muted-foreground font-medium">Fecha hasta</label>
+          <label htmlFor="audit-fecha-hasta" className="text-xs text-muted-foreground font-medium">Fecha hasta</label>
           <Input
+            id="audit-fecha-hasta"
             type="date"
             value={filtros.fechaHasta ?? ""}
             onChange={(e) =>

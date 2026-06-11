@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useVirtualTours, useEliminarVirtualTour, useActualizarVirtualTour } from "@/presentation/hooks/use-virtual-tour";
 import { VirtualTourForm } from "./VirtualTourForm";

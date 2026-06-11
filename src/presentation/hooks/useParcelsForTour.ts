@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo } from "react";
 import { useVirtualTour } from "@/presentation/hooks/use-virtual-tour";
 import { useLotes } from "@/presentation/hooks/useLotes";

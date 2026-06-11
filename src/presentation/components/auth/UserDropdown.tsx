@@ -1,5 +1,3 @@
-"use client";
-
 import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { useAuthStore } from "@/presentation/hooks/useAuthStore";

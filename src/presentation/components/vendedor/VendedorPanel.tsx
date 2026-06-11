@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * `<VendedorPanel>` — seller's workspace shell (T-4.2).
  *

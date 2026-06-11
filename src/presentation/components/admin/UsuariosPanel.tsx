@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * `<UsuariosPanel>` — admin user management table (T-5.1, HU-009).
  *

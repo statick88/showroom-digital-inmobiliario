@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { LogIn, UserPlus } from "lucide-react";
 import type { Route } from "@/presentation/components/shared/Navbar";

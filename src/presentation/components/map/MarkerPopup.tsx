@@ -1,5 +1,3 @@
-"use client";
-
 import type { Propiedad } from "@/domain/entities/propiedad";
 import { formatPrice } from "@/presentation/lib/formatters";
 import { StatusChip } from "@/components/ui/status-chip";
@@ -18,6 +16,7 @@ export function MarkerPopup({ propiedad }: MarkerPopupProps) {
           src={propiedad.imagenes[0] ?? getPublicAssetPath("placeholder.svg")}
           alt={propiedad.titulo}
           className="w-20 h-20 object-cover rounded-lg shrink-0"
+          loading="lazy"
         />
         <div className="min-w-0">
           <p className="text-base font-semibold mb-1 truncate">{propiedad.titulo}</p>

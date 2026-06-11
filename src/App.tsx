@@ -12,7 +12,9 @@ import type { TabView } from "@/presentation/components/shared/HeaderNav";
 import { env } from "@/config/env";
 import { useProyecto } from "@/presentation/hooks/useProyectos";
 import { useVirtualToursByProyecto } from "@/presentation/hooks/use-virtual-tour";
-import { AdminDashboard } from "@/presentation/components/admin/AdminDashboard";
+const AdminDashboard = lazy(() =>
+  import("@/presentation/components/admin/AdminDashboard").then((m) => ({ default: m.AdminDashboard })),
+);
 import { CookieBanner } from "@/presentation/components/shared/CookieBanner";
 import { MapView } from "@/presentation/components/map/MapView";
 import { RoleGuard } from "@/presentation/components/auth/RoleGuard";
@@ -147,6 +149,19 @@ export function App() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
+  // Dynamic title per route
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      showroom: "Showroom Digital — Propiedades",
+      app: "Showroom Digital — App",
+      admin: "Showroom Digital — Admin",
+      vendedor: "Showroom Digital — Vendedor",
+      privacidad: "Política de Privacidad",
+      auth: "Iniciar Sesión",
+    };
+    document.title = titles[effectiveRoute] || "Showroom Digital Inmobiliario";
+  }, [effectiveRoute]);
+
   useEffect(() => {
     if (sessionChecked && route === "admin" && !authenticated && !redirected.current) {
       redirected.current = true;
@@ -197,7 +212,9 @@ export function App() {
       <QueryClientProvider client={queryClient}>
         <SkipToContent />
         <ErrorBoundary>
-          <AdminDashboard />
+          <Suspense fallback={<Skeleton className="h-screen" />}>
+            <AdminDashboard />
+          </Suspense>
         </ErrorBoundary>
         <Toaster />
       </QueryClientProvider>

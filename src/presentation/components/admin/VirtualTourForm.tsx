@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { useVirtualTour, useCrearVirtualTour, useActualizarVirtualTour } from "@/presentation/hooks/use-virtual-tour";
 import { useProyectos } from "@/presentation/hooks/useProyectos";
@@ -208,8 +206,9 @@ export function VirtualTourForm({ open, onOpenChange, tourId }: VirtualTourFormP
           {/* Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-muted-foreground font-medium">Nombre *</label>
+              <label htmlFor="tour-nombre" className="text-xs text-muted-foreground font-medium">Nombre *</label>
               <input
+                id="tour-nombre"
                 className="w-full px-3 py-2 rounded-lg border border-input focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none bg-card text-sm"
                 placeholder="Tour Virtual - Mi Proyecto"
                 value={nombre}
@@ -217,9 +216,9 @@ export function VirtualTourForm({ open, onOpenChange, tourId }: VirtualTourFormP
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-muted-foreground font-medium">Proyecto *</label>
+              <label htmlFor="tour-proyecto" className="text-xs text-muted-foreground font-medium">Proyecto *</label>
               <Select value={proyectoId} onValueChange={setProyectoId}>
-                <SelectTrigger className="w-full" aria-label="Seleccionar proyecto">
+                <SelectTrigger id="tour-proyecto" className="w-full" aria-label="Seleccionar proyecto">
                   <SelectValue placeholder="Seleccionar proyecto..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -234,8 +233,9 @@ export function VirtualTourForm({ open, onOpenChange, tourId }: VirtualTourFormP
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-muted-foreground font-medium">Descripción</label>
+            <label htmlFor="tour-descripcion" className="text-xs text-muted-foreground font-medium">Descripción</label>
             <textarea
+              id="tour-descripcion"
               className="w-full px-3 py-2 rounded-lg border border-input focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none bg-card text-sm resize-none"
               rows={2}
               placeholder="Descripción del tour virtual..."
@@ -245,9 +245,9 @@ export function VirtualTourForm({ open, onOpenChange, tourId }: VirtualTourFormP
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-muted-foreground font-medium">Estado</label>
+            <label htmlFor="tour-estado" className="text-xs text-muted-foreground font-medium">Estado</label>
             <Select value={estado} onValueChange={(val) => setEstado(val as typeof estado)}>
-              <SelectTrigger className="w-full" aria-label="Estado del tour">
+              <SelectTrigger id="tour-estado" className="w-full" aria-label="Estado del tour">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

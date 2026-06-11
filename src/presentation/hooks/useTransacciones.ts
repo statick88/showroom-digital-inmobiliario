@@ -1,5 +1,3 @@
-"use client";
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { transaccionesRepository } from "@/data/repositories";
 import type { CrearTransaccionData } from "@/domain/entities/lote";

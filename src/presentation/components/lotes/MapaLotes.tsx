@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect } from "react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import { useLotes, useLotesPorVendedor } from "@/presentation/hooks/useLotes";

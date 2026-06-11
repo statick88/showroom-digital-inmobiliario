@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, Suspense, lazy } from "react";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";

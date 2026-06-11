@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";

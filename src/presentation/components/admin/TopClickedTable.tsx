@@ -1,5 +1,3 @@
-"use client";
-
 import { useTopClicks } from "@/presentation/hooks/useTopClicks";
 import { cn } from "@/lib/utils";
 import { getPublicAssetPath } from "@/presentation/components/map/map-utils";

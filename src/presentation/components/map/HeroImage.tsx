@@ -1,5 +1,3 @@
-"use client";
-
 import type { Propiedad } from "@/domain/entities/propiedad";
 import { Building } from "lucide-react";
 import { formatPrice } from "@/presentation/lib/formatters";

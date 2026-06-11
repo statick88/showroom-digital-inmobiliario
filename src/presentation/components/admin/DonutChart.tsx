@@ -1,5 +1,3 @@
-"use client";
-
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 interface DonutChartProps {

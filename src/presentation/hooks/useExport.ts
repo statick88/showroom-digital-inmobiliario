@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useCallback } from "react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";

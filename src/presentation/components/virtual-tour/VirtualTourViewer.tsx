@@ -1,5 +1,3 @@
-"use client";
-
 import { Suspense, lazy, useEffect, useState, useCallback } from "react";
 import { useVirtualTour } from "@/presentation/hooks/use-virtual-tour";
 import { useParcelsForTour } from "@/presentation/hooks/useParcelsForTour";

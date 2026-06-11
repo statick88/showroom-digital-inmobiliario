@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useCallback } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { usePropiedades } from "@/presentation/hooks/usePropiedades.legacy";
@@ -45,6 +43,12 @@ import { Button } from "@/components/ui/button";
 import { Pagination } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   LayoutDashboard,
   Building2,
   MessageCircle,
@@ -57,6 +61,10 @@ import {
   BarChart3,
   MapPin,
   CircleDollarSign,
+  MoreHorizontal,
+  Eye,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import type { EstadoPropiedad } from "@/domain/entities/propiedad";
 
@@ -103,7 +111,7 @@ function AdminDashboardInner() {
       {!isMobile && (
         <aside className="hidden md:flex w-64 h-full bg-card border-r border-border flex-col gap-6 p-6">
           <div>
-            <h1 className="text-lg font-bold text-primary">Admin Panel</h1>
+            <h2 className="text-lg font-bold text-primary">Admin Panel</h2>
             <p className="text-xs text-muted-foreground">Gestión Inmobiliaria</p>
           </div>
 
@@ -653,7 +661,44 @@ function PropiedadesTab() {
                       </Select>
                     </td>
                     <td className="p-4 text-center">
-                      {/* TODO: Add edit functionality when needed */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className="inline-flex items-center justify-center size-8 rounded-lg hover:bg-muted transition-colors"
+                            aria-label={`Acciones para ${p.codigo}`}
+                          >
+                            <MoreHorizontal size={16} />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              // TODO: navigate to property detail
+                              window.open(`/?lote=${p.id}`, "_blank");
+                            }}
+                          >
+                            <Eye size={14} className="mr-2" />
+                            Ver detalle
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              // TODO: open edit dialog
+                            }}
+                          >
+                            <Pencil size={14} className="mr-2" />
+                            Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => {
+                              // TODO: confirm delete
+                            }}
+                          >
+                            <Trash2 size={14} className="mr-2" />
+                            Eliminar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))
@@ -707,8 +752,9 @@ function PropiedadesTab() {
             <div className="space-y-4 py-2">
               {/* CCI input */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs text-muted-foreground font-medium">CCI (opcional)</label>
+                <label htmlFor="confirm-cci" className="text-xs text-muted-foreground font-medium">CCI (opcional)</label>
                 <Input
+                  id="confirm-cci"
                   className="w-full"
                   placeholder="002-XXXXXXXXXXXX-XX"
                   value={cci}
@@ -718,11 +764,11 @@ function PropiedadesTab() {
 
               {/* Payment method */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs text-muted-foreground font-medium">
+                <label htmlFor="confirm-metodo-pago" className="text-xs text-muted-foreground font-medium">
                   Método de pago (opcional)
                 </label>
                 <Select value={metodoPago || "none"} onValueChange={(val) => setMetodoPago(val === "none" ? "" : val)}>
-                  <SelectTrigger className="w-full" aria-label="Método de pago">
+                  <SelectTrigger id="confirm-metodo-pago" className="w-full" aria-label="Método de pago">
                     <SelectValue placeholder="Seleccionar..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -759,8 +805,9 @@ function PropiedadesTab() {
             <div className="space-y-4 py-2">
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs text-muted-foreground font-medium">Código *</label>
+                  <label htmlFor="prop-codigo" className="text-xs text-muted-foreground font-medium">Código *</label>
                   <Input
+                    id="prop-codigo"
                     className="w-full"
                     placeholder="LOTE-001"
                     value={form.codigo}
@@ -769,9 +816,9 @@ function PropiedadesTab() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs text-muted-foreground font-medium">Tipo *</label>
+                  <label htmlFor="prop-tipo" className="text-xs text-muted-foreground font-medium">Tipo *</label>
                   <Select value={form.tipo} onValueChange={(val) => setForm({ ...form, tipo: val as TipoPropiedad })}>
-                    <SelectTrigger className="w-full" aria-label="Tipo de propiedad">
+                    <SelectTrigger id="prop-tipo" className="w-full" aria-label="Tipo de propiedad">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -787,8 +834,9 @@ function PropiedadesTab() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs text-muted-foreground font-medium">Título *</label>
+                <label htmlFor="prop-titulo" className="text-xs text-muted-foreground font-medium">Título *</label>
                 <Input
+                  id="prop-titulo"
                   className="w-full"
                   placeholder="Lote 120m² en Urbanización Los Olivos"
                   value={form.titulo}
@@ -799,8 +847,9 @@ function PropiedadesTab() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs text-muted-foreground font-medium">Precio (S/) *</label>
+                  <label htmlFor="prop-precio" className="text-xs text-muted-foreground font-medium">Precio (S/) *</label>
                   <Input
+                    id="prop-precio"
                     type="number"
                     className="w-full"
                     placeholder="85000"
@@ -810,8 +859,9 @@ function PropiedadesTab() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs text-muted-foreground font-medium">Área (m²)</label>
+                  <label htmlFor="prop-area" className="text-xs text-muted-foreground font-medium">Área (m²)</label>
                   <Input
+                    id="prop-area"
                     type="number"
                     className="w-full"
                     placeholder="120"
@@ -824,8 +874,9 @@ function PropiedadesTab() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs text-muted-foreground font-medium">Cuartos</label>
+                  <label htmlFor="prop-cuartos" className="text-xs text-muted-foreground font-medium">Cuartos</label>
                   <Input
+                    id="prop-cuartos"
                     type="number"
                     className="w-full"
                     value={form.cuartos}
@@ -834,8 +885,9 @@ function PropiedadesTab() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs text-muted-foreground font-medium">Baños</label>
+                  <label htmlFor="prop-banios" className="text-xs text-muted-foreground font-medium">Baños</label>
                   <Input
+                    id="prop-banios"
                     type="number"
                     className="w-full"
                     value={form.banios}
@@ -844,8 +896,9 @@ function PropiedadesTab() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs text-muted-foreground font-medium">Distrito</label>
+                  <label htmlFor="prop-distrito" className="text-xs text-muted-foreground font-medium">Distrito</label>
                   <Input
+                    id="prop-distrito"
                     className="w-full"
                     placeholder="Ate"
                     value={form.distrito}
@@ -856,8 +909,9 @@ function PropiedadesTab() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs text-muted-foreground font-medium">Descripción</label>
+                <label htmlFor="prop-descripcion" className="text-xs text-muted-foreground font-medium">Descripción</label>
                 <textarea
+                  id="prop-descripcion"
                   className="w-full px-3 py-2 rounded-lg border border-input focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none bg-card text-sm resize-none"
                   rows={3}
                   placeholder="Descripción de la propiedad..."

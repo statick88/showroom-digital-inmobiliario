@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useCallback } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { toast } from "sonner";

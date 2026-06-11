@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, Suspense, lazy } from "react";
 import { Icon } from "@/components/ui/icon";
 import { Tour360 } from "@/presentation/components/map/Tour360";

@@ -1,5 +1,3 @@
-"use client";
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { virtualTourRepository } from "@/data/repositories";
 import type { CrearVirtualTourData, ActualizarVirtualTourData } from "@/domain/entities/virtual-tour";

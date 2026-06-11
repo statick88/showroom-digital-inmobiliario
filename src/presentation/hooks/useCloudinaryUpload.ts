@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useCallback } from "react";
 import { uploadImage, getThumbnailUrl, type UploadResult } from "@/lib/cloudinary/client";
 

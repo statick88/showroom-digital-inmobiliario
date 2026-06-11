@@ -92,13 +92,8 @@ export const usuariosRepository: IUsuariosRepository = {
     }
 
     // Capture the original error for re-throw if the fallback also
-    // fails. Logging here is intentional — every site in the repo
-    // uses `console.error` until we wire `logError` in a follow-up.
+    // fails.
     const originalError = error;
-    console.warn(
-      "[usuariosRepository.crear] Edge Function failed, attempting RPC fallback:",
-      originalError,
-    );
 
     // ── Fallback: RPC ───────────────────────────────────────
     const { data: rpcData, error: rpcError } = await supabase.rpc("crear_vendedor", {
@@ -118,12 +113,6 @@ export const usuariosRepository: IUsuariosRepository = {
     // Both paths failed. Surface the original Edge Function error so
     // the operator can debug "is the function deployed?" before
     // chasing a misconfigured RPC.
-    console.error(
-      "[usuariosRepository.crear] Edge Function and RPC fallback both failed. Original:",
-      originalError,
-      "RPC:",
-      rpcError,
-    );
     rethrowIfPresent(
       originalError ?? rpcError ?? { message: "Edge Function and RPC returned no data" },
       "Error al crear vendedor",

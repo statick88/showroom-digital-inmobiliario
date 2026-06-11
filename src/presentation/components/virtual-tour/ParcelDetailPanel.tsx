@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useCallback } from "react";
 import type { Lote } from "@/domain/entities/lote";
 import { LoteDetailContent } from "@/presentation/components/lotes/LoteDetailContent";

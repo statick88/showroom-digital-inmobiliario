@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from "react-leaflet";
 import type L from "leaflet";
@@ -89,6 +87,7 @@ function PropertyList({ propiedades, isLoading, selectedId, onSelect }: Property
             src={p.imagenes[0] ?? getPublicAssetPath("placeholder.svg")}
             alt={p.titulo}
             className="w-20 h-20 object-cover rounded-lg shrink-0"
+            loading="lazy"
           />
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-1">

@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Menu, X, MapPin, Building2, Shield, Home } from "lucide-react";
 import { cn } from "@/lib/utils";

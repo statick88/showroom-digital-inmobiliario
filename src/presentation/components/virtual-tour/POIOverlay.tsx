@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo } from "react";
 import { projectToSphere } from "@/presentation/hooks/useParcelProjection";
 import { POIMarker } from "./POIMarker";

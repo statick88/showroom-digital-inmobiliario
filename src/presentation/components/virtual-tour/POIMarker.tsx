@@ -1,5 +1,3 @@
-"use client";
-
 import { Html } from "@react-three/drei";
 import { POI_ICONS, POI_COLORS } from "@/config/poi-icons";
 import type { TourPOI } from "@/domain/entities/tour-poi";
