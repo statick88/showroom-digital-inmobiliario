@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/showroom-digital-inmobiliario/sw.js', { scope: '/showroom-digital-inmobiliario/' })})}

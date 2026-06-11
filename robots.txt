@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /#/admin
+Disallow: /#/vendedor
+Sitemap: https://statick88.github.io/showroom-digital-inmobiliario/sitemap.xml
